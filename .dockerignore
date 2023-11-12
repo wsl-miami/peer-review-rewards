@@ -1,0 +1,8 @@
+./.gitlab/*
+./.vscode/*
+./Attachments/*
+./docs/*
+./Images/*
+.gitattributes
+Changelog.md
+Readme.md

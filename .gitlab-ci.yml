@@ -1,0 +1,32 @@
+stages:
+  - debug
+  - lint
+  - security
+  - build
+  - test
+  - deploy
+
+pipeline-debug:
+  stage: debug
+  tags: [ "docker" ] # "docker", "shell"
+  allow_failure: true
+  script:
+    - sh ./scripts/pipeline/debug.sh
+
+docker-deploy:
+  stage: deploy
+  tags: [ "shell" ]
+  allow_failure: true
+  script: 
+    - sh ./scripts/pipeline/docker-deploy.sh
+  only:
+    - master
+
+unit-test:
+  stage: test
+  image: node:16-alpine
+  tags: [ "docker" ]
+  when: manual
+  allow_failure: true
+  script:
+    - sh ./scripts/pipeline/unit-test.sh
