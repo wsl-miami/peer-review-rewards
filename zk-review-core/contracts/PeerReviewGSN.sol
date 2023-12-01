@@ -52,6 +52,64 @@ contract PeerReviewGSN is ERC2771Recipient {
         return manuscripts[_manuscriptId];
     }
 
+    function allManuscripts() public view returns(ManuscriptReview[] memory) {
+        return manuscripts;
+    }
+
+        /*
+     @notice Calculates all manuscripts existing for an author's address
+     @param _account is the address of the account you wish to find the bounties for
+     @return ManuscriptReview[] list of manuscripts for the account
+    */
+    function getManuscriptsByAuthor(address _account) public view returns(ManuscriptReview[] memory) {
+        // Create lists
+        uint256[] memory ids = authorManuscriptIds[_account];
+        ManuscriptReview[] memory ret = new ManuscriptReview[](ids.length);
+
+        // Loops through the manuscripts to create return lists
+        for(uint i = 0; i < ids.length; i++) {
+            ret[i] = manuscripts[ids[i]];
+        }
+
+        // Returns the list of manuscripts and claim statuses
+        return ret;
+    }
+
+    /*
+     @notice Calculates all  manuscripts existing for a reviewer's address
+     @param _account is the address of the account you wish to find the manuscripts for
+     @return ManuscriptReview[] list of  manuscripts for the account, bool[] list of bounty statuses
+    */
+    function getManuscriptsByReviewer(address _account) public view returns(ManuscriptReview[] memory) {
+        uint256[] memory ids = reviewerManuscriptIds[_account];
+        ManuscriptReview[] memory ret = new ManuscriptReview[](ids.length);
+        // bool[] memory claim_status = new bool[](ids.length);
+        
+        for(uint i = 0; i < ids.length; i++) {
+            ret[i] = manuscripts[ids[i]];
+            // claim_status[i] = hasClaimed[ids[i]][_account];
+        }
+        
+        // return (ret, claim_status);
+        return ret;
+    }
+
+    /*
+     @notice Calculates all manuscripts existing for an editor's address
+     @param _account is the address of the account you wish to find the manuscripts for
+     @return ManuscriptReview[] list of manuscripts for the account
+    */
+    function getManuscriptsByJournal(address _account) public view returns(ManuscriptReview[] memory) {
+        uint256[] memory ids = journalManuscriptIds[_account];
+        ManuscriptReview[] memory ret = new ManuscriptReview[](ids.length);
+        
+        for(uint i = 0; i < ids.length; i++) {
+            ret[i] = manuscripts[ids[i]];
+        }
+        
+        return ret;
+    }
+
     function submitManuscript(address _journal, bytes32 _manuscriptHash) public returns(ManuscriptReview memory) {
         // require(manuscriptExists[_manuscriptHash], "Manuscript does not exist");
 
