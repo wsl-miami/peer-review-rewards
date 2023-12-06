@@ -22,6 +22,8 @@ class Editor extends Component {
                                     bounties={this.props.editorBounties}
                                     PRContract={this.props.PRContract}
                                     type={'editor'}
+                                    web3={this.props.web3}
+
                                 />
                             </Tab>
                             <Tab title='Statistics' eventKey='statistics'>

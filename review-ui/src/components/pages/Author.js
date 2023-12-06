@@ -24,6 +24,7 @@ class Author extends Component {
                                     bounties={this.props.authorBounties}
                                     PRContract={this.props.PRContract}
                                     type={'author'}
+                                    web3={this.props.web3}
                                 />
                             </Tab>
                             <Tab title='Statistics' eventKey='statistics'>

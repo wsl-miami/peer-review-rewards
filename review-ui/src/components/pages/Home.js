@@ -4,20 +4,27 @@ import Row from 'react-bootstrap/Row';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import bigLogo from '../../static/derpLogoBig.png';
 import Container from 'react-bootstrap/Container';
+// const oracledb = require('oracledb');
+
 
 export default function AuthorDashboard({
     PRContract
 }) {
     const [bounties, setBounties] = useState(null);
     useEffect(() => {
-        getBounties()
-            .then(data =>
-                setBounties(data)
-            );
-    }, []);
+        console.log("here");
+        if (PRContract) {
+            console.log("then here");
+            getBounties() 
+                .then(data =>
+                    setBounties(data)
+                );
+        }
+    }, [PRContract]);
 
     const getBounties = async () => {
-        const ret = (await PRContract.methods.allBounties().call());
+        const ret = (await PRContract.methods.allManuscripts().call());
+        console.log('bounties', ret);
         return (ret);
     }
 
@@ -27,7 +34,9 @@ export default function AuthorDashboard({
           return arr;
         }
         for (let i = 0; i < bounties.length; i++) {
-          arr[i] = new Date(bounties[i].gen_time * 1000).toLocaleDateString("en-US");
+        // @TODO: Sort this out later
+        //   arr[i] = new Date(bounties[i].gen_time * 1000).toLocaleDateString("en-US");
+          arr[i] = new Date().toLocaleDateString("en-US");
         }
       
         var dateCounts = {};
@@ -111,7 +120,7 @@ export default function AuthorDashboard({
       }
     const intro_text = 'From 2 professors and 5 students at Miami University, the DERP is aimed to democratize and provide efficiency to all forms of science.';
 
-    const rewards_text = 'As an author on the DERP, you can provide rewards for reviewers. The more rewards you provide, the faster your paper could be reviewed.'
+    const rewards_text = 'Peer-Review rewards system is a platform to reward reviewers for their contributions to the academic research community.'
     const team_members_and_citations =
         <>
             <ul>
@@ -142,7 +151,7 @@ export default function AuthorDashboard({
                 <Row
                     className='text-center align-items-center'
                 >
-                    <h2>Decentralized Educated Review Protocol</h2>
+                    <h2>Peer Review Rewards</h2>
                 </Row>
                 <Row className='align-items-center'>
                     <Col md={{ span: 4, offset: 2 }}>

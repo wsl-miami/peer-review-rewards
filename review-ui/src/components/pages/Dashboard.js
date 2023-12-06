@@ -18,7 +18,8 @@ export default function Dashboard({
     bounties,
     PRContract,
     type,
-    profile
+    profile,
+    web3
 }) {
     const [openFilter, setOpenFilter] = useState(false);
     const [closedFilter, setClosedFilter] = useState(false);
@@ -27,31 +28,39 @@ export default function Dashboard({
     const [showOpenForm, setShowOpenForm] = useState(false);
 
     const renderBounties = () => {
-        var bountyList = type === 'reviewer' ? bounties[0] : bounties;
-        if (bountyList.length === 0 || bounties === null) {
-            return <NoBounties type={type} />
+        console.log('bounties', bounties);
+        console.log("prcont", PRContract);
+        console.log("type", type);
+        console.log("chainId", chainId);
+        if (bounties) {
+            var bountyList = type === 'reviewer' ? bounties[0] : bounties;
+            if (bountyList.length === 0 || bounties === null) {
+                return <NoBounties type={type} />
+            }
+            return bountyList.map((bounty) => {
+                return (
+                    <>
+                        <Row>
+                            <Col>
+                                <BountyCard
+                                    account={account}
+                                    bounty={bounty}
+                                    openFilter={openFilter}
+                                    closedFilter={closedFilter}
+                                    passedFilter={passedFilter}
+                                    failedFilter={failedFilter}
+                                    PRContract={PRContract}
+                                    type={type}
+                                    profile={profile}
+                                />
+                            </Col>
+                        </Row>
+                    </>
+                );
+            });
+        } else {
+            return '';
         }
-        return bountyList.map((bounty) => {
-            return (
-                <>
-                    <Row>
-                        <Col>
-                            <BountyCard
-                                account={account}
-                                bounty={bounty}
-                                openFilter={openFilter}
-                                closedFilter={closedFilter}
-                                passedFilter={passedFilter}
-                                failedFilter={failedFilter}
-                                PRContract={PRContract}
-                                type={type}
-                                profile={profile}
-                            />
-                        </Col>
-                    </Row>
-                </>
-            );
-        });
     }
 
     const handleFilterChange = (key) => {
@@ -165,6 +174,7 @@ export default function Dashboard({
                     handleCloseOpenForm={handleCloseOpenForm}
                     account={account}
                     PRContract={PRContract}
+                    web3={web3}
                 />
             </Container>
         </>

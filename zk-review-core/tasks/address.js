@@ -6,14 +6,15 @@ const getCounter = (networkId) => {
 
 const getPeerReviewGSN = (networkId) => {
   return {
-    5: '0x78D993D488d7A89Ab85F0881247db0a866dAb7fD'
+    '5old': '0x78D993D488d7A89Ab85F0881247db0a866dAb7fD',
+    5: '0x40141272e950c29054CBEdE950Abf1ced940A9eB'
   }[networkId];
 }
   
   const getPayMaster = (networkId) => {
     return {
-      5: '0x2b7E48676090A1B0FB636E1005D77c8B6BEF195c',
-      // 5: '0x7e4123407707516bD7a3aFa4E3ebCeacfcbBb107'
+      // 5: '0x2b7E48676090A1B0FB636E1005D77c8B6BEF195c',
+      5: '0x7e4123407707516bD7a3aFa4E3ebCeacfcbBb107'
     }[networkId];
   };
   

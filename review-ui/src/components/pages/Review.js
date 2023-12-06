@@ -23,6 +23,8 @@ class Review extends Component {
                                     PRContract={this.props.PRContract}
                                     type={"reviewer"}
                                     profile={this.props.profile}
+                                    web3={this.props.web3}
+
                                 />
                             </Tab>
                             <Tab title='Statistics' eventKey='statistics'>

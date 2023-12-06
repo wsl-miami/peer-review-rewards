@@ -400,7 +400,7 @@ export default function BountyCard({
                                     <Col>
                                         <Ratio aspectRatio="16x9">
                                             <IframeResizer
-                                                src={bounty ? "https://ipfs.io/ipfs/" + convertBytes32toIpfsHash(bounty.article_link) : ''}
+                                                src={bounty ? "https://review-rewards.infura-ipfs.io/ipfs/" + convertBytes32toIpfsHash(bounty.manuscript_link) : ''}
                                                 heightCalculationMethod="lowestElement"
                                                 style={{ width: '1px', minWidth: '100%' }}
                                             />
@@ -415,7 +415,7 @@ export default function BountyCard({
                             </Col>
                             <Col md={{ span: 2 }}>
                                 <Row>
-                                    <p>Editor: {bounty.editor.substring(0, 7) + '...'}</p>
+                                    <p>Editor: {bounty.journal.substring(0, 7) + '...'}</p>
                                 </Row>
                                 <br />
                                 <Row>
@@ -433,7 +433,7 @@ export default function BountyCard({
                                 <br />
                                 <Row>
                                     <Button
-                                        onClick={() => handleShow(bounty.article_link)}
+                                        onClick={() => handleShow(bounty.manuscript_link)}
                                         variant='primary'
                                     >
                                         View Article
@@ -480,7 +480,7 @@ export default function BountyCard({
                     </Modal.Header>
                     <Modal.Body>
                         <IframeResizer
-                            src={bounty ? "https://ipfs.io/ipfs/" + convertBytes32toIpfsHash(ipfs32) : ''}
+                            src={bounty ? "https://review-rewards.infura-ipfs.io/ipfs/" + convertBytes32toIpfsHash(ipfs32) : ''}
                             aspectRatio="1/1"
                             height="700"
                             style={{ width: '1px', minWidth: '100%' }}
