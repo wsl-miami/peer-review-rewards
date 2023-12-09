@@ -60,31 +60,80 @@ app.post('/api/manuscript-submission', async(req, res) => {
 
   console.log(req.body);
   const author_hash = req.body.author;
+  const journal_hash = req.body.journal;
   const file_hash = req.body.file_hash;
-  const timestamp = Date.now();
+  // const timestamp = new Date.now();
 
   try {
-    const sql = `INSERT INTO authors VALUES (:1, :2)`; const binds = [ [author_hash, file_hash] ];
-    await connection.executeMany(sql, binds);
+    const sql = `INSERT INTO authors (author_hash, file_hash, time_stamp) VALUES ('${author_hash}',' ${file_hash}', CURRENT_TIMESTAMP)`;
+    await connection.execute(sql);
 
-    // const res = await connection.execute('select * from authors');
-    // console.log(res);
-
+    const journals = `INSERT INTO journals (journal_hash, article_hash, time_stamp) VALUES ('${journal_hash}',' ${file_hash}', CURRENT_TIMESTAMP)`;
+    await connection.execute(journals);
 
     connection.commit();
   } catch (err) {
     console.log('err here', err);
   }
 
-
-
-
-  // await run();
   res.send({ success: true, author_hash: author_hash, file_hash: file_hash });
 });
 
-app.get('/api/hello', async(req, res) => {
+app.post('/api/add-reviewers', async(req, res) => {
+
+  if (!connection) {
+    await run();
+  }
+
+  console.log(req.body);
+  const reviewer_hashes = req.body.reviewer_hashes;
+  const article_hash = req.body.article_hash;
+
+  reviewer_hashes.forEach(async(reviewer, index) => {
+    try {
+      const sql = `INSERT INTO reviewers (reviewer_hash, article_hash, time_stamp) VALUES ('${reviewer}',' ${article_hash}', CURRENT_TIMESTAMP)`;
+      await connection.execute(sql);
+  
+      connection.commit();
+    } catch (err) {
+      console.log('err here', err);
+    }
+
+  });
+
+
   // await run();
+  res.send({ success: true, reviewer_hashes: reviewer_hashes, article_hash: article_hash });
+});
+
+
+app.get('/api/get-manuscripts-by-author', async(req, res)  => {
+
+  console.log('req', req.query);
+  const author_hash = req.query.author_hash;
+  try {
+    const sql = `SELECT authors.author_hash AS author_hash, authors.file_hash as article_hash, authors.time_stamp as time_stamp, journals.journal_hash as journal_hash, journals.review_hash as review_hash FROM authors JOIN journals ON authors.file_hash=journals.article_hash where authors.author_hash = '${author_hash}'`;
+    const manuscripts = await connection.execute(sql);
+    res.send({success: true, manuscripts});
+  } catch (err) {
+    console.log('err here', err);
+  }
+
+});
+
+app.get('/api/get-manuscripts-by-journal', async(req, res)  => {
+  const journal_hash = req.query.journal_hash;
+  try {
+    const sql = `SELECT authors.author_hash AS author_hash, authors.file_hash as article_hash, authors.time_stamp as time_stamp, journals.journal_hash as journal_hash, journals.review_hash as review_hash FROM authors JOIN journals ON authors.file_hash=journals.article_hash where journals.journal_hash = '${journal_hash}'`;
+    const manuscripts = await connection.execute(sql);
+    res.send({success: true, manuscripts});
+  } catch (err) {
+    console.log('err here', err);
+  }
+
+});
+
+app.get('/api/hello', async(req, res) => {
   res.send({ express: 'Hello From Express' });
 });
 
