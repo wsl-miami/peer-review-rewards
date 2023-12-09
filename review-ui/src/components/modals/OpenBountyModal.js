@@ -104,11 +104,14 @@ class OpenBountyModal extends React.Component {
             },
 
             // Attaching the form data
-            data: {author: this.props.account, file_hash: results.path},
+            data: {author: this.props.account, file_hash: results.path, journal: this.state.editor},
             // data: {author: "0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6", file_hash: "QmVZerrmNhQE1gPp4KnX1yFJSHgAfMY6QW5LxGdpRPM2uJ"}
         })
             // Handle the response from backend here
-            .then((res) => {console.log('api response', res);})
+            .then((res) => {
+                console.log('api response', res);
+                window.location.reload();
+            })
 
             // Catch errors if any
             .catch((err) => {console.log('api error', err)});
@@ -119,13 +122,13 @@ class OpenBountyModal extends React.Component {
 
         // await this.props.PRContract.methods.increment().send({ from, gas: 21000 });
 
-        this.props.PRContract.methods.submitManuscript(
-            this.state.editor,
-            '0x'+str.substring(4, str.length)
-        ).send({from, gas: 210000})
-        .on('confirmation', (receipt) => {
-            window.location.reload();
-        });
+        // this.props.PRContract.methods.submitManuscript(
+        //     this.state.editor,
+        //     '0x'+str.substring(4, str.length)
+        // ).send({from, gas: 210000})
+        // .on('confirmation', (receipt) => {
+        //     window.location.reload();
+        // });
 
         this.props.handleCloseOpenForm();
         this.setState({

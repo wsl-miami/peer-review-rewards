@@ -310,6 +310,7 @@ export default function BountyCard({
                     account={account}
                     bountyid={bounty.id}
                     PRContract={PRContract}
+                    ipfs32={bounty.manuscript_link}
                 />
             </>
         )
@@ -354,7 +355,7 @@ export default function BountyCard({
         return hashStr;
     }
     const checkState = () => {
-        if (bounty.review_links.length == 0 && !bounty.open) {
+        if (bounty && bounty.review_links && bounty.review_links.length == 0 && !bounty.open) {
             return (
                 <>
                     <span className="close">Cancelled</span>
@@ -400,7 +401,8 @@ export default function BountyCard({
                                     <Col>
                                         <Ratio aspectRatio="16x9">
                                             <IframeResizer
-                                                src={bounty ? "https://review-rewards.infura-ipfs.io/ipfs/" + convertBytes32toIpfsHash(bounty.manuscript_link) : ''}
+                                                // src={bounty ? "https://review-rewards.infura-ipfs.io/ipfs/" + convertBytes32toIpfsHash(bounty.manuscript_link) : ''}
+                                                src={bounty ? "https://review-rewards.infura-ipfs.io/ipfs/" + bounty.manuscript_link : ''}
                                                 heightCalculationMethod="lowestElement"
                                                 style={{ width: '1px', minWidth: '100%' }}
                                             />
@@ -415,15 +417,15 @@ export default function BountyCard({
                             </Col>
                             <Col md={{ span: 2 }}>
                                 <Row>
-                                    <p>Editor: {bounty.journal.substring(0, 7) + '...'}</p>
+                                    <p>Editor: {bounty && bounty.journal && bounty.journal.substring(0, 7) + '...'}</p>
                                 </Row>
                                 <br />
                                 <Row>
-                                    <p>Reviewers Assigned: {bounty.reviewers.length}</p>
+                                    <p>Reviewers Assigned: {bounty && bounty.reviewers && bounty.reviewers.length}</p>
                                 </Row>
                                 <br />
                                 <Row>
-                                    <p>Reviews Submitted: {bounty.review_links.length}</p>
+                                    <p>Reviews Submitted: {bounty && bounty.review_links && bounty.review_links.length}</p>
                                 </Row>
                             </Col>
                             <Col md={{ span: 2 }}>
@@ -447,17 +449,18 @@ export default function BountyCard({
                                         style={{}}
                                     >
                                         {
-                                            bounty.review_links.map((link, index) => {
-                                                return (
-                                                    <Dropdown.Item 
-                                                        key={index}
-                                                        onClick={() => handleShow(link)}
-                                                    >
-                                                        Review {index + 1}
-                                                    </Dropdown.Item>
-                                                )
-                                            })
-                                        }
+                                                bounty.review_links.map((link, index) => {
+                                                    return (
+                                                        <Dropdown.Item 
+                                                            key={index}
+                                                            onClick={() => handleShow(link)}
+                                                        >
+                                                            Review {index + 1}
+                                                        </Dropdown.Item>
+                                                    )
+                                                })
+
+                                            }
                                     </DropdownButton>
                                 </Row>
                             </Col>
@@ -480,7 +483,9 @@ export default function BountyCard({
                     </Modal.Header>
                     <Modal.Body>
                         <IframeResizer
-                            src={bounty ? "https://review-rewards.infura-ipfs.io/ipfs/" + convertBytes32toIpfsHash(ipfs32) : ''}
+                            // src={bounty ? "https://review-rewards.infura-ipfs.io/ipfs/" + convertBytes32toIpfsHash(ipfs32) : ''}
+                            src={bounty ? "https://review-rewards.infura-ipfs.io/ipfs/" + ipfs32 : ''}
+
                             aspectRatio="1/1"
                             height="700"
                             style={{ width: '1px', minWidth: '100%' }}
