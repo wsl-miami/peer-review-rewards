@@ -12,7 +12,8 @@ import editorButton from './static/editorButton.png';
 import reviewerButton from './static/ReviewerButton.png';
 import authorButton from './static/authorButton.png';
 import reputationButton from './static/reputationButtonV2.png';
-import AccountButton from './components/general/AccountButton.js'
+import AccountButton from './components/general/AccountButton.js';
+import bs58 from 'bs58';
 import {
     BrowserRouter,
     Routes,
@@ -23,7 +24,9 @@ import {
 import Row from 'react-bootstrap/Row';
 import Home from './components/pages/Home.js'
 import Web3 from 'web3';
-import PRContractABI from './static/PeerReviewGSN.json';
+// import PRContractABI from './static/PeerReviewGSN.json';
+import PRContractABI from './static/PeerReviewGSNNew.json';
+
 import ProfilesABI from './static/ProfilesABI.json';
 import CreateProfile from './components/modals/CreateProfile.js';
 import ViewProfile from './components/modals/ViewProfile.js';
@@ -237,16 +240,123 @@ class App extends Component {
     }
 
     async getBounties() {
-        const authorBounties =
-            await this.state.PRContract.methods.getManuscriptsByAuthor(
-                this.state.account
+        // const authorBounties =
+        //     await this.state.PRContract.methods.getManuscriptsByAuthor(
+        //         this.state.account
+        //     ).call();
+
+        const authorBount = await axios({
+            // Endpoint to send files
+            url: "http://localhost:5000/api/get-manuscripts-by-author",
+            method: "GET",
+            headers: {
+                // Add any auth token here
+                authorization: "your token comes here",
+            },
+
+            // Attaching the form data
+            params: {author_hash: this.state.account},
+        });
+
+        console.log("authorBount", authorBount.data.manuscripts.rows);
+        const authorManuscripts = authorBount.data.manuscripts.rows;
+        let authorBounties = [];
+        let authorManuscriptId = 0;
+
+        authorManuscripts.forEach(async(manuscript, index) => {
+            const manuscript_hash = manuscript[1].trim();
+            console.log("manuscript hash", `test${manuscript_hash}test`);
+            const str = Buffer.from(bs58.decode(manuscript_hash)).toString('hex')
+
+            const authorBounty =
+            await this.state.PRContract.methods.getManuscriptsByArticleHash(
+                '0x'+str.substring(4, str.length)
             ).call();
+
+            console.log('authorBounty from contract', authorBounty);
+
+            const review_links = manuscript[4] != null ? manuscript[4] : [];
+            if (authorBounty && authorBounty.length != 0) {
+                // console.log('shouldnot be here', authorBounty[0].article);
+                authorBounties.push({
+                    accepted: authorBounty[0].accepted,
+                    author: manuscript[0].trim(),
+                    journal: manuscript[3].trim(),
+                    manuscriptId: authorManuscriptId,
+                    manuscript_link: manuscript_hash,
+                    open_for_review: false,
+                    open: true,
+                    review_links: review_links,
+                    reviewers: [],
+                    rewardAmount: "0",
+                    token: "0x00000000000000000000000"
+                });
+            } else {
+                authorBounties.push({
+                    accepted: false,
+                    author: manuscript[0].trim(),
+                    journal: manuscript[3].trim(),
+                    manuscriptId: authorManuscriptId,
+                    manuscript_link: manuscript_hash,
+                    open_for_review: false,
+                    open: true,
+                    review_links: review_links,
+                    reviewers: ['0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6'],
+                    rewardAmount: "0",
+                    token: "0x00000000000000000000000"
+                });
+            }
+            authorManuscriptId = authorManuscriptId+1;
+        });
+
+        console.log('final authorbounties', authorBounties);
         this.setState({ authorBounties: authorBounties });
 
-        const editorBounties =
-            await this.state.PRContract.methods.getManuscriptsByJournal(
-                this.state.account
-            ).call();
+        const editorBount = await axios({
+            // Endpoint to send files
+            url: "http://localhost:5000/api/get-manuscripts-by-journal",
+            method: "GET",
+            headers: {
+                // Add any auth token here
+                authorization: "your token comes here",
+            },
+
+            // Attaching the form data
+            params: {journal_hash: this.state.account},
+        });
+
+        const editorManuscripts = editorBount.data.manuscripts.rows;
+        let editorBounties = [];
+        let manuscriptId = 0;
+        editorManuscripts.forEach(async(manuscript, index) => {
+            const manuscript_hash = manuscript[1].trim();
+            console.log("manuscript hash", `test${manuscript_hash}test`);
+            const str = Buffer.from(bs58.decode(manuscript_hash)).toString('hex')
+
+            const review_links = manuscript[4] != null ? manuscript[4] : [];
+            editorBounties.push({
+                accepted: false,
+                author: manuscript[0].trim(),
+                journal: manuscript[3].trim(),
+                manuscriptId: manuscriptId,
+                manuscript_link: manuscript_hash,
+                open_for_review: true,
+                open: true,
+                review_links: review_links,
+                reviewers: ['0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6'],
+                rewardAmount: "0",
+                token: "0x00000000000000000000000"
+            });
+
+            manuscriptId = manuscriptId + 1;
+        });
+
+        console.log('final editorbounties', editorBounties);
+
+        // const editorBounties =
+        //     await this.state.PRContract.methods.getManuscriptsByJournal(
+        //         this.state.account
+        //     ).call();
         this.setState({ editorBounties: editorBounties });
 
         const reviewerBounties =

@@ -14,7 +14,8 @@ contract PeerReviewGSN is ERC2771Recipient {
         bytes32 manuscript_link;
         address token;
         bytes32[] review_links;
-        address author;
+        // address author;
+        bytes32 article;
         address[] reviewers;
         uint256 rewardAmount;
         bool openForReview;
@@ -24,9 +25,10 @@ contract PeerReviewGSN is ERC2771Recipient {
     ManuscriptReview[] public manuscripts;
     uint256 public reviewedGroupId = 1;
 
-    mapping(address => uint256[]) authorManuscriptIds;
+    // mapping(address => uint256[]) authorManuscriptIds;
     mapping(address => uint256[]) reviewerManuscriptIds;
     mapping(address => uint256[]) journalManuscriptIds;
+    mapping(bytes32 => uint256[]) articleManuscriptIds;
 
 
     event ManuscriptSubmitted(ManuscriptReview manuscript);
@@ -61,9 +63,23 @@ contract PeerReviewGSN is ERC2771Recipient {
      @param _account is the address of the account you wish to find the bounties for
      @return ManuscriptReview[] list of manuscripts for the account
     */
-    function getManuscriptsByAuthor(address _account) public view returns(ManuscriptReview[] memory) {
+    // function getManuscriptsByAuthor(address _account) public view returns(ManuscriptReview[] memory) {
+    //     // Create lists
+    //     uint256[] memory ids = authorManuscriptIds[_account];
+    //     ManuscriptReview[] memory ret = new ManuscriptReview[](ids.length);
+
+    //     // Loops through the manuscripts to create return lists
+    //     for(uint i = 0; i < ids.length; i++) {
+    //         ret[i] = manuscripts[ids[i]];
+    //     }
+
+    //     // Returns the list of manuscripts and claim statuses
+    //     return ret;
+    // }
+
+    function getManuscriptsByArticleHash(bytes32 _manuscript_hash) public view returns(ManuscriptReview[] memory) {
         // Create lists
-        uint256[] memory ids = authorManuscriptIds[_account];
+        uint256[] memory ids = articleManuscriptIds[_manuscript_hash];
         ManuscriptReview[] memory ret = new ManuscriptReview[](ids.length);
 
         // Loops through the manuscripts to create return lists
@@ -110,7 +126,7 @@ contract PeerReviewGSN is ERC2771Recipient {
         return ret;
     }
 
-    function submitManuscript(address _journal, bytes32 _manuscriptHash) public returns(ManuscriptReview memory) {
+    function submitManuscript(address _journal, bytes32 _manuscriptHash, bytes32 _article) public returns(ManuscriptReview memory) {
         // require(manuscriptExists[_manuscriptHash], "Manuscript does not exist");
 
         ManuscriptReview memory manuscript;
@@ -120,14 +136,17 @@ contract PeerReviewGSN is ERC2771Recipient {
         // manuscript.token = _token;
 
         // Use _msgSender instead of msg.sender for GSN
-        manuscript.author = _msgSender();
+        // manuscript.author = _msgSender();
         manuscript.journal = _journal;
         manuscript.manuscript_link = _manuscriptHash;
         manuscript.openForReview = false;
+        manuscript.article = _article;
 
         manuscripts.push(manuscript);
 
-        authorManuscriptIds[_msgSender()].push(manuscript.manuscriptId);
+        // authorManuscriptIds[_msgSender()].push(manuscript.manuscriptId);
+        articleManuscriptIds[_article].push(manuscript.manuscriptId);
+
         journalManuscriptIds[_journal].push(manuscript.manuscriptId);
 
         emit ManuscriptSubmitted(manuscript);
