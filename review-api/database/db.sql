@@ -31,3 +31,5 @@ CREATE TABLE rewards (
   review_hash VARCHAR2(100),
   time_stamp timestamp
 );
+
+alter table rewards add assigned NUMBER(1) default 0;

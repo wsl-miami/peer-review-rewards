@@ -191,6 +191,18 @@ app.get('/api/get-manuscripts-by-journal', async(req, res)  => {
 
 });
 
+app.get('/api/get-unassigned-reviews', async(req, res) => {
+  const journal_hash = req.query.journal_hash;
+  try {
+    const sql = `SELECT * FROM rewards WHERE assigned = 0`;
+    const unassignedReviews = await connection.execute(sql);
+    res.send({success: true, unassignedReviews});
+
+  } catch (err) {
+    console.log('err: ', err);
+  }
+})
+
 app.get('/api/hello', async(req, res) => {
   res.send({ express: 'Hello From Express' });
 });
