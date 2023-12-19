@@ -33,7 +33,9 @@ export default function Dashboard({
         console.log("type", type);
         console.log("chainId", chainId);
         if (bounties) {
-            var bountyList = type === 'reviewer' ? bounties[0] : bounties;
+            // var bountyList = type === 'reviewer' ? bounties[0] : bounties;
+            var bountyList = bounties;
+
             if (bountyList.length === 0 || bounties === null) {
                 return <NoBounties type={type} />
             }

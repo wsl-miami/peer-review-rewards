@@ -7,7 +7,9 @@ import Modal from 'react-bootstrap/Modal';
 import * as IPFS from 'ipfs-http-client';
 import bs58 from 'bs58'
 import { Buffer } from 'buffer';
-import { Identity } from "@semaphore-protocol/identity";
+// import { Identity } from "@semaphore-protocol/identity";
+import axios from "axios";
+
 
 class SubmitReviewModal extends Component {
     constructor(props) {
@@ -46,25 +48,25 @@ class SubmitReviewModal extends Component {
         e.preventDefault();
         this.setState({ isReviewed: true });
         const msg = `0x${Buffer.from(this.state.note, 'utf8').toString('hex')}`;
-        const sign = await window.ethereum.request({
-            method: 'personal_sign',
-            params: [msg, this.props.account, 'Example password'],
-        });
+        // const sign = await window.ethereum.request({
+        //     method: 'personal_sign',
+        //     params: [msg, this.props.account, 'Example password'],
+        // });
 
-        var identity = new Identity(sign);
-        var idArray = JSON.parse(localStorage.getItem('review-identities'));
-        var obj = {
-            note: this.state.note,
-            date: new Date()
-        }
-        if (idArray === null) {
-            idArray = [obj]
-        } else {
-            idArray.push(obj);
-        }
-        localStorage.setItem('review-identities', JSON.stringify(idArray));
+        // var identity = new Identity(sign);
+        // var idArray = JSON.parse(localStorage.getItem('review-identities'));
+        // var obj = {
+        //     note: this.state.note,
+        //     date: new Date()
+        // }
+        // if (idArray === null) {
+        //     idArray = [obj]
+        // } else {
+        //     idArray.push(obj);
+        // }
+        // localStorage.setItem('review-identities', JSON.stringify(idArray));
 
-        const results = await this.ipfsUpload(identity);
+        const results = await this.ipfsUpload();
         this.props.handleCloseOpenForm();
     }
 
@@ -86,7 +88,7 @@ class SubmitReviewModal extends Component {
         `;
     }
 
-    async ipfsUpload(identity) {
+    async ipfsUpload() {
         // Connect to IPFS
         const projectId = process.env.REACT_APP_IPFS_ID;
         const projectSecret = process.env.REACT_APP_IPFS_SECRET;
@@ -103,14 +105,36 @@ class SubmitReviewModal extends Component {
         reader.onload = async (e) => {
             var text = (e.target.result)
             var text = this.formContent() + text;
-            const results = await node.add(text)
-            const str = Buffer.from(bs58.decode(results.path)).toString('hex')
-            this.props.PRContract.methods.claimBounty(
-                this.props.bountyid, '0x' + str.substring(4, str.length), identity.commitment
-            ).send({ from: this.props.account })
-                .on('confirmation', (receipt) => {
+            const results = await node.add(text);
+            const str = Buffer.from(bs58.decode(results.path)).toString('hex');
+            // this.props.PRContract.methods.claimBounty(
+            //     this.props.bountyid, '0x' + str.substring(4, str.length), identity.commitment
+            // ).send({ from: this.props.account })
+            //     .on('confirmation', (receipt) => {
+            //         window.location.reload();
+            //     });
+            
+                    // Connecting to database and updating data
+            axios({
+                // Endpoint to send files
+                url: "http://localhost:5000/api/review-submission",
+                method: "POST",
+                headers: {
+                    // Add any auth token here
+                    authorization: "your token comes here",
+                },
+                data: {reviewer: this.props.account, prev_review_links: this.props.prevReviewLinks, review: results.path, journal: this.props.journal, article: this.props.ipfs32},
+            })
+                // Handle the response from backend here
+                .then((res) => {
+                    console.log('api response', res);
                     window.location.reload();
-                });
+                })
+
+                // Catch errors if any
+                .catch((err) => {console.log('api error', err)});
+
+            
         };
         reader.readAsText(this.state.review)
     }

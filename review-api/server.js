@@ -121,6 +121,64 @@ app.get('/api/get-manuscripts-by-author', async(req, res)  => {
 
 });
 
+app.get('/api/get-manuscripts-by-reviewer', async(req, res)  => {
+
+  console.log('req', req.query);
+  const reviewer_hash = req.query.reviewer_hash;
+  try {
+    const sql = `SELECT reviewers.reviewer_hash AS reviewer_hash, reviewers.article_hash as article_hash, reviewers.time_stamp as time_stamp, journals.journal_hash as journal_hash, journals.review_hash as review_hash FROM reviewers JOIN journals ON reviewers.article_hash=journals.article_hash where reviewers.reviewer_hash = '${reviewer_hash}'`;
+    const manuscripts = await connection.execute(sql);
+    res.send({success: true, manuscripts});
+  } catch (err) {
+    console.log('err here', err);
+  }
+
+});
+
+app.post('/api/review-submission', async(req, res) => {
+  if (!connection) {
+    await run();
+  }
+
+  console.log('req.body', req.body);
+    const reviewer_hash = req.body.reviewer;
+    const journal_hash = req.body.journal;
+    const article_hash = req.body.article;
+    const review_hashes = req.body.prev_review_links;
+    const review_hash = req.body.review;
+  
+    try {
+      const sql = `INSERT INTO rewards (reviewer_hash, review_hash, time_stamp) VALUES ('${reviewer_hash}',' ${review_hash}', CURRENT_TIMESTAMP)`;
+      await connection.execute(sql);
+  
+      // const journal_sql = `SELECT id, review_hash from journals where article_hash LIKE '%${article_hash}'`;
+      // console.log("journal sql", journal_sql);
+  
+      // const journal = await connection.execute(journal_sql);
+  
+      // const journal_id = journal.rows[0][0];
+      // let review_hashes = journal.rows[0][1];
+
+      review_hashes.push(review_hash);
+      let new_review_hashes = review_hashes.map(x => "'" + x + "'").toString();
+  
+      // const journals = `UPDATE journals SET review_hash=string_array('${review_hash}', 'new_test') WHERE id=${journal_id}`;
+      const journals = `UPDATE journals SET review_hash=string_array(${new_review_hashes}) WHERE journal_hash='${journal_hash}' AND article_hash LIKE '%${article_hash}'`;
+
+      console.log("journals sql", journals);
+
+      await connection.execute(journals);
+  
+      connection.commit();
+    } catch (err) {
+      console.log('err here', err);
+      await connection.close();
+  
+    }
+
+  res.send({ success: true, reviewer_hash: reviewer_hash, review_hash: review_hash });
+});
+
 app.get('/api/get-manuscripts-by-journal', async(req, res)  => {
   const journal_hash = req.query.journal_hash;
   try {

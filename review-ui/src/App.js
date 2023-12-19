@@ -330,10 +330,11 @@ class App extends Component {
         let manuscriptId = 0;
         editorManuscripts.forEach(async(manuscript, index) => {
             const manuscript_hash = manuscript[1].trim();
-            console.log("manuscript hash", `test${manuscript_hash}test`);
+            // console.log("manuscript hash rev here", `test${manuscript_hash}test`);
             const str = Buffer.from(bs58.decode(manuscript_hash)).toString('hex')
 
             const review_links = manuscript[4] != null ? manuscript[4] : [];
+
             editorBounties.push({
                 accepted: false,
                 author: manuscript[0].trim(),
@@ -359,12 +360,50 @@ class App extends Component {
         //     ).call();
         this.setState({ editorBounties: editorBounties });
 
-        const reviewerBounties =
-            await this.state.PRContract.methods.getManuscriptsByReviewer(
-                this.state.account
-            ).call();
+        const reviewerBount = await axios({
+            // Endpoint to send files
+            url: "http://localhost:5000/api/get-manuscripts-by-reviewer",
+            method: "GET",
+            headers: {
+                // Add any auth token here
+                authorization: "your token comes here",
+            },
+            params: {reviewer_hash: this.state.account},
+        });
+
+        const reviewerManuscripts = reviewerBount.data.manuscripts.rows;
+        let reviewerBounties = [];
+        let reviewerManuscriptId = 0;
+        reviewerManuscripts.forEach(async(manuscript, index) => {
+            const manuscript_hash = manuscript[1].trim();
+            const str = Buffer.from(bs58.decode(manuscript_hash)).toString('hex')
+            
+            const review_links = manuscript[4] != null ? manuscript[4] : [];
+            // console.log('typeof review_links ', typeof(review_links), review_links.push('test'));
+            console.log("final review_links", review_links);
+            reviewerBounties.push({
+                accepted: false,
+                author: null,
+                journal: manuscript[3].trim(),
+                manuscriptId: reviewerManuscriptId,
+                manuscript_link: manuscript_hash,
+                open_for_review: true,
+                open: true,
+                review_links: review_links,
+                reviewers: ['0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6'],
+                rewardAmount: "0",
+                token: "0x00000000000000000000000"
+            });
+
+            reviewerManuscriptId = reviewerManuscriptId + 1;
+        });
+
+        // const reviewerBounties =
+        //     await this.state.PRContract.methods.getManuscriptsByReviewer(
+        //         this.state.account
+        //     ).call();
         this.setState({ reviewerBounties: reviewerBounties });
-        console.log('authorBounties', this.state.authorBounties);
+        console.log('reviewerBounties', this.state.reviewerBounties);
     }
 
     setChainId(chainId) {

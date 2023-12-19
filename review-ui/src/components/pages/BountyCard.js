@@ -341,6 +341,9 @@ export default function BountyCard({
                             account={account}
                             bountyid={bounty.id}
                             PRContract={PRContract}
+                            ipfs32={bounty.manuscript_link}
+                            journal={bounty.journal}
+                            prevReviewLinks={bounty.review_links}
                         />
                     </Row>
                 </Col>

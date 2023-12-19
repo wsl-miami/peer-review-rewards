@@ -11,10 +11,10 @@ export default function ReviewerStats({
         if (reviewerBounties === null) {
             return reviewerBounties;
         }
-        console.log(reviewerBounties[0].length)
+        // console.log(reviewerBounties[0].length)
         var arr = [];
-        for (let i = 0; i < reviewerBounties[0].length; i++) {
-            arr[i] = { "date": new Date(reviewerBounties[0][i].gen_time * 1000).toLocaleDateString("en-US"), "passed": reviewerBounties[0][i].reviewers.length };
+        for (let i = 0; i < reviewerBounties.length; i++) {
+            arr[i] = { "date": new Date(reviewerBounties[i].gen_time * 1000).toLocaleDateString("en-US"), "passed": reviewerBounties[i].reviewers.length };
         }
         console.log(arr)
         var dateAmounts = {};
@@ -38,8 +38,8 @@ export default function ReviewerStats({
         if (reviewerBounties === null) {
             return arr;
         }
-        for (let i = 0; i < reviewerBounties[0].length; i++) {
-            var temp = { "date": new Date(reviewerBounties[0][i].gen_time * 1000).toLocaleDateString("en-US"), "amount": reviewerBounties[0][i].amount };
+        for (let i = 0; i < reviewerBounties.length; i++) {
+            var temp = { "date": new Date(reviewerBounties[i].gen_time * 1000).toLocaleDateString("en-US"), "amount": reviewerBounties[i].amount };
             arr[i] = temp;
         }
         
