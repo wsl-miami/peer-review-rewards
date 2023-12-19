@@ -10,6 +10,12 @@ const getPeerReviewGSN = (networkId) => {
     5: '0x40141272e950c29054CBEdE950Abf1ced940A9eB'
   }[networkId];
 }
+
+const getSoulBoundToken = (networkId) => {
+  return {
+    5: '0x459dE1B62FEBac77Ed5d46B35e2D094cf3Ee92D9'
+  }[networkId];
+}
   
   const getPayMaster = (networkId) => {
     return {
@@ -36,4 +42,5 @@ const getPeerReviewGSN = (networkId) => {
     getRelayHub,
     getForwarder,
     getPeerReviewGSN,
+    getSoulBoundToken,
   }

@@ -26,6 +26,7 @@ import Home from './components/pages/Home.js'
 import Web3 from 'web3';
 // import PRContractABI from './static/PeerReviewGSN.json';
 import PRContractABI from './static/PeerReviewGSNNew.json';
+import SoulBoundABI from './static/SoulBoundABI.json';
 
 import ProfilesABI from './static/ProfilesABI.json';
 import CreateProfile from './components/modals/CreateProfile.js';
@@ -77,6 +78,7 @@ class App extends Component {
             this.setWeb3 = this.setWeb3.bind(this);
             this.setPRContract = this.setPRContract.bind(this);
             this.setProfilesContract = this.setProfilesContract.bind(this);
+            this.setSoulBoundContract = this.setSoulBoundContract.bind(this);
 
         // (async()=>{
         //     const config = { 
@@ -167,6 +169,7 @@ class App extends Component {
                 console.log('state', this.state.web3);
                 this.setPRContract();
                 this.setProfilesContract();
+                this.setSoulBoundContract();
                 this.setAccount();
             });
         } catch (err) {
@@ -190,6 +193,15 @@ class App extends Component {
         var ProfContract =
             new web3.eth.Contract(ProfilesABI, profAddress);
         this.setState({ProfilesContract: ProfContract});
+    }
+
+    async setSoulBoundContract() {
+        // @TODO: use opengsn for SoulBoundContract
+        const web3 = new Web3(window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(process.env.REACT_APP_GOERLI_URL));
+        // const web3 = this.state.web3;
+        const soulBoundAddress = '0x459dE1B62FEBac77Ed5d46B35e2D094cf3Ee92D9';
+        var SoulBoundContract = new web3.eth.Contract(SoulBoundABI, soulBoundAddress);
+        this.setState({SoulBoundContract: SoulBoundContract});
     }
 
     async setAccount() {
@@ -518,6 +530,7 @@ class App extends Component {
                                         account={this.state.account}
                                         authorBounties={this.state.authorBounties}
                                         PRContract={this.state.PRContract}
+                                        // SoulBoundContract={this.state.SoulBoundContract}
                                         web3={this.state.web3}
                                     />} />
                             <Route path="/editor"
@@ -527,6 +540,7 @@ class App extends Component {
                                         account={this.state.account}
                                         editorBounties={this.state.editorBounties}
                                         PRContract={this.state.PRContract}
+                                        SoulBoundContract={this.state.SoulBoundContract}
                                         web3={this.state.web3}
 
                                     />
@@ -539,6 +553,7 @@ class App extends Component {
                                         account={this.state.account}
                                         reviewerBounties={this.state.reviewerBounties}
                                         PRContract={this.state.PRContract}
+                                        // SoulBoundContract={this.state.SoulBoundContract}
                                         profile={this.state.profile}
                                         web3={this.state.web3}
 

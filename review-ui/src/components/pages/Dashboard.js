@@ -11,12 +11,14 @@ import OpenBountyModal from '../modals/OpenBountyModal.js';
 import BountyCard from "./BountyCard";
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+import axios from "axios";
 
 export default function Dashboard({
     chainId,
     account,
     bounties,
     PRContract,
+    SoulBoundContract,
     type,
     profile,
     web3
@@ -77,6 +79,26 @@ export default function Dashboard({
         }
     }
 
+    const distributeRewards = async () => {
+        const res = await axios({
+            url: "http://localhost:5000/api/get-unassigned-reviews",
+            method: "GET",
+            headers: {
+                authorization: "your token comes here",
+            },
+            params: {journal_hash: account},
+        })
+        console.log('api response', res);
+        const unassignedReviews =  res.data.unassignedReviews.rows;
+        unassignedReviews.forEach(async (review) => {
+            const reviewerAddress = review[1];
+            console.log(reviewerAddress);
+            let test = await SoulBoundContract.methods.safeMint(
+                    reviewerAddress
+                ).send({from: account, gas: 2100000});
+        });
+    }
+
     const handleShowOpenForm = () => {
         setShowOpenForm(true);
     }
@@ -116,6 +138,32 @@ export default function Dashboard({
         );
     }
 
+
+    const editorContent = () => {
+        if (type !== 'editor') {
+            return ('');
+        }
+        return (
+            <>
+                <br />
+                <br />
+                <Col style={{ 'text-align': 'right' }}>
+                    <OverlayTrigger overlay={account == null ? <Tooltip id="tooltip-disabled">Account Connection Required</Tooltip> : <div></div>}>
+                        <span>
+                            <Button
+                                disabled={account == null}
+                                class="btn btn-success"
+                                onClick={() => distributeRewards()} >
+                                Distribute Rewards
+                            </Button>
+                        </span>
+                    </OverlayTrigger>
+
+                </Col>
+            </>
+        );
+    }
+
     const filterTypes = ['passedFilter', 'failedFilter', 'openFilter', 'closedFilter'];
     return (
         <>
@@ -142,6 +190,7 @@ export default function Dashboard({
                                 </>
                             ))}
                             {authorContent()}
+                            {editorContent()}
                         </Row>
                     </Form>
                 </Row>

@@ -21,6 +21,7 @@ class Editor extends Component {
                                     account={this.props.account}
                                     bounties={this.props.editorBounties}
                                     PRContract={this.props.PRContract}
+                                    SoulBoundContract={this.props.SoulBoundContract}
                                     type={'editor'}
                                     web3={this.props.web3}
 
