@@ -7,21 +7,32 @@ import Row from 'react-bootstrap/Row';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Web3 from 'web3';
+import RewardTokens from "./RewardTokens";
+import Container from 'react-bootstrap/Container';
+
 
 export default function Reputation({
     PRContract,
+    SoulBoundContract,
     account
 }) {
 
     const [reputation, setReputation] = useState(0);
     const [unclaimed, setUnclaimed] = useState([]);
     const [identities, setIdentities] = useState([]);
+    const [tokens, setTokens] = useState([]);
 
     useEffect(() => {
         const fetchReputation = async () => {
             if(account) {
-                var ret = await PRContract.methods.addressToReputation(account).call();
-                setReputation(ret);
+                // var ret = await PRContract.methods.addressToReputation(account).call();
+                var totalTokens = await SoulBoundContract.methods.balanceOf(account).call();
+                // setReputation(ret);
+                var listAllTokens = await SoulBoundContract.methods.getTokensOwnedByAddress(account).call();
+                console.log('listAllTokens', listAllTokens);
+                setReputation(totalTokens);
+                setTokens(listAllTokens);
+
             }
         }
 
@@ -39,7 +50,7 @@ export default function Reputation({
         }
         fetchReputation()
         fetchUnclaimed()
-        fetchIdentities()
+        // fetchIdentities()
 
     }, [account])
 
@@ -118,10 +129,16 @@ export default function Reputation({
     }
     return (
         <>
-            <Row>
-                <h2 style={{ "margin-top": "5px" }}>Your repuation: {reputation}</h2>
-            </Row>
-            {unclaimed.length !== 0 ? unclaimed.map((item, index) => reputationCard(item, index)) : 'No reputation to claim'}
+            <Container>
+                <Row>
+                    <h2 style={{ "margin-top": "5px" }}>Your reputation: {reputation}</h2>
+                </Row>
+                {/* {tokens.length !==0 ? tokens.map((item, index) => tokensCard(item, index)) : 'No Tokens accumulated'} */}
+                <Row xs={1} md={3} className="g-4">
+                    {tokens.length !==0 ? tokens.map((item, index) => <RewardTokens tokenId={item} SoulBoundContract={SoulBoundContract} key={index} />) : 'No Tokens accumulated'}
+                </Row>
+                {/* {unclaimed.length !== 0 ? unclaimed.map((item, index) => reputationCard(item, index)) : 'No reputation to claim'} */}
+            </Container>
         </>
     )
 }

@@ -113,6 +113,7 @@ app.get('/api/get-manuscripts-by-author', async(req, res)  => {
   const author_hash = req.query.author_hash;
   try {
     const sql = `SELECT authors.author_hash AS author_hash, authors.file_hash as article_hash, authors.time_stamp as time_stamp, journals.journal_hash as journal_hash, journals.review_hash as review_hash FROM authors JOIN journals ON authors.file_hash=journals.article_hash where authors.author_hash = '${author_hash}'`;
+    console.log("sql", sql);
     const manuscripts = await connection.execute(sql);
     res.send({success: true, manuscripts});
   } catch (err) {
@@ -202,6 +203,29 @@ app.get('/api/get-unassigned-reviews', async(req, res) => {
     console.log('err: ', err);
   }
 })
+
+app.post('/api/update-assigned-reviews', async(req, res) => {
+  if (!connection) {
+    await run();
+  }
+    const rewards_id = req.body.rewardsId;
+  
+    try {
+      const rewards = `UPDATE rewards SET assigned=1 WHERE id=${rewards_id}`;
+
+      console.log("journals sql", rewards);
+
+      await connection.execute(rewards);
+  
+      connection.commit();
+    } catch (err) {
+      console.log('err here', err);
+      await connection.close();
+  
+    }
+
+  res.send({ success: true});
+});
 
 app.get('/api/hello', async(req, res) => {
   res.send({ express: 'Hello From Express' });

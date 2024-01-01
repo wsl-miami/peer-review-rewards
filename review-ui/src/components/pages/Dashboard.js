@@ -91,11 +91,21 @@ export default function Dashboard({
         console.log('api response', res);
         const unassignedReviews =  res.data.unassignedReviews.rows;
         unassignedReviews.forEach(async (review) => {
+            const rewardsId = review[0];
             const reviewerAddress = review[1];
             console.log(reviewerAddress);
             let test = await SoulBoundContract.methods.safeMint(
-                    reviewerAddress
+                    reviewerAddress, account
                 ).send({from: account, gas: 2100000});
+
+            const updateRewards = await axios({
+                url: "http://localhost:5000/api/update-assigned-reviews",
+                method: "POST",
+                headers: {
+                    authorization: "your token comes here",
+                },
+                data: {rewardsId: rewardsId},
+            })
         });
     }
 
