@@ -12,7 +12,7 @@ describe("Soulbound Token Test", function () {
         soulbound = await Soulbound.deploy();
 
         // Mint token ID 1 to owner address
-        await soulbound.safeMint(owner.address);
+        await soulbound.safeMint(owner.address, owner.address);
         
     });
 
@@ -20,6 +20,9 @@ describe("Soulbound Token Test", function () {
         // Check that owner address owns the token ID 0
         const value = await soulbound.ownerOf(1);
         expect(value).to.equal(owner.address);
+
+        var totalTokens = await soulbound.balanceOf(owner.address);
+        console.log('totalTokens', totalTokens);
     });
 
     it("should not allow transfer using safeTransferFrom", async () => {
