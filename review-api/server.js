@@ -55,10 +55,10 @@ app.post('/api/manuscript-submission', async(req, res) => {
   let connection;
   try {
     connection = await oracledb.getConnection();
-    const sql = `INSERT INTO authors (author_hash, file_hash, time_stamp) VALUES ('${author_hash}',' ${file_hash}', CURRENT_TIMESTAMP)`;
+    const sql = `INSERT INTO authors (author_hash, file_hash, time_stamp) VALUES ('${author_hash}','${file_hash}', CURRENT_TIMESTAMP)`;
     await connection.execute(sql);
 
-    const journals = `INSERT INTO journals (journal_hash, article_hash, time_stamp) VALUES ('${journal_hash}',' ${file_hash}', CURRENT_TIMESTAMP)`;
+    const journals = `INSERT INTO journals (journal_hash, article_hash, time_stamp) VALUES ('${journal_hash}','${file_hash}', CURRENT_TIMESTAMP)`;
     await connection.execute(journals);
 
     connection.commit();
@@ -87,25 +87,26 @@ app.post('/api/add-reviewers', async(req, res) => {
   const reviewer_hashes = req.body.reviewer_hashes;
   const article_hash = req.body.article_hash;
   let connection;
-  try {
-    connection = await oracledb.getConnection();
-    reviewer_hashes.forEach(async(reviewer, index) => {
-      const sql = `INSERT INTO reviewers (reviewer_hash, article_hash, time_stamp) VALUES ('${reviewer}',' ${article_hash}', CURRENT_TIMESTAMP)`;
+
+  reviewer_hashes.forEach(async(reviewer, index) => {
+    try {
+      connection = await oracledb.getConnection();
+      const sql = `INSERT INTO reviewers (reviewer_hash, article_hash, time_stamp) VALUES ('${reviewer}','${article_hash}', CURRENT_TIMESTAMP)`;
       await connection.execute(sql);
   
       connection.commit();
-    });
-  } catch (err) {
-  console.log('err here', err);
-  } finally {
+    } catch (err) {
+      console.log('err here', err);
+    } finally {
       if (connection) {
-          try {
-              await connection.close(); // Put the connection back in the pool
-          } catch (err) {
-              throw (err);
-          }
-      }
+        try {
+            await connection.close(); // Put the connection back in the pool
+        } catch (err) {
+            throw (err);
+        }
     }
+    }
+  });
   res.send({ success: true, reviewer_hashes: reviewer_hashes, article_hash: article_hash });
 });
 
@@ -168,7 +169,7 @@ app.post('/api/review-submission', async(req, res) => {
   let connection;
   try {
     connection = await oracledb.getConnection();
-    const sql = `INSERT INTO rewards (reviewer_hash, review_hash, time_stamp) VALUES ('${reviewer_hash}',' ${review_hash}', CURRENT_TIMESTAMP)`;
+    const sql = `INSERT INTO rewards (reviewer_hash, review_hash, journal_hash, time_stamp) VALUES ('${reviewer_hash}','${review_hash}', '${journal_hash}', CURRENT_TIMESTAMP)`;
     await connection.execute(sql);
 
     // const journal_sql = `SELECT id, review_hash from journals where article_hash LIKE '%${article_hash}'`;
@@ -235,7 +236,7 @@ app.get('/api/get-unassigned-reviews', async(req, res) => {
 
   try {
     connection = await oracledb.getConnection();
-    const sql = `SELECT * FROM rewards WHERE assigned = 0`;
+    const sql = `SELECT * FROM rewards WHERE assigned = 0 AND journal_hash='${journal_hash}'`;
     const unassignedReviews = await connection.execute(sql);
     res.send({success: true, unassignedReviews});
 

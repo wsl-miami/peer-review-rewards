@@ -33,3 +33,4 @@ CREATE TABLE rewards (
 );
 
 alter table rewards add assigned NUMBER(1) default 0;
+alter table rewards add journal_hash VARCHAR2(100);
