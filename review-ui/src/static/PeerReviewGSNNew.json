@@ -50,33 +50,13 @@
 						"type": "bytes32"
 					},
 					{
-						"internalType": "address",
-						"name": "token",
-						"type": "address"
-					},
-					{
 						"internalType": "bytes32[]",
 						"name": "review_links",
 						"type": "bytes32[]"
 					},
 					{
-						"internalType": "bytes32",
-						"name": "article",
-						"type": "bytes32"
-					},
-					{
-						"internalType": "address[]",
-						"name": "reviewers",
-						"type": "address[]"
-					},
-					{
-						"internalType": "uint256",
-						"name": "rewardAmount",
-						"type": "uint256"
-					},
-					{
 						"internalType": "bool",
-						"name": "openForReview",
+						"name": "open",
 						"type": "bool"
 					},
 					{
@@ -115,33 +95,13 @@
 						"type": "bytes32"
 					},
 					{
-						"internalType": "address",
-						"name": "token",
-						"type": "address"
-					},
-					{
 						"internalType": "bytes32[]",
 						"name": "review_links",
 						"type": "bytes32[]"
 					},
 					{
-						"internalType": "bytes32",
-						"name": "article",
-						"type": "bytes32"
-					},
-					{
-						"internalType": "address[]",
-						"name": "reviewers",
-						"type": "address[]"
-					},
-					{
-						"internalType": "uint256",
-						"name": "rewardAmount",
-						"type": "uint256"
-					},
-					{
 						"internalType": "bool",
-						"name": "openForReview",
+						"name": "open",
 						"type": "bool"
 					},
 					{
@@ -180,33 +140,13 @@
 						"type": "bytes32"
 					},
 					{
-						"internalType": "address",
-						"name": "token",
-						"type": "address"
-					},
-					{
 						"internalType": "bytes32[]",
 						"name": "review_links",
 						"type": "bytes32[]"
 					},
 					{
-						"internalType": "bytes32",
-						"name": "article",
-						"type": "bytes32"
-					},
-					{
-						"internalType": "address[]",
-						"name": "reviewers",
-						"type": "address[]"
-					},
-					{
-						"internalType": "uint256",
-						"name": "rewardAmount",
-						"type": "uint256"
-					},
-					{
 						"internalType": "bool",
-						"name": "openForReview",
+						"name": "open",
 						"type": "bool"
 					},
 					{
@@ -245,33 +185,13 @@
 						"type": "bytes32"
 					},
 					{
-						"internalType": "address",
-						"name": "token",
-						"type": "address"
-					},
-					{
 						"internalType": "bytes32[]",
 						"name": "review_links",
 						"type": "bytes32[]"
 					},
 					{
-						"internalType": "bytes32",
-						"name": "article",
-						"type": "bytes32"
-					},
-					{
-						"internalType": "address[]",
-						"name": "reviewers",
-						"type": "address[]"
-					},
-					{
-						"internalType": "uint256",
-						"name": "rewardAmount",
-						"type": "uint256"
-					},
-					{
 						"internalType": "bool",
-						"name": "openForReview",
+						"name": "open",
 						"type": "bool"
 					},
 					{
@@ -287,6 +207,51 @@
 			}
 		],
 		"name": "ManuscriptSubmitted",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "manuscriptId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "journal",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "manuscript_link",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "review_links",
+						"type": "bytes32[]"
+					},
+					{
+						"internalType": "bool",
+						"name": "open",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "accepted",
+						"type": "bool"
+					}
+				],
+				"indexed": false,
+				"internalType": "struct PeerReviewGSN.ManuscriptReview",
+				"name": "manuscript",
+				"type": "tuple"
+			}
+		],
+		"name": "ReviewClosed",
 		"type": "event"
 	},
 	{
@@ -311,33 +276,13 @@
 						"type": "bytes32"
 					},
 					{
-						"internalType": "address",
-						"name": "token",
-						"type": "address"
-					},
-					{
 						"internalType": "bytes32[]",
 						"name": "review_links",
 						"type": "bytes32[]"
 					},
 					{
-						"internalType": "bytes32",
-						"name": "article",
-						"type": "bytes32"
-					},
-					{
-						"internalType": "address[]",
-						"name": "reviewers",
-						"type": "address[]"
-					},
-					{
-						"internalType": "uint256",
-						"name": "rewardAmount",
-						"type": "uint256"
-					},
-					{
 						"internalType": "bool",
-						"name": "openForReview",
+						"name": "open",
 						"type": "bool"
 					},
 					{
@@ -362,17 +307,12 @@
 				"type": "uint256"
 			},
 			{
-				"internalType": "address[]",
-				"name": "reviewerAddresses",
-				"type": "address[]"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_rewardAmount",
-				"type": "uint256"
+				"internalType": "bool",
+				"name": "accepted",
+				"type": "bool"
 			}
 		],
-		"name": "assignReviewers",
+		"name": "closeReview",
 		"outputs": [
 			{
 				"components": [
@@ -392,33 +332,13 @@
 						"type": "bytes32"
 					},
 					{
-						"internalType": "address",
-						"name": "token",
-						"type": "address"
-					},
-					{
 						"internalType": "bytes32[]",
 						"name": "review_links",
 						"type": "bytes32[]"
 					},
 					{
-						"internalType": "bytes32",
-						"name": "article",
-						"type": "bytes32"
-					},
-					{
-						"internalType": "address[]",
-						"name": "reviewers",
-						"type": "address[]"
-					},
-					{
-						"internalType": "uint256",
-						"name": "rewardAmount",
-						"type": "uint256"
-					},
-					{
 						"internalType": "bool",
-						"name": "openForReview",
+						"name": "open",
 						"type": "bool"
 					},
 					{
@@ -432,34 +352,6 @@
 				"type": "tuple"
 			}
 		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "signal",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "uint256",
-				"name": "merkleTreeRoot",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "nullifierHash",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256[8]",
-				"name": "proof",
-				"type": "uint256[8]"
-			}
-		],
-		"name": "claimReputation",
-		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
@@ -474,77 +366,6 @@
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bool",
-				"name": "verified",
-				"type": "bool"
-			}
-		],
-		"name": "distributeRewardToken",
-		"outputs": [
-			{
-				"components": [
-					{
-						"internalType": "uint256",
-						"name": "manuscriptId",
-						"type": "uint256"
-					},
-					{
-						"internalType": "address",
-						"name": "journal",
-						"type": "address"
-					},
-					{
-						"internalType": "bytes32",
-						"name": "manuscript_link",
-						"type": "bytes32"
-					},
-					{
-						"internalType": "address",
-						"name": "token",
-						"type": "address"
-					},
-					{
-						"internalType": "bytes32[]",
-						"name": "review_links",
-						"type": "bytes32[]"
-					},
-					{
-						"internalType": "bytes32",
-						"name": "article",
-						"type": "bytes32"
-					},
-					{
-						"internalType": "address[]",
-						"name": "reviewers",
-						"type": "address[]"
-					},
-					{
-						"internalType": "uint256",
-						"name": "rewardAmount",
-						"type": "uint256"
-					},
-					{
-						"internalType": "bool",
-						"name": "openForReview",
-						"type": "bool"
-					},
-					{
-						"internalType": "bool",
-						"name": "accepted",
-						"type": "bool"
-					}
-				],
-				"internalType": "struct PeerReviewGSN.ManuscriptReview",
-				"name": "",
-				"type": "tuple"
-			}
-		],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -575,33 +396,13 @@
 						"type": "bytes32"
 					},
 					{
-						"internalType": "address",
-						"name": "token",
-						"type": "address"
-					},
-					{
 						"internalType": "bytes32[]",
 						"name": "review_links",
 						"type": "bytes32[]"
 					},
 					{
-						"internalType": "bytes32",
-						"name": "article",
-						"type": "bytes32"
-					},
-					{
-						"internalType": "address[]",
-						"name": "reviewers",
-						"type": "address[]"
-					},
-					{
-						"internalType": "uint256",
-						"name": "rewardAmount",
-						"type": "uint256"
-					},
-					{
 						"internalType": "bool",
-						"name": "openForReview",
+						"name": "open",
 						"type": "bool"
 					},
 					{
@@ -646,33 +447,13 @@
 						"type": "bytes32"
 					},
 					{
-						"internalType": "address",
-						"name": "token",
-						"type": "address"
-					},
-					{
 						"internalType": "bytes32[]",
 						"name": "review_links",
 						"type": "bytes32[]"
 					},
 					{
-						"internalType": "bytes32",
-						"name": "article",
-						"type": "bytes32"
-					},
-					{
-						"internalType": "address[]",
-						"name": "reviewers",
-						"type": "address[]"
-					},
-					{
-						"internalType": "uint256",
-						"name": "rewardAmount",
-						"type": "uint256"
-					},
-					{
 						"internalType": "bool",
-						"name": "openForReview",
+						"name": "open",
 						"type": "bool"
 					},
 					{
@@ -717,33 +498,13 @@
 						"type": "bytes32"
 					},
 					{
-						"internalType": "address",
-						"name": "token",
-						"type": "address"
-					},
-					{
 						"internalType": "bytes32[]",
 						"name": "review_links",
 						"type": "bytes32[]"
 					},
 					{
-						"internalType": "bytes32",
-						"name": "article",
-						"type": "bytes32"
-					},
-					{
-						"internalType": "address[]",
-						"name": "reviewers",
-						"type": "address[]"
-					},
-					{
-						"internalType": "uint256",
-						"name": "rewardAmount",
-						"type": "uint256"
-					},
-					{
 						"internalType": "bool",
-						"name": "openForReview",
+						"name": "open",
 						"type": "bool"
 					},
 					{
@@ -788,33 +549,13 @@
 						"type": "bytes32"
 					},
 					{
-						"internalType": "address",
-						"name": "token",
-						"type": "address"
-					},
-					{
 						"internalType": "bytes32[]",
 						"name": "review_links",
 						"type": "bytes32[]"
 					},
 					{
-						"internalType": "bytes32",
-						"name": "article",
-						"type": "bytes32"
-					},
-					{
-						"internalType": "address[]",
-						"name": "reviewers",
-						"type": "address[]"
-					},
-					{
-						"internalType": "uint256",
-						"name": "rewardAmount",
-						"type": "uint256"
-					},
-					{
 						"internalType": "bool",
-						"name": "openForReview",
+						"name": "open",
 						"type": "bool"
 					},
 					{
@@ -928,23 +669,8 @@
 				"type": "bytes32"
 			},
 			{
-				"internalType": "address",
-				"name": "token",
-				"type": "address"
-			},
-			{
-				"internalType": "bytes32",
-				"name": "article",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "uint256",
-				"name": "rewardAmount",
-				"type": "uint256"
-			},
-			{
 				"internalType": "bool",
-				"name": "openForReview",
+				"name": "open",
 				"type": "bool"
 			},
 			{
@@ -972,19 +698,6 @@
 	{
 		"inputs": [
 			{
-				"internalType": "bytes",
-				"name": "file",
-				"type": "bytes"
-			}
-		],
-		"name": "submitFile",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
 				"internalType": "address",
 				"name": "_journal",
 				"type": "address"
@@ -992,11 +705,6 @@
 			{
 				"internalType": "bytes32",
 				"name": "_manuscriptHash",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "bytes32",
-				"name": "_article",
 				"type": "bytes32"
 			}
 		],
@@ -1020,33 +728,13 @@
 						"type": "bytes32"
 					},
 					{
-						"internalType": "address",
-						"name": "token",
-						"type": "address"
-					},
-					{
 						"internalType": "bytes32[]",
 						"name": "review_links",
 						"type": "bytes32[]"
 					},
 					{
-						"internalType": "bytes32",
-						"name": "article",
-						"type": "bytes32"
-					},
-					{
-						"internalType": "address[]",
-						"name": "reviewers",
-						"type": "address[]"
-					},
-					{
-						"internalType": "uint256",
-						"name": "rewardAmount",
-						"type": "uint256"
-					},
-					{
 						"internalType": "bool",
-						"name": "openForReview",
+						"name": "open",
 						"type": "bool"
 					},
 					{
@@ -1101,33 +789,13 @@
 						"type": "bytes32"
 					},
 					{
-						"internalType": "address",
-						"name": "token",
-						"type": "address"
-					},
-					{
 						"internalType": "bytes32[]",
 						"name": "review_links",
 						"type": "bytes32[]"
 					},
 					{
-						"internalType": "bytes32",
-						"name": "article",
-						"type": "bytes32"
-					},
-					{
-						"internalType": "address[]",
-						"name": "reviewers",
-						"type": "address[]"
-					},
-					{
-						"internalType": "uint256",
-						"name": "rewardAmount",
-						"type": "uint256"
-					},
-					{
 						"internalType": "bool",
-						"name": "openForReview",
+						"name": "open",
 						"type": "bool"
 					},
 					{

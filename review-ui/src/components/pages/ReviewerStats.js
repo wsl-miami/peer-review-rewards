@@ -6,7 +6,6 @@ export default function ReviewerStats({
 })
 
 {
-    console.log(reviewerBounties)
     const getCountOfReviewers = () => {
         if (reviewerBounties === null) {
             return reviewerBounties;

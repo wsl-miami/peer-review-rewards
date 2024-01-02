@@ -12,13 +12,11 @@ contract PeerReviewGSN is ERC2771Recipient {
         uint256 manuscriptId;
         address journal;
         bytes32 manuscript_link;
-        address token;
         bytes32[] review_links;
         // address author;
-        bytes32 article;
-        address[] reviewers;
-        uint256 rewardAmount;
-        bool openForReview;
+        // address[] reviewers;
+        // uint256 rewardAmount;
+        bool open;
         bool accepted;
     }
 
@@ -35,6 +33,7 @@ contract PeerReviewGSN is ERC2771Recipient {
     event ManuscriptReviewOpened(ManuscriptReview manuscript);
     event ManuscriptReviewClosed(ManuscriptReview manuscript);
     event ManuscriptReviewClaimed(ManuscriptReview manuscript);
+    event ReviewClosed(ManuscriptReview manuscript);
 
     uint256 public counter;
     address public lastCaller;
@@ -126,7 +125,7 @@ contract PeerReviewGSN is ERC2771Recipient {
         return ret;
     }
 
-    function submitManuscript(address _journal, bytes32 _manuscriptHash, bytes32 _article) public returns(ManuscriptReview memory) {
+    function submitManuscript(address _journal, bytes32 _manuscriptHash) public returns(ManuscriptReview memory) {
         // require(manuscriptExists[_manuscriptHash], "Manuscript does not exist");
 
         ManuscriptReview memory manuscript;
@@ -139,13 +138,12 @@ contract PeerReviewGSN is ERC2771Recipient {
         // manuscript.author = _msgSender();
         manuscript.journal = _journal;
         manuscript.manuscript_link = _manuscriptHash;
-        manuscript.openForReview = false;
-        manuscript.article = _article;
+        manuscript.open = true;
 
         manuscripts.push(manuscript);
 
         // authorManuscriptIds[_msgSender()].push(manuscript.manuscriptId);
-        articleManuscriptIds[_article].push(manuscript.manuscriptId);
+        articleManuscriptIds[_manuscriptHash].push(manuscript.manuscriptId);
 
         journalManuscriptIds[_journal].push(manuscript.manuscriptId);
 
@@ -154,15 +152,24 @@ contract PeerReviewGSN is ERC2771Recipient {
         return manuscript;
     }
 
-    function assignReviewers(uint256 _manuscriptId, address[] memory reviewerAddresses, uint256 _rewardAmount) public returns(ManuscriptReview memory) {
-        // Logic to assign reiewers here
+    function closeReview(uint256 _manuscriptId, bool accepted) public returns(ManuscriptReview memory) {
         ManuscriptReview memory manuscript = manuscripts[_manuscriptId];
-        manuscripts[_manuscriptId].rewardAmount = _rewardAmount; // Allow journal to assign specific reward amount later
-        manuscripts[_manuscriptId].reviewers = reviewerAddresses;
-        emit ManuscriptReviewOpened(manuscript);
-        return manuscript;
+        manuscripts[_manuscriptId].accepted = accepted;
+        manuscripts[_manuscriptId].open = false;
 
+        emit ReviewClosed(manuscripts[_manuscriptId]);
+        return manuscripts[_manuscriptId];
     }
+
+    // function assignReviewers(uint256 _manuscriptId, address[] memory reviewerAddresses, uint256 _rewardAmount) public returns(ManuscriptReview memory) {
+    //     // Logic to assign reiewers here
+    //     ManuscriptReview memory manuscript = manuscripts[_manuscriptId];
+    //     manuscripts[_manuscriptId].rewardAmount = _rewardAmount; // Allow journal to assign specific reward amount later
+    //     manuscripts[_manuscriptId].reviewers = reviewerAddresses;
+    //     emit ManuscriptReviewOpened(manuscript);
+    //     return manuscript;
+
+    // }
 
     function submitReview(uint256 _manuscriptId, uint256 _journalId, bytes32 _ipfsHash) public returns(ManuscriptReview memory){
         // Logic to submit review here
@@ -172,36 +179,6 @@ contract PeerReviewGSN is ERC2771Recipient {
         // generateProof();
         
     }
-
-    function claimReputation(bytes32 signal, uint256 merkleTreeRoot, uint256 nullifierHash, uint256[8] calldata proof) external {
-        // bool verified = semaphore.verifyProof(groupId, merkleTreeRoot, signal, nullifierHash, reviewedGroupId, proof);
-        bool verified = true;
-        distributeRewardToken(verified);
-    }
-
-    function distributeRewardToken(bool verified) public returns(ManuscriptReview memory) {
-        // Logic to distribute token here
-    }
-
-    function submitFile(bytes memory file) external {
-        require(file.length > 0, "File cannot be empty");
-
-        // Upload file to IPFS and get the IPFS hash
-        bytes32 ipfsHash = uploadToIPFS(file);
-
-        // uint256 manuscriptId = manuscriptIds.current();
-        // manuscriptIds.increment();
-
-        // manuscriptIPFSHashes[manuscriptId] = ipfsHash;
-        // manuscriptExists[manuscriptId] = true;
-    }
-
-    function uploadToIPFS(bytes memory file) internal returns (bytes32) {
-        bytes32 ipfsHash = keccak256(file);
-        return ipfsHash;
-    }
-
-    // Other functions for reviewers, proofs, etc.
 
     string public versionRecipient = "3.0.0-beta.6";
 }

@@ -66,7 +66,6 @@ class AddReveiwersModal extends React.Component {
 
         this.props.PRContract.methods.submitManuscript(
             this.props.account,
-            '0x'+str.substring(4, str.length),
             '0x'+str.substring(4, str.length)
         ).send({from: this.props.account, gas: 210000})
         .on('confirmation', (receipt) => {

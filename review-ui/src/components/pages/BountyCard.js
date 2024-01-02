@@ -52,13 +52,13 @@ export default function BountyCard({
     const isVisible = () => {
         var ret = true;
         if (passedFilter) {
-            ret = ret && bounty.passed;
+            ret = ret && bounty.accepted;
         } else if (closedFilter) {
             ret = ret && !bounty.open;
         } else if (openFilter) {
             ret = ret && bounty.open;
         } else if (failedFilter) {
-            ret = ret && !bounty.passed;
+            ret = ret && !bounty.accepted;
         }
         return (ret);
     }
@@ -85,13 +85,21 @@ export default function BountyCard({
                 .on('confirmation', (receipt) => {
                     window.location.reload();
                 });
-        } else if (type === 'editor') {
-            PRContract.methods.closeBounty(
-                bounty.id, passedOrFailed == 'Publish'
-            ).send({ from: account })
-                .on('confirmation', (receipt) => {
-                    window.location.reload();
-                });;
+        } else if (type === 'editor' && bounty.blockManuscriptId) {
+            PRContract.methods.closeReview(
+                bounty.blockManuscriptId, passedOrFailed == 'Publish'
+            ).send({from: account, gas: 210000})
+            .on('confirmation', (receipt) => {
+                console.log("done!");
+                window.location.reload();
+            });
+            
+            // PRContract.methods.closeBounty(
+            //     bounty.id, passedOrFailed == 'Publish'
+            // ).send({ from: account })
+            //     .on('confirmation', (receipt) => {
+            //         window.location.reload();
+            //     });;
         }
 
         setConfirmation('');
@@ -161,7 +169,7 @@ export default function BountyCard({
                 <Modal.Body>
                     <Row>
                         <Col>
-                            <h6>Are you want to {type === 'author' ? 'cancel' : 'close'} the article with id: {bounty.id}?</h6>
+                            <h6>Are you sure want to {type === 'author' ? 'cancel' : 'close'} the article with id: {bounty.blockManuscriptId}?</h6>
                         </Col>
                     </Row>
                     <Form onSubmit={(e) => e.preventDefault()}>
@@ -247,7 +255,7 @@ export default function BountyCard({
         }
     }
     const isEditorClosedDisabled = () => {
-        if (!bounty.open || bounty.review_links.length < bounty.reviewers.length) {
+        if (!bounty.open || bounty.review_links.length < bounty.reviewers_count) {
             return true;
         }
         else {
@@ -266,7 +274,7 @@ export default function BountyCard({
         if (!bounty.open) {
             return 'Article is closed.';
         }
-        else if (bounty.review_links.length < bounty.reviewers.length) {
+        else if (bounty.review_links.length < bounty.reviewers_count) {
             return 'Reviewers are still working on their reviews.';
         }
     }
@@ -372,10 +380,10 @@ export default function BountyCard({
                 </>
             );
         }
-        if (bounty.passed) {
+        if (bounty.accepted) {
             return (
                 <>
-                    <span className="passed">Passed</span>
+                    <span className="passed">Accepted</span>
                 </>
             );
         }
@@ -424,7 +432,7 @@ export default function BountyCard({
                                 </Row>
                                 <br />
                                 <Row>
-                                    <p>Reviewers Assigned: {bounty && bounty.reviewers && bounty.reviewers.length}</p>
+                                    <p>Reviewers Assigned: {bounty && bounty.reviewers && bounty.reviewers_count}</p>
                                 </Row>
                                 <br />
                                 <Row>

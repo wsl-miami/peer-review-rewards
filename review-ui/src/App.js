@@ -199,6 +199,8 @@ class App extends Component {
         // @TODO: use opengsn for SoulBoundContract
         const web3 = new Web3(window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(process.env.REACT_APP_GOERLI_URL));
         // const web3 = this.state.web3;
+        const soulBoundAddressBeforeUpdate = '0x459dE1B62FEBac77Ed5d46B35e2D094cf3Ee92D9';
+        // const soulBoundAddress ='0x503DA66Fa530Acf202944B55f8cd2289a3948A03';
         const soulBoundAddress = '0xD2045db3992f485eC3081BD6120a8d581B97D597';
         var SoulBoundContract = new web3.eth.Contract(SoulBoundABI, soulBoundAddress);
         this.setState({SoulBoundContract: SoulBoundContract});
@@ -286,6 +288,8 @@ class App extends Component {
             ).call();
 
             console.log('authorBounty from contract', authorBounty);
+            const reviewers_count = manuscript[5];
+
 
             const review_links = manuscript[4] != null ? manuscript[4] : [];
             if (authorBounty && authorBounty.length != 0) {
@@ -296,12 +300,10 @@ class App extends Component {
                     journal: manuscript[3].trim(),
                     manuscriptId: authorManuscriptId,
                     manuscript_link: manuscript_hash,
-                    open_for_review: false,
-                    open: true,
+                    open: authorBounty[0].open,
                     review_links: review_links,
                     reviewers: [],
-                    rewardAmount: "0",
-                    token: "0x00000000000000000000000"
+                    reviewers_count: reviewers_count
                 });
             } else {
                 authorBounties.push({
@@ -310,12 +312,10 @@ class App extends Component {
                     journal: manuscript[3].trim(),
                     manuscriptId: authorManuscriptId,
                     manuscript_link: manuscript_hash,
-                    open_for_review: false,
                     open: true,
                     review_links: review_links,
-                    reviewers: ['0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6'],
-                    rewardAmount: "0",
-                    token: "0x00000000000000000000000"
+                    reviewers: [],
+                    reviewers_count: reviewers_count
                 });
             }
             authorManuscriptId = authorManuscriptId+1;
@@ -345,21 +345,44 @@ class App extends Component {
             // console.log("manuscript hash rev here", `test${manuscript_hash}test`);
             const str = Buffer.from(bs58.decode(manuscript_hash)).toString('hex')
 
-            const review_links = manuscript[4] != null ? manuscript[4] : [];
+            const editorBounty =
+            await this.state.PRContract.methods.getManuscriptsByArticleHash(
+                '0x'+str.substring(4, str.length)
+            ).call();
 
-            editorBounties.push({
-                accepted: false,
-                author: manuscript[0].trim(),
-                journal: manuscript[3].trim(),
-                manuscriptId: manuscriptId,
-                manuscript_link: manuscript_hash,
-                open_for_review: true,
-                open: true,
-                review_links: review_links,
-                reviewers: ['0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6'],
-                rewardAmount: "0",
-                token: "0x00000000000000000000000"
-            });
+            console.log('editorBounty from blockchain', editorBounty);
+
+            const review_links = manuscript[4] != null ? manuscript[4] : [];
+            const reviewers_count = manuscript[5];
+
+            if (editorBounty && editorBounty.length != 0) {
+                editorBounties.push({
+                    accepted: editorBounty[0].accepted,
+                    author: manuscript[0].trim(),
+                    journal: manuscript[3].trim(),
+                    manuscriptId: manuscriptId,
+                    manuscript_link: manuscript_hash,
+                    open: editorBounty[0].open,
+                    review_links: review_links,
+                    reviewers: [],
+                    reviewers_count: reviewers_count,
+                    blockManuscriptId: editorBounty[0].manuscriptId
+                });
+            } else {
+                editorBounties.push({
+                    accepted: false,
+                    author: manuscript[0].trim(),
+                    journal: manuscript[3].trim(),
+                    manuscriptId: manuscriptId,
+                    manuscript_link: manuscript_hash,
+                    open: true,
+                    review_links: review_links,
+                    reviewers: [],
+                    reviewers_count: reviewers_count,
+                    blockManuscriptId: null
+
+                });
+            }
 
             manuscriptId = manuscriptId + 1;
         });
@@ -389,23 +412,41 @@ class App extends Component {
         reviewerManuscripts.forEach(async(manuscript, index) => {
             const manuscript_hash = manuscript[1].trim();
             const str = Buffer.from(bs58.decode(manuscript_hash)).toString('hex')
+
+            const reviewerBounty =
+            await this.state.PRContract.methods.getManuscriptsByArticleHash(
+                '0x'+str.substring(4, str.length)
+            ).call();
             
             const review_links = manuscript[4] != null ? manuscript[4] : [];
             // console.log('typeof review_links ', typeof(review_links), review_links.push('test'));
             console.log("final review_links", review_links);
-            reviewerBounties.push({
-                accepted: false,
-                author: null,
-                journal: manuscript[3].trim(),
-                manuscriptId: reviewerManuscriptId,
-                manuscript_link: manuscript_hash,
-                open_for_review: true,
-                open: true,
-                review_links: review_links,
-                reviewers: ['0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6'],
-                rewardAmount: "0",
-                token: "0x00000000000000000000000"
-            });
+
+            if (reviewerBounty && reviewerBounty.length != 0) {
+                reviewerBounties.push({
+                    accepted: reviewerBounty[0].accepted,
+                    author: null,
+                    journal: manuscript[3].trim(),
+                    manuscriptId: reviewerManuscriptId,
+                    manuscript_link: manuscript_hash,
+                    open: reviewerBounty[0].open,
+                    review_links: review_links,
+                    reviewers: [],
+                    reviewers_count: 0 // @TODO: Change the static value later
+                });
+            } else {
+                reviewerBounties.push({
+                    accepted: false,
+                    author: null,
+                    journal: manuscript[3].trim(),
+                    manuscriptId: reviewerManuscriptId,
+                    manuscript_link: manuscript_hash,
+                    open: true,
+                    review_links: review_links,
+                    reviewers: [],
+                    reviewers_count: 0
+                });
+            }
 
             reviewerManuscriptId = reviewerManuscriptId + 1;
         });

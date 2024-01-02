@@ -117,9 +117,19 @@ app.get('/api/get-manuscripts-by-author', async(req, res)  => {
   let connection;
   try {
     connection = await oracledb.getConnection();
-    const sql = `SELECT authors.author_hash AS author_hash, authors.file_hash as article_hash, authors.time_stamp as time_stamp, journals.journal_hash as journal_hash, journals.review_hash as review_hash FROM authors JOIN journals ON authors.file_hash=journals.article_hash where authors.author_hash = '${author_hash}'`;
+    const sql = `SELECT authors.author_hash AS author_hash, authors.file_hash as article_hash, \
+    authors.time_stamp as time_stamp, journals.journal_hash as journal_hash, journals.review_hash as review_hash, \
+    (SELECT COUNT(reviewer_hash) from reviewers where reviewers.article_hash = authors.file_hash) as reviewers_count \
+    FROM authors JOIN journals ON authors.file_hash=journals.article_hash where authors.author_hash = '${author_hash}'`;
     console.log("sql", sql);
     const manuscripts = await connection.execute(sql);
+
+    // const reviewers_sql = `select authors.author_hash AS author_hash, authors.file_hash as article_hash FROM authors join reviewers on authors.file_hash = reviewers.article_hash where authors.author_hash = '${author_hash}' GROUP BY authors.author_hash, authors.file_hash`;
+
+    // console.log('rev sql', reviewers_sql);
+
+    // const reviewers_hashes = await connection.execute(reviewers_sql);
+
     res.send({success: true, manuscripts});
   } catch (err) {
     console.log('err here', err);
@@ -143,6 +153,7 @@ app.get('/api/get-manuscripts-by-reviewer', async(req, res)  => {
     connection = await oracledb.getConnection();
     const sql = `SELECT reviewers.reviewer_hash AS reviewer_hash, reviewers.article_hash as article_hash, reviewers.time_stamp as time_stamp, journals.journal_hash as journal_hash, journals.review_hash as review_hash FROM reviewers JOIN journals ON reviewers.article_hash=journals.article_hash where reviewers.reviewer_hash = '${reviewer_hash}'`;
     const manuscripts = await connection.execute(sql);
+    console.log('resp', manuscripts);
     res.send({success: true, manuscripts});
   } catch (err) {
     console.log('err here', err);
@@ -213,8 +224,22 @@ app.get('/api/get-manuscripts-by-journal', async(req, res)  => {
   let connection;
   try {
     connection = await oracledb.getConnection();
-    const sql = `SELECT authors.author_hash AS author_hash, authors.file_hash as article_hash, authors.time_stamp as time_stamp, journals.journal_hash as journal_hash, journals.review_hash as review_hash FROM authors JOIN journals ON authors.file_hash=journals.article_hash where journals.journal_hash = '${journal_hash}'`;
+    const sql = `SELECT authors.author_hash AS author_hash, authors.file_hash as article_hash, \
+    authors.time_stamp as time_stamp, journals.journal_hash as journal_hash, journals.review_hash as review_hash, \
+    (SELECT COUNT(reviewer_hash) from reviewers where reviewers.article_hash = authors.file_hash) as reviewers_count \
+    FROM authors JOIN journals ON authors.file_hash=journals.article_hash where journals.journal_hash = '${journal_hash}'`;
     const manuscripts = await connection.execute(sql);
+
+    // const reviewers_sql = ` select journals.article_hash AS article_hash,
+    // LISTAGG(reviewers.reviewer_hash, ',') WITHIN GROUP (ORDER BY reviewers.reviewer_hash) AS "reviewers_hashes"
+    // FROM
+    // journals join reviewers
+    // on journals.article_hash = reviewers.article_hash
+    // where journals.journal_hash = '${journal_hash}'
+    // GROUP BY journals.article_hash;`;
+
+    // const reviewers_hashes = await connection.execute(reviewers_sql);
+
     res.send({success: true, manuscripts});
   } catch (err) {
     console.log('err here', err);
