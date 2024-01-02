@@ -196,12 +196,9 @@ class App extends Component {
     }
 
     async setSoulBoundContract() {
-        // @TODO: use opengsn for SoulBoundContract
-        const web3 = new Web3(window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(process.env.REACT_APP_GOERLI_URL));
-        // const web3 = this.state.web3;
-        const soulBoundAddressBeforeUpdate = '0x459dE1B62FEBac77Ed5d46B35e2D094cf3Ee92D9';
-        // const soulBoundAddress ='0x503DA66Fa530Acf202944B55f8cd2289a3948A03';
-        const soulBoundAddress = '0xD2045db3992f485eC3081BD6120a8d581B97D597';
+        // const web3 = new Web3(window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(process.env.REACT_APP_GOERLI_URL));
+        const web3 = this.state.web3;
+        const soulBoundAddress = process.env.REACT_APP_SOUL_BOUND_TOKEN_CONTRACT;
         var SoulBoundContract = new web3.eth.Contract(SoulBoundABI, soulBoundAddress);
         this.setState({SoulBoundContract: SoulBoundContract});
     }

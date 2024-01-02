@@ -1,4 +1,7 @@
 const { expect } = require("chai");
+const address = require('../tasks/address');
+
+// @TODO: Update the test for GSN implementation
 
 describe("Soulbound Token Test", function () {
     let owner;
