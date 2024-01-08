@@ -90,23 +90,44 @@ export default function Dashboard({
         })
         console.log('api response', res);
         const unassignedReviews =  res.data.unassignedReviews.rows;
+        const rewardsIds = [];
+        const reviewerAddresses = [];
         unassignedReviews.forEach(async (review) => {
             const rewardsId = review[0];
             const reviewerAddress = review[1];
-            console.log(reviewerAddress);
-            let test = await SoulBoundContract.methods.safeMint(
-                    reviewerAddress, account
-                ).send({from: account, gas: 2100000});
 
+            rewardsIds.push(rewardsId);
+            reviewerAddresses.push(reviewerAddress);
+
+            // console.log(reviewerAddress);
+            // let test = await SoulBoundContract.methods.safeMint(
+            //         reviewerAddress, account
+            //     ).send({from: account, gas: 2100000});
+
+            // const updateRewards = await axios({
+            //     url: "http://localhost:5000/api/update-assigned-reviews",
+            //     method: "POST",
+            //     headers: {
+            //         authorization: "your token comes here",
+            //     },
+            //     data: {rewardsId: rewardsId},
+            // })
+        });
+
+        if (reviewerAddresses.length > 0){
+            let test = await SoulBoundContract.methods.bulkMint(
+                reviewerAddresses, account, account
+            ).send({from: account, gas: 2100000});
+    
             const updateRewards = await axios({
-                url: "http://localhost:5000/api/update-assigned-reviews",
+                url: "http://localhost:5000/api/bulk-update-assigned-reviews",
                 method: "POST",
                 headers: {
                     authorization: "your token comes here",
                 },
-                data: {rewardsId: rewardsId},
+                data: {rewardIds: rewardsIds},
             })
-        });
+        }
     }
 
     const handleShowOpenForm = () => {

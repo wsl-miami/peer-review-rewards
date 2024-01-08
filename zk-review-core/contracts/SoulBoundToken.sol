@@ -80,6 +80,22 @@ contract Soulbound is ERC721, ERC721URIStorage, ERC2771Recipient, Ownable {
         
     }
 
+    function bulkMint(address[] memory _tos, string memory journalString, address journal) public {
+        require(journal == _msgSender(), "Only journal can mint the token.");
+
+        for(uint256 i=0; i< _tos.length; i++) {
+            _tokenIdCounter += 1;
+            _safeMint(_tos[i], _tokenIdCounter);
+            ownerTokenIds[_tos[i]].push(_tokenIdCounter);
+
+            string memory tURI = generateTokenURI(
+                _tokenIdCounter,
+                journalString
+            );
+            _setTokenURI(_tokenIdCounter, tURI);
+        }
+    }
+
     function generateTokenURI(
         uint256 tokenId,
         string memory journalString
