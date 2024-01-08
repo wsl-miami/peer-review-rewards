@@ -278,6 +278,36 @@ app.get('/api/get-unassigned-reviews', async(req, res) => {
   }
 })
 
+app.post('/api/bulk-update-assigned-reviews', async(req, res) => {
+  const reward_ids = req.body.rewardIds;
+  const reward_ids_string = reward_ids.toString();
+
+  let connection;
+  try {
+    connection = await oracledb.getConnection();
+
+    const rewards = `UPDATE rewards SET assigned=1 WHERE id IN (${reward_ids_string})`;
+    console.log("journals sql", rewards);
+
+    await connection.execute(rewards);
+
+    connection.commit();
+  } catch (err) {
+    console.log('err here', err);
+    await connection.close();
+  } finally {
+      if (connection) {
+          try {
+              await connection.close(); // Put the connection back in the pool
+          } catch (err) {
+              throw (err);
+          }
+      }
+  }
+
+  res.send({ success: true});
+});
+
 app.post('/api/update-assigned-reviews', async(req, res) => {
   const rewards_id = req.body.rewardsId;
 
