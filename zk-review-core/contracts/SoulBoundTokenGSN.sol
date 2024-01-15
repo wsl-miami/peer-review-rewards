@@ -4,19 +4,43 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@opengsn/contracts/src/ERC2771Recipient.sol";
 
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 
-contract Soulbound is ERC721, ERC721URIStorage, Ownable {
+contract SoulboundGSN is ERC721, ERC721URIStorage, ERC2771Recipient, Ownable {
     using Strings for uint256;
     uint256 private _tokenIdCounter;
 
     mapping(address => uint256[]) ownerTokenIds;
     string internal rewardImage;
 
-    constructor() ERC721("SoulBound", "SBT") {
+    constructor(address _forwarder) ERC721("SoulBound", "SBT") {
+        _setTrustedForwarder(_forwarder);
         rewardImage = 'https://review-rewards.infura-ipfs.io/ipfs/Qmc8dJ1o7B7kZeuhH8DshyU55FZ1JU7PjJ6ShdwuKzEqqV';
+    }
+
+    function _msgSender()
+        internal
+        view
+        override(Context, ERC2771Recipient)
+        returns (address sender)
+    {
+        sender = ERC2771Recipient._msgSender();
+    }
+
+    function _msgData()
+        internal
+        view
+        override(Context, ERC2771Recipient)
+        returns (bytes calldata)
+    {
+        return ERC2771Recipient._msgData();
+    }
+
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721) returns (bool) {
+        return super.supportsInterface(interfaceId);
     }
 
     /**
@@ -53,7 +77,7 @@ contract Soulbound is ERC721, ERC721URIStorage, Ownable {
     }
 
     function bulkMint(address[] memory _tos, string memory journalString, address journal) public {
-        require(journal == msg.sender, "Only journal can mint the token.");
+        require(journal == _msgSender(), "Only journal can mint the token.");
 
         for(uint256 i=0; i< _tos.length; i++) {
             _tokenIdCounter += 1;
@@ -112,7 +136,7 @@ contract Soulbound is ERC721, ERC721URIStorage, Ownable {
     }
 
     function burn(uint256 tokenId) external {
-        require(ownerOf(tokenId) == msg.sender, "Only owner can burn the token.");
+        require(ownerOf(tokenId) == _msgSender(), "Only owner can burn the token.");
         // require(ownerOf(tokenId) == _msgSender(), "Only owner can burn the token.");
         _burn(tokenId);
     }
@@ -131,5 +155,5 @@ contract Soulbound is ERC721, ERC721URIStorage, Ownable {
         return super.tokenURI(tokenId);
     }
 
-    // string public versionRecipient = "3.0.0-beta.6";
+    string public versionRecipient = "3.0.0-beta.6";
 }

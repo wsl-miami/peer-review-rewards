@@ -156,13 +156,15 @@ class App extends Component {
             },
             minViewableGasLimit: 0
         }
-        console.log('setweb3', config);
+        // console.log('setweb3', config);
 
+        // console.log("testing provider", new Web3.providers.HttpProvider(process.env.REACT_APP_GOERLI_URL));
         const provider = await RelayProvider.newProvider({ provider: window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(process.env.REACT_APP_GOERLI_URL), config }).init();
         console.log('setweb3', provider);
 
         try {
 
+            // const web3 = new Web3(window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(process.env.REACT_APP_GOERLI_URL))
             const web3 = new Web3(provider);
             console.log('web', web3);
             this.setState({ web3: web3 }, () => {
@@ -196,8 +198,8 @@ class App extends Component {
     }
 
     async setSoulBoundContract() {
-        // const web3 = new Web3(window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(process.env.REACT_APP_GOERLI_URL));
-        const web3 = this.state.web3;
+        // Keeping SoulBoundContract without OpenGSN
+        const web3 = new Web3(window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(process.env.REACT_APP_GOERLI_URL));
         const soulBoundAddress = process.env.REACT_APP_SOUL_BOUND_TOKEN_CONTRACT;
         var SoulBoundContract = new web3.eth.Contract(SoulBoundABI, soulBoundAddress);
         this.setState({SoulBoundContract: SoulBoundContract});

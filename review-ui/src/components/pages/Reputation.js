@@ -134,7 +134,7 @@ export default function Reputation({
                     <h2 style={{ "margin-top": "5px" }}>Your reputation: {reputation}</h2>
                 </Row>
                 {/* {tokens.length !==0 ? tokens.map((item, index) => tokensCard(item, index)) : 'No Tokens accumulated'} */}
-                <Row xs={1} md={3} className="g-4">
+                <Row xs={1} md={4} className="g-4">
                     {tokens.length !==0 ? tokens.map((item, index) => <RewardTokens tokenId={item} SoulBoundContract={SoulBoundContract} key={index} />) : 'No Tokens accumulated'}
                 </Row>
                 {/* {unclaimed.length !== 0 ? unclaimed.map((item, index) => reputationCard(item, index)) : 'No reputation to claim'} */}

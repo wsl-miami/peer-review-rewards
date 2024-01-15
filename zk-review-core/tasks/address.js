@@ -13,7 +13,8 @@ const getPeerReviewGSN = (networkId) => {
 
 const getSoulBoundToken = (networkId) => {
   return {
-    5: '0x459dE1B62FEBac77Ed5d46B35e2D094cf3Ee92D9'
+    '5withGSN': '0x459dE1B62FEBac77Ed5d46B35e2D094cf3Ee92D9',
+    5: '0x9356Afd5DD0A393a5C638d3e35614b9D45479Ac9'
   }[networkId];
 }
   

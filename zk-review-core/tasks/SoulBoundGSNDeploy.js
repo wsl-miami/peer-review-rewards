@@ -15,7 +15,7 @@ async function deploy() {
     console.log("Account balance:", (await deployer.getBalance()).toString());
 
     // Obtain the Soulbound contract
-    const Soulbound = await hre.ethers.getContractFactory("Soulbound");
+    const Soulbound = await hre.ethers.getContractFactory("SoulboundGSN");
     // Deploy the Soulbound contract
     const soulbound = await Soulbound.deploy(forwarder);
 
