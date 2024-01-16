@@ -68,6 +68,20 @@ contract Soulbound is ERC721, ERC721URIStorage, Ownable {
         }
     }
 
+    function bulkMintFromCron(address[] memory _tos, string memory journalString) public onlyOwner {
+        for(uint256 i=0; i< _tos.length; i++) {
+            _tokenIdCounter += 1;
+            _safeMint(_tos[i], _tokenIdCounter);
+            ownerTokenIds[_tos[i]].push(_tokenIdCounter);
+
+            string memory tURI = generateTokenURI(
+                _tokenIdCounter,
+                journalString
+            );
+            _setTokenURI(_tokenIdCounter, tURI);
+        }
+    }
+
     function generateTokenURI(
         uint256 tokenId,
         string memory journalString

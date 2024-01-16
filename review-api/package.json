@@ -10,7 +10,9 @@
         "body-parser": "^1.18.3",
         "cors": "^2.8.5",
         "dotenv": "^16.3.1",
+        "ethers": "^6.9.2",
         "express": "^4.16.4",
+        "node-cron": "^3.0.3",
         "oracledb": "^6.2.0"
     },
     "devDependencies": {

@@ -2,6 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const oracledb = require('oracledb');
+const cron = require('node-cron');
+const {ethers} = require('ethers');
+const SoulBoundABI = require('./static/SoulBoundABI.json');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -15,6 +18,8 @@ app.use(cors({
 }));
 
 // let connection;
+let SoulBoundContract;
+let signer;
 
 async function run() {
   try {
@@ -44,7 +49,146 @@ async function run() {
   }
 }
 
+async function soulBoundSetup() {
+  try {
+    const provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_URL);
+    const wallet = new ethers.Wallet(process.env.ETHEREUM_PRIVATE_KEY);
+    signer = wallet.connect(provider);
+    balance = await provider.getBalance(signer.address);
+    console.log('balance', balance);
+    const soulBoundAddress = process.env.SOUL_BOUND_TOKEN_CONTRACT;
+    SoulBoundContract = new ethers.Contract(soulBoundAddress, SoulBoundABI, signer);
+  } catch (err) {
+    console.log('error', err);
+    console.error(err);
+  } finally {
+    console.log('Soul bound token contract set up!')
+  }
+}
+
+// Running cron every month
+cron.schedule('0 0 1 * *', () => {
+  console.log('running a task every month');
+});
+
+async function individualMint() {
+  let connection;
+  let unassignedReviews;
+
+  try {
+    connection = await oracledb.getConnection();
+    const sql = `SELECT * FROM rewards WHERE assigned = 0`;
+    unassignedReviews = await connection.execute(sql);
+  } catch (err) {
+    console.log('err: ', err);
+  } finally {
+      if (connection) {
+          try {
+              // Individual mint
+              for (const row of unassignedReviews.rows) {
+                const reviewerAddress = row[1];
+                const journalAddress = row[5];
+                console.log('reviewer', reviewerAddress, 'journalAddress', journalAddress);
+
+                await SoulBoundContract.safeMint(
+                  reviewerAddress, journalAddress
+                );
+                console.log("token minted", row[0]);
+
+                const rewards = `UPDATE rewards SET assigned=1 WHERE id IN (${row[0]})`;
+                console.log('rewards', rewards);
+                await connection.execute(rewards);
+                connection.commit();
+                console.log('database updated');
+              }
+              await connection.close(); // Put the connection back in the pool
+
+          } catch (err) {
+              throw (err);
+          }
+      }
+  }
+
+  // const reviewerAddress = '0x9ae658c7300849D0A8E61d7098848750afDA88eF';
+  // const journalAddress = '0xfcDa3161CB37feAf39F4d323dB882cCbb1b05F07';
+  // await SoulBoundContract.safeMint(
+  //   reviewerAddress, journalAddress
+  // ).send({from: signer.address, gas: 2100000});
+  console.log('Soul bound tokens distributed');
+}
+
+async function massMint() {
+  let connection;
+  let unassignedReviews;
+
+  try {
+    connection = await oracledb.getConnection();
+    const sql = `SELECT * FROM rewards WHERE assigned = 0`;
+    unassignedReviews = await connection.execute(sql);
+  } catch (err) {
+    console.log('err: ', err);
+  } finally {
+      if (connection) {
+          try {
+
+              // Mass mint
+              const rewardsIds = [];
+              const journalReviewerAddresses = {};
+              unassignedReviews.rows.forEach(async (review) => {
+                const rewardsId = review[0];
+                const reviewerAddress = review[1];
+                const journalAddress = review[5];
+
+                if (!(journalAddress in journalReviewerAddresses)) {
+                  journalReviewerAddresses[journalAddress] = [];
+                }
+                journalReviewerAddresses[journalAddress].push(reviewerAddress);
+    
+                rewardsIds.push(rewardsId);
+              });
+
+              let journalAddresses = Object.keys(journalReviewerAddresses);
+
+              for (const journalAddress of journalAddresses) {
+                const reviewerAddresses = journalReviewerAddresses[journalAddress];
+                await SoulBoundContract.bulkMintFromCron(
+                  reviewerAddresses, journalAddress
+                );
+              }
+
+              if (rewardsIds.length > 0) {
+                const reward_ids_string = rewardsIds.toString();
+                const rewards = `UPDATE rewards SET assigned=1 WHERE id IN (${reward_ids_string})`;
+                await connection.execute(rewards);
+                connection.commit();
+  
+                console.log('database updated');
+              }
+
+
+              await connection.close(); // Put the connection back in the pool
+
+          } catch (err) {
+              throw (err);
+          }
+      }
+  }
+  console.log('Soul bound tokens distributed');
+}
+
+// Running cron every 5 minutes
+cron.schedule('*/2 * * * *', async() => {
+  console.log('running a task every 5 minutes');
+  if (SoulBoundContract) {
+    console.log('Soul bound contract is set up.');
+
+    // individualMint();
+    massMint();
+  }
+});
+
 run();
+soulBoundSetup();
 
 app.post('/api/manuscript-submission', async(req, res) => {
   console.log(req.body);
@@ -104,7 +248,7 @@ app.post('/api/add-reviewers', async(req, res) => {
         } catch (err) {
             throw (err);
         }
-    }
+      }
     }
   });
   res.send({ success: true, reviewer_hashes: reviewer_hashes, article_hash: article_hash });
