@@ -5,6 +5,7 @@ const oracledb = require('oracledb');
 const cron = require('node-cron');
 const {ethers} = require('ethers');
 const SoulBoundABI = require('./static/SoulBoundABI.json');
+const ReviewRewardTokenABI = require('./static/ReviewRewardTokenABI.json');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -19,6 +20,7 @@ app.use(cors({
 
 // let connection;
 let SoulBoundContract;
+let ReviewRewardTokenContract;
 let signer;
 
 async function run() {
@@ -49,6 +51,13 @@ async function run() {
   }
 }
 
+async function reviewRewardTokenSetup() {
+  const reviewRewardTokenAddress = process.env.REVIEW_REWARD_TOKEN_CONTRACT;
+  ReviewRewardTokenContract = new ethers.Contract(reviewRewardTokenAddress, ReviewRewardTokenABI, signer);
+  console.log('Review reward token contract set up!')
+
+}
+
 async function soulBoundSetup() {
   try {
     const provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_URL);
@@ -58,6 +67,8 @@ async function soulBoundSetup() {
     console.log('balance', balance);
     const soulBoundAddress = process.env.SOUL_BOUND_TOKEN_CONTRACT;
     SoulBoundContract = new ethers.Contract(soulBoundAddress, SoulBoundABI, signer);
+
+    reviewRewardTokenSetup();
   } catch (err) {
     console.log('error', err);
     console.error(err);
@@ -154,6 +165,22 @@ async function massMint() {
                 await SoulBoundContract.bulkMintFromCron(
                   reviewerAddresses, journalAddress
                 );
+
+                const reward_setting_sql = `SELECT * from reward_settings where journal_hash='${journalAddress}'`;
+                console.log("reward_setting_sql", reward_setting_sql);
+                const reward_setting = await connection.execute(reward_setting_sql);
+
+                if (reward_setting && reward_setting.rows && reward_setting.rows[0]) {
+                  const settings_details = reward_setting.rows[0];
+                  const enable_rrt = settings_details[2];
+                  const rrt_amount_per_review = settings_details[3];
+
+                  if (enable_rrt == 1 && rrt_amount_per_review > 0) {
+                    // bulk mint RRT tokens here
+                    await ReviewRewardTokenContract.bulkMint(reviewerAddresses, rrt_amount_per_review);
+                  }
+                } 
+
               }
 
               if (rewardsIds.length > 0) {
