@@ -27,12 +27,14 @@ import Web3 from 'web3';
 // import PRContractABI from './static/PeerReviewGSN.json';
 import PRContractABI from './static/PeerReviewGSNNew.json';
 import SoulBoundABI from './static/SoulBoundABI.json';
+import ReviewRewardTokenABI from './static/ReviewRewardTokenABI.json';
 
 import ProfilesABI from './static/ProfilesABI.json';
 import CreateProfile from './components/modals/CreateProfile.js';
 import ViewProfile from './components/modals/ViewProfile.js';
 import WrongChain from "./components/modals/WrongChain";
 import Reputation from "./components/pages/Reputation";
+import Settings from "./components/pages/Settings";
 import axios from "axios";
 
 const { RelayProvider } = require('@opengsn/provider');
@@ -79,6 +81,7 @@ class App extends Component {
             this.setPRContract = this.setPRContract.bind(this);
             this.setProfilesContract = this.setProfilesContract.bind(this);
             this.setSoulBoundContract = this.setSoulBoundContract.bind(this);
+            this.setReviewRewardTokenContract = this.setReviewRewardTokenContract.bind(this);
 
         // (async()=>{
         //     const config = { 
@@ -172,6 +175,7 @@ class App extends Component {
                 this.setPRContract();
                 this.setProfilesContract();
                 this.setSoulBoundContract();
+                this.setReviewRewardTokenContract();
                 this.setAccount();
             });
         } catch (err) {
@@ -203,6 +207,13 @@ class App extends Component {
         const soulBoundAddress = process.env.REACT_APP_SOUL_BOUND_TOKEN_CONTRACT;
         var SoulBoundContract = new web3.eth.Contract(SoulBoundABI, soulBoundAddress);
         this.setState({SoulBoundContract: SoulBoundContract});
+    }
+
+    async setReviewRewardTokenContract() {
+        const web3 = new Web3(window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(process.env.REACT_APP_GOERLI_URL));
+        const reviewRewardTokenAddress = process.env.REACT_APP_REVIEW_REWARD_TOKEN_CONTRACT;
+        var ReviewRewardTokenContract = new web3.eth.Contract(ReviewRewardTokenABI, reviewRewardTokenAddress);
+        this.setState({ReviewRewardTokenContract: ReviewRewardTokenContract});
     }
 
     async setAccount() {
@@ -523,6 +534,14 @@ class App extends Component {
                                             />
                                             {' '}Reputation
                                         </Nav.Link>
+                                        <Nav.Link as={NavLink} to="/settings">
+                                            <img
+                                                alt=""
+                                                width="32"
+                                                height="40"
+                                            />
+                                            {' '}Settings
+                                        </Nav.Link>
                                     </Nav>
                                     <AccountButton
                                         account={this.state.account}
@@ -609,6 +628,14 @@ class App extends Component {
                                 element={<Reputation
                                     PRContract={this.state.PRContract}
                                     SoulBoundContract={this.state.SoulBoundContract}
+                                    account={this.state.account}
+                                />}
+                            />
+                            <Route path="/settings"
+                                element={<Settings
+                                    PRContract={this.state.PRContract}
+                                    SoulBoundContract={this.state.SoulBoundContract}
+                                    ReviewRewardTokenContract={this.state.ReviewRewardTokenContract}
                                     account={this.state.account}
                                 />}
                             />

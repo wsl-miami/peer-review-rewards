@@ -6,7 +6,7 @@ async function main() {
 
   await reviewRewardToken.deployed();
 
-  console.log("Ocean Token deployed: ", reviewRewardToken.address);
+  console.log("Review Reward Token deployed: ", reviewRewardToken.address);
 }
 
 main().catch((error) => {

@@ -481,4 +481,49 @@ app.post('/api/update-assigned-reviews', async(req, res) => {
   res.send({ success: true});
 });
 
+app.post('/api/update-review-settings', async(req, res) => {
+  const journal_hash = req.body.journal_hash;
+  const enable_rrt = (req.body.enableRRT) ? 1 : 0;
+  let rrt_amount_per_review = req.body.amountPerReview ? req.body.amountPerReview : 0;
+
+  if (enable_rrt == 0) {
+    rrt_amount_per_review = 0;
+  }
+
+  let connection;
+  try {
+    connection = await oracledb.getConnection();
+
+    const sql = `select * from reward_settings where journal_hash='${journal_hash}' FETCH FIRST 1 ROWS ONLY`;
+
+    const journal = await connection.execute(sql);
+
+    if (journal && journal.rows && journal.rows[0]) {
+      const settings_details = journal.rows[0];
+      const id = settings_details[0];
+
+      const settings = `UPDATE reward_settings SET enable_rrt='${enable_rrt}', rrt_amount_per_review='${rrt_amount_per_review}'  WHERE id=${id}`;
+
+      await connection.execute(settings);
+    } else {
+      const settings = `INSERT INTO reward_settings (journal_hash, enable_rrt, rrt_amount_per_review, time_stamp) VALUES ('${journal_hash}','${enable_rrt}', '${rrt_amount_per_review}', CURRENT_TIMESTAMP)`;
+      await connection.execute(settings);
+    }
+    connection.commit();
+  } catch (err) {
+    console.log('err here', err);
+    await connection.close();
+  } finally {
+      if (connection) {
+          try {
+              await connection.close(); // Put the connection back in the pool
+          } catch (err) {
+              throw (err);
+          }
+      }
+  }
+
+  res.send({ success: true});
+});
+
 app.listen(port, () => console.log(`Listening on port ${port}`));

@@ -34,3 +34,11 @@ CREATE TABLE rewards (
 
 alter table rewards add assigned NUMBER(1) default 0;
 alter table rewards add journal_hash VARCHAR2(100);
+
+CREATE TABLE reward_settings (
+  id NUMBER GENERATED ALWAYS AS IDENTITY,
+  journal_hash VARCHAR2(100),
+  enable_rrt NUMBER(1) default 0,
+  rrt_amount_per_review NUMBER(10) default 0,
+  time_stamp timestamp
+);
