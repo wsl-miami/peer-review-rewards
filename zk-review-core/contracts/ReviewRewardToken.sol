@@ -8,9 +8,14 @@ contract ReviewRewardToken is ERC20, ERC20Burnable {
     address payable public owner;
     uint256 public blockReward;
 
+    // mapping for admin access control
+    mapping(address => bool) admins;
+
     constructor(uint256 reward) ERC20("OceanToken", "RRT") {
         owner = payable(msg.sender);
-        _mint(owner, 5000 * (10 ** decimals()));
+        admins[msg.sender] = true;
+
+        _mint(owner, 10000 * (10 ** decimals()));
         blockReward = reward * (10 ** decimals());
     }
 
@@ -29,12 +34,50 @@ contract ReviewRewardToken is ERC20, ERC20Burnable {
         blockReward = reward * (10 ** decimals());
     }
 
+    /**
+        Bulk mint selected amount of tokens to reviewers
+    */
+    function bulkMint(address[] memory _tos, uint256 amount) public onlyOwner {
+        for(uint256 i=0; i< _tos.length; i++) {
+            _mint(_tos[i], amount);
+        }
+    }
+
+    function individualMint(address to, uint256 amount) public onlyAdmin {
+        // _mint(to, amount * (10 ** decimals()));
+        _mint(to, amount);
+
+    }
+
+    /*
+     @notice function to add an admin to the contract
+     @param _account account to be given admin privilledges
+     emits AdminAdded
+    */
+    function addAdmin(address _account) public onlyAdmin {
+        admins[_account] = true;
+    }
+
+    /*
+     @notice function to revoke admin access
+     @param _account address to revoke admin privilledges from
+     emits AdminRevoked
+    */
+    function revokeAdmin(address _account) public onlyAdmin {
+        admins[_account] = false;
+    }
+
     function destroy() public onlyOwner {
         selfdestruct(owner);
     }
 
     modifier onlyOwner {
         require(msg.sender == owner, "Only the owner can call this function");
+        _;
+    }
+
+    modifier onlyAdmin {
+        require(admins[msg.sender], "Only admin can call this function");
         _;
     }
 }

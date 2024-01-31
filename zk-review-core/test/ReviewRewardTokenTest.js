@@ -9,6 +9,7 @@ describe("ReviewRewardToken contract", function() {
   let addr1;
   let addr2;
   let tokenBlockReward = 50;
+  let initialSupply = 0;
 
   beforeEach(async function () {
     // Get the ContractFactory and Signers here.
@@ -25,6 +26,7 @@ describe("ReviewRewardToken contract", function() {
 
     it("Should assign the total supply of tokens to the owner", async function () {
       const ownerBalance = await reviewRewardToken.balanceOf(owner.address);
+      initialSupply = ownerBalance;
       expect(await reviewRewardToken.totalSupply()).to.equal(ownerBalance);
     });
 
@@ -81,6 +83,28 @@ describe("ReviewRewardToken contract", function() {
       const addr2Balance = await reviewRewardToken.balanceOf(addr2.address);
       expect(addr2Balance).to.equal(50);
     });
+    
+    it("Owner should be able to mint tokens in bulk", async function () {
+      // Owner mints 50 tokens for addr1 and addr2
+      let addresses = [addr1.address, addr2.address]
+      await reviewRewardToken.bulkMint(addresses, 50);
+      const addr1Balance = await reviewRewardToken.balanceOf(addr1.address);
+      expect(addr1Balance).to.equal(50);
+
+      const addr2Balance = await reviewRewardToken.balanceOf(addr2.address);
+      expect(addr2Balance).to.equal(50);
+
+      // Total supply should equal to all the tokens minted till now
+      const currentSupply = initialSupply.add(100);
+      expect(await reviewRewardToken.totalSupply()).to.equal(currentSupply);
+
+    });
+
+    it("Non owner should not be able to mint tokens", async function () {
+      let addresses = [addr2.address]
+      await expect(reviewRewardToken.connect(addr1).bulkMint(addresses, 50)).to.be.revertedWith("Only the owner can call this function");
+    });
+
   });
   
 });
