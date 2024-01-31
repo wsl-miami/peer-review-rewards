@@ -6,6 +6,7 @@ PeerReviewGSN : Implementation of Peer Review contract with Gas Station Network
 SoulBoundToken : Implementation of soul bound tokens without GSN
 SoulBoundTokenGSN : Implementation of soul bound tokens with GSN
 TestSoulBoundToken : Generate test soul bound tokens for testing
+ReviewRewardToken : Implementation of ERC-20 tokens for review rewards
 
 ## Scripts/Tasks
 address.js : File containing addresses of GSN based contracts
@@ -15,11 +16,13 @@ fund : Script to fund the paymaster to perform GSN transactions
 deployTokenSoulBound : Deployment script for TestSoulBoundToken contract
 SoulBoundDeploy : Deployment script for SoulBound contract without GSN
 SoulBoundGSNDeploy : Deployment script for SoulBound contract with GSN
+deployReviewRewardToken : Deployment script for ReviewRewardToken contract
 
 
 ## Tests
 PeerReviewGSNTest : Test file for PeerReviewGSN contract
 SoulBoundToken : Test file for SoulBoundToken contract
+ReviewRewardTokenTest : Test file for ReviewRewardToken contract
 
 # Semaphore Hardhat template
 

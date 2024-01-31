@@ -11,7 +11,7 @@ contract ReviewRewardToken is ERC20, ERC20Burnable {
     // mapping for admin access control
     mapping(address => bool) admins;
 
-    constructor(uint256 reward) ERC20("OceanToken", "RRT") {
+    constructor(uint256 reward) ERC20("ReviewRewardToken", "RRT") {
         owner = payable(msg.sender);
         admins[msg.sender] = true;
 
@@ -39,13 +39,13 @@ contract ReviewRewardToken is ERC20, ERC20Burnable {
     */
     function bulkMint(address[] memory _tos, uint256 amount) public onlyOwner {
         for(uint256 i=0; i< _tos.length; i++) {
-            _mint(_tos[i], amount);
+            _mint(_tos[i], amount * (10 ** decimals()));
         }
     }
 
     function individualMint(address to, uint256 amount) public onlyAdmin {
         // _mint(to, amount * (10 ** decimals()));
-        _mint(to, amount);
+        _mint(to, amount * (10 ** decimals()));
 
     }
 
