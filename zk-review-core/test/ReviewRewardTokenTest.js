@@ -89,14 +89,15 @@ describe("ReviewRewardToken contract", function() {
       let addresses = [addr1.address, addr2.address]
       await reviewRewardToken.bulkMint(addresses, 50);
       const addr1Balance = await reviewRewardToken.balanceOf(addr1.address);
-      expect(addr1Balance).to.equal(50);
+      expect(Number(hre.ethers.utils.formatEther(addr1Balance))).to.equal(50);
 
       const addr2Balance = await reviewRewardToken.balanceOf(addr2.address);
-      expect(addr2Balance).to.equal(50);
+      expect(Number(hre.ethers.utils.formatEther(addr2Balance))).to.equal(50);
 
       // Total supply should equal to all the tokens minted till now
-      const currentSupply = initialSupply.add(100);
-      expect(await reviewRewardToken.totalSupply()).to.equal(currentSupply);
+      const currentSupply = Number(hre.ethers.utils.formatEther(initialSupply)) + 100;
+      const totalSupply = await reviewRewardToken.totalSupply();
+      expect(Number(hre.ethers.utils.formatEther(totalSupply))).to.equal(currentSupply);
 
     });
 
