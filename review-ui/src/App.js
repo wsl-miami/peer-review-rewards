@@ -628,6 +628,7 @@ class App extends Component {
                                 element={<Reputation
                                     PRContract={this.state.PRContract}
                                     SoulBoundContract={this.state.SoulBoundContract}
+                                    ReviewRewardTokenContract={this.state.ReviewRewardTokenContract}
                                     account={this.state.account}
                                 />}
                             />

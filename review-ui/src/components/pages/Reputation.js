@@ -14,6 +14,7 @@ import Container from 'react-bootstrap/Container';
 export default function Reputation({
     PRContract,
     SoulBoundContract,
+    ReviewRewardTokenContract,
     account
 }) {
 
@@ -21,6 +22,7 @@ export default function Reputation({
     const [unclaimed, setUnclaimed] = useState([]);
     const [identities, setIdentities] = useState([]);
     const [tokens, setTokens] = useState([]);
+    const [rrtTokens, setRrtTokens] = useState(0);
 
     useEffect(() => {
         const fetchReputation = async () => {
@@ -33,6 +35,14 @@ export default function Reputation({
                 setReputation(totalTokens);
                 setTokens(listAllTokens);
 
+            }
+        }
+
+        const fetchRRTTokens = async () => {
+            if (account) {
+                var totalTokens = await ReviewRewardTokenContract.methods.balanceOf(account).call();
+                totalTokens = Web3.utils.fromWei(totalTokens);
+                setRrtTokens(totalTokens);
             }
         }
 
@@ -50,6 +60,7 @@ export default function Reputation({
         }
         fetchReputation()
         fetchUnclaimed()
+        fetchRRTTokens();
         // fetchIdentities()
 
     }, [account])
@@ -131,7 +142,8 @@ export default function Reputation({
         <>
             <Container>
                 <Row>
-                    <h2 style={{ "margin-top": "5px" }}>Your reputation: {reputation}</h2>
+                    <h2 style={{ "margin-top": "5px" }}>Available RRT tokens: {rrtTokens}</h2>
+                    <h2 style={{ "margin-top": "5px" }}>Your reputation based on SBTs: {reputation}</h2>
                 </Row>
                 {/* {tokens.length !==0 ? tokens.map((item, index) => tokensCard(item, index)) : 'No Tokens accumulated'} */}
                 <Row xs={1} md={4} className="g-4">
