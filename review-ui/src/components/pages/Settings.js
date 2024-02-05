@@ -21,7 +21,7 @@ export default function Settings({
         console.log("test", RRTEnabled, tokenAmount);
         axios({
             // Endpoint to send files
-            url: "http://localhost:5000/api/update-review-settings",
+            url: `${process.env.REACT_APP_API_URL}/api/update-review-settings`,
             method: "POST",
 
             // Attaching the form data

@@ -96,7 +96,7 @@ class OpenBountyModal extends React.Component {
         // Connecting to database and updating data
         axios({
             // Endpoint to send files
-            url: "http://localhost:5000/api/manuscript-submission",
+            url: `${process.env.REACT_APP_API_URL}/api/manuscript-submission`,
             method: "POST",
             headers: {
                 // Add any auth token here

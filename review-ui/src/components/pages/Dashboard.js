@@ -81,7 +81,7 @@ export default function Dashboard({
 
     const distributeRewards = async () => {
         const res = await axios({
-            url: "http://localhost:5000/api/get-unassigned-reviews",
+            url: `${process.env.REACT_APP_API_URL}/api/get-unassigned-reviews`,
             method: "GET",
             headers: {
                 authorization: "your token comes here",
@@ -120,7 +120,7 @@ export default function Dashboard({
             ).send({from: account, gas: 2100000});
     
             const updateRewards = await axios({
-                url: "http://localhost:5000/api/bulk-update-assigned-reviews",
+                url: `${process.env.REACT_APP_API_URL}/api/bulk-update-assigned-reviews`,
                 method: "POST",
                 headers: {
                     authorization: "your token comes here",

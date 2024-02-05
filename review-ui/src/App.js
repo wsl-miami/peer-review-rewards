@@ -271,7 +271,7 @@ class App extends Component {
 
         const authorBount = await axios({
             // Endpoint to send files
-            url: "http://localhost:5000/api/get-manuscripts-by-author",
+            url: `${process.env.REACT_APP_API_URL}/api/get-manuscripts-by-author`,
             method: "GET",
             headers: {
                 // Add any auth token here
@@ -336,7 +336,7 @@ class App extends Component {
 
         const editorBount = await axios({
             // Endpoint to send files
-            url: "http://localhost:5000/api/get-manuscripts-by-journal",
+            url: `${process.env.REACT_APP_API_URL}/api/get-manuscripts-by-journal`,
             method: "GET",
             headers: {
                 // Add any auth token here
@@ -407,7 +407,7 @@ class App extends Component {
 
         const reviewerBount = await axios({
             // Endpoint to send files
-            url: "http://localhost:5000/api/get-manuscripts-by-reviewer",
+            url: `${process.env.REACT_APP_API_URL}/api/get-manuscripts-by-reviewer`,
             method: "GET",
             headers: {
                 // Add any auth token here

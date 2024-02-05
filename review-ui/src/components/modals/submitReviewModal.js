@@ -117,7 +117,7 @@ class SubmitReviewModal extends Component {
                     // Connecting to database and updating data
             axios({
                 // Endpoint to send files
-                url: "http://localhost:5000/api/review-submission",
+                url: `${process.env.REACT_APP_API_URL}/api/review-submission`,
                 method: "POST",
                 headers: {
                     // Add any auth token here

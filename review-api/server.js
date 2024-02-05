@@ -262,10 +262,19 @@ app.post('/api/add-reviewers', async(req, res) => {
   reviewer_hashes.forEach(async(reviewer, index) => {
     try {
       connection = await oracledb.getConnection();
-      const sql = `INSERT INTO reviewers (reviewer_hash, article_hash, time_stamp) VALUES ('${reviewer}','${article_hash}', CURRENT_TIMESTAMP)`;
-      await connection.execute(sql);
-  
-      connection.commit();
+      // insert only if reviewer_hash not present in reviewers table
+      const checkAlreadyPresentReview = `SELECT * from reviewers where reviewer_hash='${reviewer}' and article_hash='${article_hash}'`;
+
+      const alreadyPresentReview = await connection.execute(checkAlreadyPresentReview);
+
+      if (alreadyPresentReview && alreadyPresentReview.rows && alreadyPresentReview.rows[0] && alreadyPresentReview.rows[0][0]) {
+        // pass
+      } else {
+        const sql = `INSERT INTO reviewers (reviewer_hash, article_hash, time_stamp) VALUES ('${reviewer}','${article_hash}', CURRENT_TIMESTAMP)`;
+        await connection.execute(sql);
+    
+        connection.commit();
+      }
     } catch (err) {
       console.log('err here', err);
     } finally {
@@ -351,8 +360,20 @@ app.post('/api/review-submission', async(req, res) => {
   let connection;
   try {
     connection = await oracledb.getConnection();
-    const sql = `INSERT INTO rewards (reviewer_hash, review_hash, journal_hash, time_stamp) VALUES ('${reviewer_hash}','${review_hash}', '${journal_hash}', CURRENT_TIMESTAMP)`;
-    await connection.execute(sql);
+    // @TODO update review_hash if data already present in rewards table
+    const checkAlreadyPresentReview = `SELECT * from rewards where reviewer_hash='${reviewer_hash}' and journal_hash='${journal_hash}'`;
+
+    const alreadyPresentReview = await connection.execute(checkAlreadyPresentReview);
+
+    if (alreadyPresentReview && alreadyPresentReview.rows && alreadyPresentReview.rows[0] && alreadyPresentReview.rows[0][0]) {
+      const review_id = alreadyPresentReview.rows[0][0];
+      const sql = `UPDATE rewards set review_hash='${review_hash}' where id='${review_id}'`;
+      await connection.execute(sql);
+    } else {
+      const sql = `INSERT INTO rewards (reviewer_hash, review_hash, journal_hash, time_stamp) VALUES ('${reviewer_hash}','${review_hash}', '${journal_hash}', CURRENT_TIMESTAMP)`;
+      await connection.execute(sql);
+    }
+
 
     // const journal_sql = `SELECT id, review_hash from journals where article_hash LIKE '%${article_hash}'`;
     // console.log("journal sql", journal_sql);
@@ -365,6 +386,7 @@ app.post('/api/review-submission', async(req, res) => {
     review_hashes.push(review_hash);
     let new_review_hashes = review_hashes.map(x => "'" + x + "'").toString();
 
+    // @TODO in case of updated review, delete old hash and change it with new hash
     // const journals = `UPDATE journals SET review_hash=string_array('${review_hash}', 'new_test') WHERE id=${journal_id}`;
     const journals = `UPDATE journals SET review_hash=string_array(${new_review_hashes}) WHERE journal_hash='${journal_hash}' AND article_hash LIKE '%${article_hash}'`;
 

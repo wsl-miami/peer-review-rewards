@@ -47,7 +47,7 @@ class AddReveiwersModal extends React.Component {
         // Connecting to database and updating data
         axios({
             // Endpoint to send files
-            url: "http://localhost:5000/api/add-reviewers",
+            url: `${process.env.REACT_APP_API_URL}/api/add-reviewers`,
             method: "POST",
             headers: {
                 // Add any auth token here
