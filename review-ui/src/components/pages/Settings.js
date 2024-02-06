@@ -5,6 +5,9 @@ import Button from 'react-bootstrap/Button';
 import Web3 from 'web3';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
+import FormControl from 'react-bootstrap/FormControl';
+
 import axios from "axios";
 
 export default function Settings({
@@ -37,59 +40,59 @@ export default function Settings({
 
     return (
         <>
-            <Container>
-                <Row>
-                    <h2 style={{ "margin-top": "5px" }}>Reviewer Reward Options</h2>
+            <Container class="container px-4 py-5 text-center">
+                <h2 class="pb-2 border-bottom">Reviewer Reward Options</h2>
+                <p class="lead">Reviewers that submit quality reviews to your journal can be rewarded in following ways</p>
+                <Row class="row g-4 py-5 row-cols-2 row-cols-lg-3">
+                    
+                    <Col class="col feature">
+                        <h3>Soul Bound Tokens</h3>
+                        <p>Tokens of recognition assigned to reviewers for each review submitted. The system automatically assigns one token per review.</p>
+                    </Col>
+                    <Col class="col feature">
+                        <h3>Review Reward Tokens (RRT)</h3>
+                        <p>Transferrable utility tokens that reviewers can use for subscriptions. If you want to enable distribution of RRT tokens, please fill in the details below.</p>
+                    </Col>
                 </Row>
+                <br/>
                 <Row>
-                    You can reward reviewers who contribute towards your journal in two ways:
-                    <ol>
-                        <li>Soul Bound Tokens: Tokens of recognition assigned to reviewers for each review submitted. The system automatically assigns one token per review.</li>
-                        <li>Review Reward Tokens (RRT): Transferrable utility tokens that reviewers can use for subscriptions. If you want to enable distribution of RRT tokens, please fill in the details below.</li>
-                    </ol>
-                </Row>
-                <Row>
-                    <h3>Review Reward Tokens (RRT)</h3>
+                    <h2 class="pb-2 border-bottom">Reward Policy</h2>
+                    <p class="lead">Enable this option to automatically assign RRT tokens to reviewers. Once activated, the reviewers will receive RRT tokens for the papers they review. Select the number of tokens that should be assigned per review.</p>
+
+
                     <Form>
-                        <Row>
-                            <Form.Group as={Col}>
-                                <Row className='align-items-center'>
-                                    <Form.Check
-                                        type="switch"
-                                        id="enableRRT"
-                                        label="Enable Review Rewards Token (RRT)"
-                                        onChange={e => setRRTEnabled(e.target.checked)}
+                        <Row className="align-items-center">
+                            <Col xs="auto">
+                                <Form.Check
+                                    type="switch"
+                                    id="enableRRT"
+                                    label="Enable Review Rewards Token"
+                                    onChange={e => setRRTEnabled(e.target.checked)}
+                                    className="mb-2"
+                                />
+                            </Col>
+                            <Col xs="auto">
+                                <Form.Label htmlFor="rrt_amount" visuallyHidden>
+                                    Tokens Per Review
+                                </Form.Label>
+                                <InputGroup className="mb-2">
+                                    <InputGroup.Text>RRT</InputGroup.Text>
+                                    <FormControl 
+                                        id="rrt_amount"
+                                        placeholder="Tokens per review" 
+                                        type="text"
+                                        value={tokenAmount}
+                                        onChange={e => setTokenAmount(e.target.value)}    
                                     />
-                                </Row>
-                            </Form.Group>
-                            <Form.Group as={Col}>
-                                <Row className='align-items-center'>
-                                    <Col md={{span:4}}>
-                                        <Form.Label>No. of tokens per review:</Form.Label>
-                                    </Col>
-                                    <Col md={{span:2}}>
-                                        <Form.Control 
-                                            type="text"
-                                            placeholder="amount"
-                                            value={tokenAmount}
-                                            onChange={e => setTokenAmount(e.target.value)}
-                                        />
-                                    </Col>
-                                </Row>
-                            </Form.Group>
+                                </InputGroup>
+                            </Col>
+                            <Col xs="auto">
+                                <Button type="submit" className="mb-2" onClick={handleSettingsUpdate}>
+                                    Submit
+                                </Button>
+                            </Col>
                         </Row>
                     </Form>
-                    <br />
-                    <Row className='text-center'>
-                        <Col>
-                            <Button
-                                variant="primary"
-                                onClick={handleSettingsUpdate}
-                            >
-                                Submit
-                            </Button>
-                        </Col>
-                    </Row>
                 </Row>
             </Container>
         </>
