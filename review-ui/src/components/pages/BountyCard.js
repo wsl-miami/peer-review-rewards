@@ -1,5 +1,5 @@
 import "../../style/BountyCardStyle.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from 'react-bootstrap/Card';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -20,6 +20,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import Dropdown from 'react-bootstrap/Dropdown';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import DropdownButton from 'react-bootstrap/DropdownButton';
+import axios from "axios";
 
 export default function BountyCard({
     account,
@@ -39,6 +40,7 @@ export default function BountyCard({
     const [passedOrFailed, setPassedOrFailed] = useState("Publish");
     const [show, setShow] = useState(false);
     const [ipfs32, setIpfs32] = useState('');
+    const [reviewers, setReviewers] = useState([]);
     const handleClose = () => {
         setShow(false);
         setIpfs32('');
@@ -48,6 +50,23 @@ export default function BountyCard({
         console.log(ipfs32);
         setShow(true);
     }
+
+    useEffect(() => {
+        const fetchReviewers = async() => {
+            const reviewers = await axios({
+                url: `${process.env.REACT_APP_API_URL}/api/get-assigned-reviewers`,
+                method: "GET",
+                params: {article_hash: bounty.manuscript_link},
+            });
+
+            if (reviewers && reviewers.data && reviewers.data.reviewers) {
+                setReviewers(reviewers.data.reviewers);
+            }
+        }
+        if (bounty && bounty.manuscript_link) {
+            fetchReviewers();
+        }
+    },[bounty]);
 
     const isVisible = () => {
         var ret = true;
@@ -285,6 +304,8 @@ export default function BountyCard({
         return (
             <>
                 <Col md={{ span: 2 }}>
+                    <br /><br />
+                    <br />
                     <OverlayTrigger overlay={isEditorDisabled() ? <Tooltip id="tooltip-disabled">{editorDisabledString()}</Tooltip> : <div></div>}>
                         <Row class='text-right'>
                             <Button
@@ -296,6 +317,28 @@ export default function BountyCard({
                             </Button>
                         </Row>
                     </OverlayTrigger>
+                    <br />
+
+                    <Row>
+                        <DropdownButton
+                            as={ButtonGroup}
+                            title="View Reviewers"
+                            style={{}}
+                        >
+                            {
+                                    reviewers.map((reviewer, index) => {
+                                        return (
+                                            <Dropdown.Item 
+                                                key={index}
+                                            >
+                                                {reviewer.REVIEWER_HASH}
+                                            </Dropdown.Item>
+                                        )
+                                    })
+
+                                }
+                        </DropdownButton>
+                    </Row>
                 </Col>
 
                 <Col md={{ span: 2 }}>
@@ -319,6 +362,7 @@ export default function BountyCard({
                     bountyid={bounty.id}
                     PRContract={PRContract}
                     ipfs32={bounty.manuscript_link}
+                    reviewers={reviewers}
                 />
             </>
         )

@@ -268,6 +268,21 @@ app.post('/api/manuscript-submission', async(req, res) => {
   res.send({ success: true, author_hash: author_hash, file_hash: file_hash });
 });
 
+app.get('/api/get-assigned-reviewers', async(req, res) => {
+  const article_hash = req.query.article_hash;
+
+  try {
+    const reviewers = await knex('REVIEWERS')
+                                  .where('REVIEWERS.ARTICLE_HASH', article_hash)
+                                  .select();
+
+    res.send({success: true, reviewers});
+  } catch (err) {
+    console.log('err here', err);
+    res.send({success: false, error_code: 'SERVERSIDEERROR'})
+  }
+});
+
 app.post('/api/add-reviewers', async(req, res) => {
 
   // if (!connection) {

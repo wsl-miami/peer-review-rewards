@@ -12,6 +12,7 @@ import editorButton from './static/editorButton.png';
 import reviewerButton from './static/ReviewerButton.png';
 import authorButton from './static/authorButton.png';
 import reputationButton from './static/reputationButtonV2.png';
+import settingsButton from './static/settings.png';
 import AccountButton from './components/general/AccountButton.js';
 import bs58 from 'bs58';
 import {
@@ -537,6 +538,7 @@ class App extends Component {
                                         <Nav.Link as={NavLink} to="/settings">
                                             <img
                                                 alt=""
+                                                src={settingsButton}
                                                 width="32"
                                                 height="40"
                                             />
