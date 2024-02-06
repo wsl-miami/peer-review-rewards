@@ -282,13 +282,12 @@ class App extends Component {
             params: {author_hash: this.state.account},
         });
 
-        console.log("authorBount", authorBount.data.manuscripts.rows);
-        const authorManuscripts = authorBount.data.manuscripts.rows;
+        const authorManuscripts = authorBount.data.manuscripts;
         let authorBounties = [];
         let authorManuscriptId = 0;
 
         authorManuscripts.forEach(async(manuscript, index) => {
-            const manuscript_hash = manuscript[1].trim();
+            const manuscript_hash = manuscript.ARTICLE_HASH.trim();
             console.log("manuscript hash", `test${manuscript_hash}test`);
             const str = Buffer.from(bs58.decode(manuscript_hash)).toString('hex')
 
@@ -298,16 +297,16 @@ class App extends Component {
             ).call();
 
             console.log('authorBounty from contract', authorBounty);
-            const reviewers_count = manuscript[5];
+            const reviewers_count = manuscript.REVIEWERS_COUNT;
 
 
-            const review_links = manuscript[4] != null ? manuscript[4] : [];
+            const review_links = manuscript.REVIEW_HASH != null ? manuscript.REVIEW_HASH : [];
             if (authorBounty && authorBounty.length != 0) {
                 // console.log('shouldnot be here', authorBounty[0].article);
                 authorBounties.push({
                     accepted: authorBounty[0].accepted,
-                    author: manuscript[0].trim(),
-                    journal: manuscript[3].trim(),
+                    author: manuscript.AUTHOR_HASH.trim(),
+                    journal: manuscript.JOURNAL_HASH.trim(),
                     manuscriptId: authorManuscriptId,
                     manuscript_link: manuscript_hash,
                     open: authorBounty[0].open,
@@ -318,8 +317,8 @@ class App extends Component {
             } else {
                 authorBounties.push({
                     accepted: false,
-                    author: manuscript[0].trim(),
-                    journal: manuscript[3].trim(),
+                    author: manuscript.AUTHOR_HASH.trim(),
+                    journal: manuscript.JOURNAL_HASH.trim(),
                     manuscriptId: authorManuscriptId,
                     manuscript_link: manuscript_hash,
                     open: true,
@@ -347,11 +346,11 @@ class App extends Component {
             params: {journal_hash: this.state.account},
         });
 
-        const editorManuscripts = editorBount.data.manuscripts.rows;
+        const editorManuscripts = editorBount.data.manuscripts;
         let editorBounties = [];
         let manuscriptId = 0;
         editorManuscripts.forEach(async(manuscript, index) => {
-            const manuscript_hash = manuscript[1].trim();
+            const manuscript_hash = manuscript.ARTICLE_HASH.trim();
             // console.log("manuscript hash rev here", `test${manuscript_hash}test`);
             const str = Buffer.from(bs58.decode(manuscript_hash)).toString('hex')
 
@@ -362,14 +361,14 @@ class App extends Component {
 
             console.log('editorBounty from blockchain', editorBounty);
 
-            const review_links = manuscript[4] != null ? manuscript[4] : [];
-            const reviewers_count = manuscript[5];
+            const review_links = manuscript.REVIEW_HASH != null ? manuscript.REVIEW_HASH : [];
+            const reviewers_count = manuscript.REVIEWERS_COUNT;
 
             if (editorBounty && editorBounty.length != 0) {
                 editorBounties.push({
                     accepted: editorBounty[0].accepted,
-                    author: manuscript[0].trim(),
-                    journal: manuscript[3].trim(),
+                    author: manuscript.AUTHOR_HASH.trim(),
+                    journal: manuscript.JOURNAL_HASH.trim(),
                     manuscriptId: manuscriptId,
                     manuscript_link: manuscript_hash,
                     open: editorBounty[0].open,
@@ -381,8 +380,8 @@ class App extends Component {
             } else {
                 editorBounties.push({
                     accepted: false,
-                    author: manuscript[0].trim(),
-                    journal: manuscript[3].trim(),
+                    author: manuscript.AUTHOR_HASH.trim(),
+                    journal: manuscript.JOURNAL_HASH.trim(),
                     manuscriptId: manuscriptId,
                     manuscript_link: manuscript_hash,
                     open: true,
@@ -416,11 +415,12 @@ class App extends Component {
             params: {reviewer_hash: this.state.account},
         });
 
-        const reviewerManuscripts = reviewerBount.data.manuscripts.rows;
+        console.log("reviewerBount", reviewerBount);
+        const reviewerManuscripts = reviewerBount.data.manuscript_details;
         let reviewerBounties = [];
         let reviewerManuscriptId = 0;
         reviewerManuscripts.forEach(async(manuscript, index) => {
-            const manuscript_hash = manuscript[1].trim();
+            const manuscript_hash = manuscript.ARTICLE_HASH.trim();
             const str = Buffer.from(bs58.decode(manuscript_hash)).toString('hex')
 
             const reviewerBounty =
@@ -428,7 +428,7 @@ class App extends Component {
                 '0x'+str.substring(4, str.length)
             ).call();
             
-            const review_links = manuscript[4] != null ? manuscript[4] : [];
+            const review_links = manuscript.REVIEW_HASH != null ? manuscript.REVIEW_HASH : [];
             // console.log('typeof review_links ', typeof(review_links), review_links.push('test'));
             console.log("final review_links", review_links);
 
@@ -436,7 +436,7 @@ class App extends Component {
                 reviewerBounties.push({
                     accepted: reviewerBounty[0].accepted,
                     author: null,
-                    journal: manuscript[3].trim(),
+                    journal: manuscript.JOURNAL_HASH.trim(),
                     manuscriptId: reviewerManuscriptId,
                     manuscript_link: manuscript_hash,
                     open: reviewerBounty[0].open,
@@ -448,7 +448,7 @@ class App extends Component {
                 reviewerBounties.push({
                     accepted: false,
                     author: null,
-                    journal: manuscript[3].trim(),
+                    journal: manuscript.JOURNAL_HASH.trim(),
                     manuscriptId: reviewerManuscriptId,
                     manuscript_link: manuscript_hash,
                     open: true,

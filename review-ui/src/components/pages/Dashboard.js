@@ -89,12 +89,12 @@ export default function Dashboard({
             params: {journal_hash: account},
         })
         console.log('api response', res);
-        const unassignedReviews =  res.data.unassignedReviews.rows;
+        const unassignedReviews =  res.data.unassignedReviews;
         const rewardsIds = [];
         const reviewerAddresses = [];
         unassignedReviews.forEach(async (review) => {
-            const rewardsId = review[0];
-            const reviewerAddress = review[1];
+            const rewardsId = review.ID;
+            const reviewerAddress = review.REVIEWER_HASH;
 
             rewardsIds.push(rewardsId);
             reviewerAddresses.push(reviewerAddress);
