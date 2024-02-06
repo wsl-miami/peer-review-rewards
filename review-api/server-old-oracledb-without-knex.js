@@ -51,26 +51,6 @@ async function run() {
   }
 }
 
-const knex = require("knex")({
-  client: "oracledb",
-  connection: {
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      connectString: '(description= (retry_count=20)(retry_delay=3)(address=(protocol=tcps)(port=1521)(host=adb.us-ashburn-1.oraclecloud.com))(connect_data=(service_name=gf4419f065faf53_peerreviewrewards_low.adb.oraclecloud.com))(security=(ssl_server_dn_match=yes)))',
-  },
-  fetchAsString: ["number", "clob"],
-  pool: { min: 0, max: 20 },
-  debug: true
-});
-
-knex.raw("SELECT 1 from DUAL").then(() => {
-  console.log("Oracledb connected");
-})
-.catch((e) => {
-  console.log("Oracledb not connected");
-  console.error(e);
-});
-
 async function reviewRewardTokenSetup() {
   const reviewRewardTokenAddress = process.env.REVIEW_REWARD_TOKEN_CONTRACT;
   ReviewRewardTokenContract = new ethers.Contract(reviewRewardTokenAddress, ReviewRewardTokenABI, signer);
@@ -223,8 +203,8 @@ async function massMint() {
   console.log('Soul bound tokens distributed');
 }
 
-// Running cron every 30 minutes
-cron.schedule('*/30 * * * *', async() => {
+// Running cron every 5 minutes
+cron.schedule('*/2 * * * *', async() => {
   console.log('running a task every 5 minutes');
   if (SoulBoundContract) {
     console.log('Soul bound contract is set up.');
@@ -314,25 +294,33 @@ app.post('/api/add-reviewers', async(req, res) => {
 app.get('/api/get-manuscripts-by-author', async(req, res)  => {
   console.log('req', req.query);
   const author_hash = req.query.author_hash;
+  let connection;
   try {
-    const manuscripts = await knex('AUTHORS')
-                                  .join('JOURNALS', 'AUTHORS.FILE_HASH', 'JOURNALS.ARTICLE_HASH')
-                                  .select(
-                                    'AUTHORS.AUTHOR_HASH',
-                                    'AUTHORS.FILE_HASH AS ARTICLE_HASH',
-                                    'AUTHORS.TIME_STAMP',
-                                    'JOURNALS.JOURNAL_HASH',
-                                    'JOURNALS.REVIEW_HASH',
-                                    knex.raw(`(SELECT COUNT(REVIEWER_HASH) from REVIEWERS where REVIEWERS.ARTICLE_HASH = AUTHORS.FILE_HASH) as REVIEWERS_COUNT`)
-                                  )
-                                  .where('AUTHORS.AUTHOR_HASH', author_hash);
+    connection = await oracledb.getConnection();
+    const sql = `SELECT authors.author_hash AS author_hash, authors.file_hash as article_hash, \
+    authors.time_stamp as time_stamp, journals.journal_hash as journal_hash, journals.review_hash as review_hash, \
+    (SELECT COUNT(reviewer_hash) from reviewers where reviewers.article_hash = authors.file_hash) as reviewers_count \
+    FROM authors JOIN journals ON authors.file_hash=journals.article_hash where authors.author_hash = '${author_hash}'`;
+    console.log("sql", sql);
+    const manuscripts = await connection.execute(sql);
+
+    // const reviewers_sql = `select authors.author_hash AS author_hash, authors.file_hash as article_hash FROM authors join reviewers on authors.file_hash = reviewers.article_hash where authors.author_hash = '${author_hash}' GROUP BY authors.author_hash, authors.file_hash`;
+
+    // console.log('rev sql', reviewers_sql);
+
+    // const reviewers_hashes = await connection.execute(reviewers_sql);
 
     res.send({success: true, manuscripts});
   } catch (err) {
     console.log('err here', err);
-    res.send({success: false, error_code: 'SERVERSIDEERROR'});
-
   } finally {
+      if (connection) {
+          try {
+              await connection.close(); // Put the connection back in the pool
+          } catch (err) {
+              throw (err);
+          }
+      }
   }
 
 });
@@ -340,26 +328,25 @@ app.get('/api/get-manuscripts-by-author', async(req, res)  => {
 app.get('/api/get-manuscripts-by-reviewer', async(req, res)  => {
   console.log('req', req.query);
   const reviewer_hash = req.query.reviewer_hash;
+  let connection;
   try {
-    const manuscript_details = await knex.select(
-      'REVIEWERS.REVIEWER_HASH',
-      'REVIEWERS.ARTICLE_HASH',
-      'REVIEWERS.TIME_STAMP',
-      'JOURNALS.JOURNAL_HASH', 
-      'JOURNALS.REVIEW_HASH'
-     )
-     .table('REVIEWERS')
-     .join('JOURNALS', 'REVIEWERS.ARTICLE_HASH', 'JOURNALS.ARTICLE_HASH')
-     .where('REVIEWERS.REVIEWER_HASH', reviewer_hash);
-
-    console.log('manuscript details', manuscript_details);
-
-    res.send({success: true, manuscript_details});
+    connection = await oracledb.getConnection();
+    const sql = `SELECT reviewers.reviewer_hash AS reviewer_hash, reviewers.article_hash as article_hash, reviewers.time_stamp as time_stamp, journals.journal_hash as journal_hash, journals.review_hash as review_hash FROM reviewers JOIN journals ON reviewers.article_hash=journals.article_hash where reviewers.reviewer_hash = '${reviewer_hash}'`;
+    const manuscripts = await connection.execute(sql);
+    res.send({success: true, manuscripts});
   } catch (err) {
     console.log('err here', err);
-    res.send({success: false, error_code: 'SERVERSIDEERROR'});
   } finally {
+      if (connection) {
+          try {
+              await connection.close(); // Put the connection back in the pool
+              console.log('connection is closed!');
+          } catch (err) {
+              throw (err);
+          }
+      }
   }
+
 });
 
 app.post('/api/review-submission', async(req, res) => {
@@ -426,43 +413,60 @@ app.post('/api/review-submission', async(req, res) => {
 
 app.get('/api/get-manuscripts-by-journal', async(req, res)  => {
   const journal_hash = req.query.journal_hash;
+  let connection;
   try {
-    const manuscripts = await knex('AUTHORS')
-                                  .join('JOURNALS', 'AUTHORS.FILE_HASH', 'JOURNALS.ARTICLE_HASH')
-                                  .where('JOURNALS.JOURNAL_HASH', journal_hash)
-                                  .select(
-                                    'AUTHORS.AUTHOR_HASH',
-                                    'AUTHORS.FILE_HASH AS ARTICLE_HASH',
-                                    'AUTHORS.TIME_STAMP',
-                                    'JOURNALS.JOURNAL_HASH',
-                                    'JOURNALS.REVIEW_HASH',
-                                    knex.raw('(SELECT COUNT(REVIEWER_HASH) from REVIEWERS where REVIEWERS.ARTICLE_HASH = AUTHORS.FILE_HASH) as REVIEWERS_COUNT')
-                                  );
+    connection = await oracledb.getConnection();
+    const sql = `SELECT authors.author_hash AS author_hash, authors.file_hash as article_hash, \
+    authors.time_stamp as time_stamp, journals.journal_hash as journal_hash, journals.review_hash as review_hash, \
+    (SELECT COUNT(reviewer_hash) from reviewers where reviewers.article_hash = authors.file_hash) as reviewers_count \
+    FROM authors JOIN journals ON authors.file_hash=journals.article_hash where journals.journal_hash = '${journal_hash}'`;
+    const manuscripts = await connection.execute(sql);
+
+    // const reviewers_sql = ` select journals.article_hash AS article_hash,
+    // LISTAGG(reviewers.reviewer_hash, ',') WITHIN GROUP (ORDER BY reviewers.reviewer_hash) AS "reviewers_hashes"
+    // FROM
+    // journals join reviewers
+    // on journals.article_hash = reviewers.article_hash
+    // where journals.journal_hash = '${journal_hash}'
+    // GROUP BY journals.article_hash;`;
+
+    // const reviewers_hashes = await connection.execute(reviewers_sql);
 
     res.send({success: true, manuscripts});
   } catch (err) {
     console.log('err here', err);
-    res.send({success: false, error_code: 'SERVERSIDEERROR'})
   } finally {
+      if (connection) {
+          try {
+              await connection.close(); // Put the connection back in the pool
+          } catch (err) {
+              throw (err);
+          }
+      }
   }
 
 });
 
 app.get('/api/get-unassigned-reviews', async(req, res) => {
   const journal_hash = req.query.journal_hash;
+  let connection;
 
   try {
-    const unassignedReviews = await knex('REWARDS')
-                                        .where('ASSIGNED', 0)
-                                        .where('JOURNAL_HASH', journal_hash)
-                                        .select();
-    console.log('unassignedReveiws', unassignedReviews);
+    connection = await oracledb.getConnection();
+    const sql = `SELECT * FROM rewards WHERE assigned = 0 AND journal_hash='${journal_hash}'`;
+    const unassignedReviews = await connection.execute(sql);
     res.send({success: true, unassignedReviews});
 
   } catch (err) {
     console.log('err: ', err);
-    res.send({success: false, error_code: 'SERVERSIDEERROR'});
   } finally {
+      if (connection) {
+          try {
+              await connection.close(); // Put the connection back in the pool
+          } catch (err) {
+              throw (err);
+          }
+      }
   }
 })
 

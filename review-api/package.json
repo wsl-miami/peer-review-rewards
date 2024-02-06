@@ -12,8 +12,9 @@
         "dotenv": "^16.3.1",
         "ethers": "^6.9.2",
         "express": "^4.16.4",
+        "knex": "^3.1.0",
         "node-cron": "^3.0.3",
-        "oracledb": "^6.2.0"
+        "oracledb": "^6.3.0"
     },
     "devDependencies": {
         "concurrently": "^4.0.1"
