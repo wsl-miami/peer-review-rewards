@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Col from "react-bootstrap/Col";
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
@@ -19,6 +19,27 @@ export default function Settings({
 
     const [tokenAmount, setTokenAmount] = useState(null);
     const [RRTEnabled, setRRTEnabled] = useState(null);
+
+    useEffect(() => {
+        const fetchSettings = async() => {
+            console.log("entered here", account);
+            if (account) {
+                const settings = await axios({
+                    url: `${process.env.REACT_APP_API_URL}/api/get-token-settings`,
+                    method: "GET",
+                    params: {journal_hash: account},
+                });
+    
+                if (settings && settings.data && settings.data.settings) {
+                    const rrt_amount_per_review = settings.data.settings.RRT_AMOUNT_PER_REVIEW;
+                    const enabled = (settings.data.settings.ENABLE_RRT && settings.data.settings.ENABLE_RRT == 1) ? true : false;
+                    setTokenAmount(rrt_amount_per_review);
+                    setRRTEnabled(enabled);
+                }
+            }
+        };  
+        fetchSettings();
+    }, [account]);
 
     const handleSettingsUpdate = () => {
         console.log("test", RRTEnabled, tokenAmount);
@@ -67,6 +88,7 @@ export default function Settings({
                                     type="switch"
                                     id="enableRRT"
                                     label="Enable Review Rewards Token"
+                                    checked={RRTEnabled ? 'checked' : ''}
                                     onChange={e => setRRTEnabled(e.target.checked)}
                                     className="mb-2"
                                 />

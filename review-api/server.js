@@ -464,7 +464,26 @@ app.get('/api/get-unassigned-reviews', async(req, res) => {
     res.send({success: false, error_code: 'SERVERSIDEERROR'});
   } finally {
   }
-})
+});
+
+app.get('/api/get-token-settings', async(req, res) => {
+  const journal_hash = req.query.journal_hash;
+
+  console.log("journal_hash", journal_hash);
+
+  try {
+    const settings = await knex('REWARD_SETTINGS')
+                                        .where('REWARD_SETTINGS.JOURNAL_HASH', journal_hash)
+                                        .select()
+                                        .first();
+    res.send({success: true, settings});
+
+  } catch (err) {
+    console.log('err: ', err);
+    res.send({success: false, error_code: 'SERVERSIDEERROR'});
+  } finally {
+  }
+});
 
 app.post('/api/bulk-update-assigned-reviews', async(req, res) => {
   const reward_ids = req.body.rewardIds;
