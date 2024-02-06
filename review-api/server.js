@@ -33,14 +33,8 @@ async function run() {
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       connectString: '(description= (retry_count=20)(retry_delay=3)(address=(protocol=tcps)(port=1521)(host=adb.us-ashburn-1.oraclecloud.com))(connect_data=(service_name=gf4419f065faf53_peerreviewrewards_low.adb.oraclecloud.com))(security=(ssl_server_dn_match=yes)))',
-      // poolAlias: 'default', // set an alias to allow access to the pool via a name.
-      // poolIncrement: 1, // only grow the pool by one connection at a time
       poolMax: 10, // maximum size of the pool. (Note: Increase UV_THREADPOOL_SIZE if you increase poolMax in Thick mode)
       poolMin: 0, // start with no connections; let the pool shrink completely
-      // poolPingInterval: 60, // check aliveness of connection if idle in the pool for 60 seconds
-      // poolTimeout: 60, // terminate connections that are idle in the pool for 60 seconds
-      // queueMax: 500, // don't allow more than 500 unsatisfied getConnection() calls in the pool queue
-      // queueTimeout: 60000, // terminate getConnection() calls queued for longer than 60000 milliseconds
     });
 
   } catch (err) {
@@ -139,12 +133,6 @@ async function individualMint() {
           }
       }
   }
-
-  // const reviewerAddress = '0x9ae658c7300849D0A8E61d7098848750afDA88eF';
-  // const journalAddress = '0xfcDa3161CB37feAf39F4d323dB882cCbb1b05F07';
-  // await SoulBoundContract.safeMint(
-  //   reviewerAddress, journalAddress
-  // ).send({from: signer.address, gas: 2100000});
   console.log('Soul bound tokens distributed');
 }
 
@@ -327,7 +315,6 @@ app.post('/api/add-reviewers', async(req, res) => {
 
 
 app.get('/api/get-manuscripts-by-author', async(req, res)  => {
-  console.log('req', req.query);
   const author_hash = req.query.author_hash;
   try {
     const manuscripts = await knex('AUTHORS')
@@ -353,7 +340,6 @@ app.get('/api/get-manuscripts-by-author', async(req, res)  => {
 });
 
 app.get('/api/get-manuscripts-by-reviewer', async(req, res)  => {
-  console.log('req', req.query);
   const reviewer_hash = req.query.reviewer_hash;
   try {
     const manuscript_details = await knex.select(
@@ -378,7 +364,6 @@ app.get('/api/get-manuscripts-by-reviewer', async(req, res)  => {
 });
 
 app.post('/api/review-submission', async(req, res) => {
-  console.log('req.body', req.body);
   const reviewer_hash = req.body.reviewer;
   const journal_hash = req.body.journal;
   const article_hash = req.body.article;
@@ -400,15 +385,6 @@ app.post('/api/review-submission', async(req, res) => {
       const sql = `INSERT INTO rewards (reviewer_hash, review_hash, journal_hash, time_stamp) VALUES ('${reviewer_hash}','${review_hash}', '${journal_hash}', CURRENT_TIMESTAMP)`;
       await connection.execute(sql);
     }
-
-
-    // const journal_sql = `SELECT id, review_hash from journals where article_hash LIKE '%${article_hash}'`;
-    // console.log("journal sql", journal_sql);
-
-    // const journal = await connection.execute(journal_sql);
-
-    // const journal_id = journal.rows[0][0];
-    // let review_hashes = journal.rows[0][1];
 
     review_hashes.push(review_hash);
     let new_review_hashes = review_hashes.map(x => "'" + x + "'").toString();

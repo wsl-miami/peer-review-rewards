@@ -42,20 +42,13 @@ export default function Settings({
     }, [account]);
 
     const handleSettingsUpdate = () => {
-        console.log("test", RRTEnabled, tokenAmount);
         axios({
-            // Endpoint to send files
             url: `${process.env.REACT_APP_API_URL}/api/update-review-settings`,
             method: "POST",
-
-            // Attaching the form data
             data: {journal_hash: account, enableRRT: RRTEnabled, amountPerReview: tokenAmount},
             // data: {author: "0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6", file_hash: "QmVZerrmNhQE1gPp4KnX1yFJSHgAfMY6QW5LxGdpRPM2uJ"}
         })
-            // Handle the response from backend here
             .then((res) => {console.log('api response', res);})
-
-            // Catch errors if any
             .catch((err) => {console.log('api error', err)});
     }
 

@@ -116,22 +116,14 @@ class SubmitReviewModal extends Component {
             
                     // Connecting to database and updating data
             axios({
-                // Endpoint to send files
                 url: `${process.env.REACT_APP_API_URL}/api/review-submission`,
                 method: "POST",
-                headers: {
-                    // Add any auth token here
-                    authorization: "your token comes here",
-                },
                 data: {reviewer: this.props.account, prev_review_links: this.props.prevReviewLinks, review: results.path, journal: this.props.journal, article: this.props.ipfs32},
             })
-                // Handle the response from backend here
                 .then((res) => {
                     console.log('api response', res);
                     window.location.reload();
                 })
-
-                // Catch errors if any
                 .catch((err) => {console.log('api error', err)});
 
             

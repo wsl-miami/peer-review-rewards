@@ -21,7 +21,6 @@ export default function AuthorStats({
         var dateCounts = {};
         var runningTotal = 0;
         for (let i = 0; i < arr.length; i++) {
-            // console.log('timedad', arr[i]);
           const date = new Date(arr[i]).toISOString().slice(0, 10);
           const count = (dateCounts[date] || 0) + 1 + runningTotal;
           dateCounts[date] = count;
@@ -63,7 +62,6 @@ export default function AuthorStats({
     } else {
         // console.log('here this is it');
         var openBounts = getTotalBounties()
-        console.log('test', openBounts)
         var TotalBounts = openBounts.length ? openBounts[openBounts.length - 1]['count'] : 0
         var closedBounts = getCountOfClosed()
         var totalClosedBounts = closedBounts.length ? closedBounts[closedBounts.length - 1]['amount'] : 0

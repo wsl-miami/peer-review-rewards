@@ -10,7 +10,6 @@ export default function ReviewerStats({
         if (reviewerBounties === null) {
             return reviewerBounties;
         }
-        // console.log(reviewerBounties[0].length)
         var arr = [];
         for (let i = 0; i < reviewerBounties.length; i++) {
             arr[i] = { "date": new Date(reviewerBounties[i].gen_time * 1000).toLocaleDateString("en-US"), "passed": reviewerBounties[i].reviewers.length };

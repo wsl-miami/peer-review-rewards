@@ -30,8 +30,6 @@ class OpenBountyModal extends React.Component {
         console.log("web3 from modal", this.props.web3);
     }
     async handleOpenBounty() {
-        
-        //IDK IF I LIKE THIS (Will be converted into secrets later)
         const projectId = process.env.REACT_APP_IPFS_ID;
         const projectSecret = process.env.REACT_APP_IPFS_SECRET;
         const authorization = "Basic " + btoa(projectId + ":" + projectSecret);
@@ -95,25 +93,15 @@ class OpenBountyModal extends React.Component {
 
         // Connecting to database and updating data
         axios({
-            // Endpoint to send files
             url: `${process.env.REACT_APP_API_URL}/api/manuscript-submission`,
             method: "POST",
-            headers: {
-                // Add any auth token here
-                authorization: "your token comes here",
-            },
-
-            // Attaching the form data
             data: {author: this.props.account, file_hash: results.path, journal: this.state.editor},
             // data: {author: "0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6", file_hash: "QmVZerrmNhQE1gPp4KnX1yFJSHgAfMY6QW5LxGdpRPM2uJ"}
         })
-            // Handle the response from backend here
             .then((res) => {
                 console.log('api response', res);
                 window.location.reload();
             })
-
-            // Catch errors if any
             .catch((err) => {console.log('api error', err)});
 
 

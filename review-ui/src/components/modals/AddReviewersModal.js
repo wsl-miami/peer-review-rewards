@@ -9,7 +9,6 @@ import bs58 from 'bs58';
 import axios from "axios";
 
 class AddReveiwersModal extends React.Component {
-    // Place holder constructor 
     constructor(props) {
         super(props);
         const w3 = new Web3(window.ethereum);
@@ -18,8 +17,6 @@ class AddReveiwersModal extends React.Component {
             reviewer_values: [''],
             web3: w3
         }
-
-        // console.log("checking ipfs", this.props.ipfs32);
         
         this.handleIncrement = this.handleIncrement.bind(this);
         this.handleDecrement = this.handleDecrement.bind(this);
@@ -46,22 +43,12 @@ class AddReveiwersModal extends React.Component {
 
         // Connecting to database and updating data
         axios({
-            // Endpoint to send files
             url: `${process.env.REACT_APP_API_URL}/api/add-reviewers`,
             method: "POST",
-            headers: {
-                // Add any auth token here
-                authorization: "your token comes here",
-            },
-
-            // Attaching the form data
             data: {reviewer_hashes: this.state.reviewer_values, article_hash: this.props.ipfs32},
             // data: {author: "0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6", file_hash: "QmVZerrmNhQE1gPp4KnX1yFJSHgAfMY6QW5LxGdpRPM2uJ"}
         })
-            // Handle the response from backend here
             .then((res) => {console.log('api response', res);})
-
-            // Catch errors if any
             .catch((err) => {console.log('api error', err)});
 
         this.props.PRContract.methods.submitManuscript(

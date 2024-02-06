@@ -54,7 +54,6 @@ export default function Reputation({
         const fetchUnclaimed = () => {
             var stored = JSON.parse(localStorage.getItem("review-identities"))
             if (stored) {
-                console.log('yes')
                 setUnclaimed(JSON.parse(localStorage.getItem("review-identities")))
             }
         }

@@ -160,17 +160,13 @@ class App extends Component {
             },
             minViewableGasLimit: 0
         }
-        // console.log('setweb3', config);
 
-        // console.log("testing provider", new Web3.providers.HttpProvider(process.env.REACT_APP_GOERLI_URL));
         const provider = await RelayProvider.newProvider({ provider: window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(process.env.REACT_APP_GOERLI_URL), config }).init();
-        console.log('setweb3', provider);
 
         try {
 
             // const web3 = new Web3(window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(process.env.REACT_APP_GOERLI_URL))
             const web3 = new Web3(provider);
-            console.log('web', web3);
             this.setState({ web3: web3 }, () => {
                 console.log('state', this.state.web3);
                 this.setPRContract();
@@ -271,11 +267,9 @@ class App extends Component {
         //     ).call();
 
         const authorBount = await axios({
-            // Endpoint to send files
             url: `${process.env.REACT_APP_API_URL}/api/get-manuscripts-by-author`,
             method: "GET",
             headers: {
-                // Add any auth token here
                 authorization: "your token comes here",
             },
 
@@ -289,7 +283,6 @@ class App extends Component {
 
         authorManuscripts.forEach(async(manuscript, index) => {
             const manuscript_hash = manuscript.ARTICLE_HASH.trim();
-            console.log("manuscript hash", `test${manuscript_hash}test`);
             const str = Buffer.from(bs58.decode(manuscript_hash)).toString('hex')
 
             const authorBounty =
@@ -297,13 +290,10 @@ class App extends Component {
                 '0x'+str.substring(4, str.length)
             ).call();
 
-            console.log('authorBounty from contract', authorBounty);
             const reviewers_count = manuscript.REVIEWERS_COUNT;
-
 
             const review_links = manuscript.REVIEW_HASH != null ? manuscript.REVIEW_HASH : [];
             if (authorBounty && authorBounty.length != 0) {
-                // console.log('shouldnot be here', authorBounty[0].article);
                 authorBounties.push({
                     accepted: authorBounty[0].accepted,
                     author: manuscript.AUTHOR_HASH.trim(),
@@ -331,17 +321,11 @@ class App extends Component {
             authorManuscriptId = authorManuscriptId+1;
         });
 
-        console.log('final authorbounties', authorBounties);
         this.setState({ authorBounties: authorBounties });
 
         const editorBount = await axios({
-            // Endpoint to send files
             url: `${process.env.REACT_APP_API_URL}/api/get-manuscripts-by-journal`,
             method: "GET",
-            headers: {
-                // Add any auth token here
-                authorization: "your token comes here",
-            },
 
             // Attaching the form data
             params: {journal_hash: this.state.account},
@@ -352,15 +336,12 @@ class App extends Component {
         let manuscriptId = 0;
         editorManuscripts.forEach(async(manuscript, index) => {
             const manuscript_hash = manuscript.ARTICLE_HASH.trim();
-            // console.log("manuscript hash rev here", `test${manuscript_hash}test`);
             const str = Buffer.from(bs58.decode(manuscript_hash)).toString('hex')
 
             const editorBounty =
             await this.state.PRContract.methods.getManuscriptsByArticleHash(
                 '0x'+str.substring(4, str.length)
             ).call();
-
-            console.log('editorBounty from blockchain', editorBounty);
 
             const review_links = manuscript.REVIEW_HASH != null ? manuscript.REVIEW_HASH : [];
             const reviewers_count = manuscript.REVIEWERS_COUNT;
@@ -397,8 +378,6 @@ class App extends Component {
             manuscriptId = manuscriptId + 1;
         });
 
-        console.log('final editorbounties', editorBounties);
-
         // const editorBounties =
         //     await this.state.PRContract.methods.getManuscriptsByJournal(
         //         this.state.account
@@ -406,17 +385,11 @@ class App extends Component {
         this.setState({ editorBounties: editorBounties });
 
         const reviewerBount = await axios({
-            // Endpoint to send files
             url: `${process.env.REACT_APP_API_URL}/api/get-manuscripts-by-reviewer`,
             method: "GET",
-            headers: {
-                // Add any auth token here
-                authorization: "your token comes here",
-            },
             params: {reviewer_hash: this.state.account},
         });
 
-        console.log("reviewerBount", reviewerBount);
         const reviewerManuscripts = reviewerBount.data.manuscript_details;
         let reviewerBounties = [];
         let reviewerManuscriptId = 0;
@@ -430,8 +403,6 @@ class App extends Component {
             ).call();
             
             const review_links = manuscript.REVIEW_HASH != null ? manuscript.REVIEW_HASH : [];
-            // console.log('typeof review_links ', typeof(review_links), review_links.push('test'));
-            console.log("final review_links", review_links);
 
             if (reviewerBounty && reviewerBounty.length != 0) {
                 reviewerBounties.push({
@@ -467,7 +438,6 @@ class App extends Component {
         //         this.state.account
         //     ).call();
         this.setState({ reviewerBounties: reviewerBounties });
-        console.log('reviewerBounties', this.state.reviewerBounties);
     }
 
     setChainId(chainId) {

@@ -83,9 +83,6 @@ export default function Dashboard({
         const res = await axios({
             url: `${process.env.REACT_APP_API_URL}/api/get-unassigned-reviews`,
             method: "GET",
-            headers: {
-                authorization: "your token comes here",
-            },
             params: {journal_hash: account},
         })
         console.log('api response', res);
@@ -107,9 +104,6 @@ export default function Dashboard({
             // const updateRewards = await axios({
             //     url: "http://localhost:5000/api/update-assigned-reviews",
             //     method: "POST",
-            //     headers: {
-            //         authorization: "your token comes here",
-            //     },
             //     data: {rewardsId: rewardsId},
             // })
         });
@@ -122,9 +116,6 @@ export default function Dashboard({
             const updateRewards = await axios({
                 url: `${process.env.REACT_APP_API_URL}/api/bulk-update-assigned-reviews`,
                 method: "POST",
-                headers: {
-                    authorization: "your token comes here",
-                },
                 data: {rewardIds: rewardsIds},
             })
         }
