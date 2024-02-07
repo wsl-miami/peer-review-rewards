@@ -280,7 +280,14 @@ app.post('/api/add-reviewers', async(req, res) => {
   console.log(req.body);
   const reviewer_hashes = req.body.reviewer_hashes;
   const article_hash = req.body.article_hash;
+  const deadline = req.body.deadline;
   let connection;
+
+  const journal_update = await knex('JOURNALS')
+                                .where('ARTICLE_HASH', article_hash)
+                                .update({
+                                  'DEADLINE': knex.raw(`to_date('${deadline}', 'YYYY-MM-DD')`)
+                                });
 
   reviewer_hashes.forEach(async(reviewer, index) => {
     try {
@@ -291,9 +298,14 @@ app.post('/api/add-reviewers', async(req, res) => {
       const alreadyPresentReview = await connection.execute(checkAlreadyPresentReview);
 
       if (alreadyPresentReview && alreadyPresentReview.rows && alreadyPresentReview.rows[0] && alreadyPresentReview.rows[0][0]) {
-        // pass
+        const updateReview = await knex('REVIEWERS')
+                              .where('REVIEWER_HASH', reviewer)
+                              .where('ARTICLE_HASH', article_hash)
+                              .update({
+                                'DEADLINE': knex.raw(`to_date('${deadline}', 'YYYY-MM-DD')`)
+                              });
       } else {
-        const sql = `INSERT INTO reviewers (reviewer_hash, article_hash, time_stamp) VALUES ('${reviewer}','${article_hash}', CURRENT_TIMESTAMP)`;
+        const sql = `INSERT INTO reviewers (reviewer_hash, article_hash, time_stamp, deadline) VALUES ('${reviewer}','${article_hash}', CURRENT_TIMESTAMP, to_date('${deadline}', 'YYYY-MM-DD'))`;
         await connection.execute(sql);
     
         connection.commit();
@@ -539,45 +551,51 @@ app.post('/api/update-review-settings', async(req, res) => {
   const journal_hash = req.body.journal_hash;
   const enable_rrt = (req.body.enableRRT) ? 1 : 0;
   let rrt_amount_per_review = req.body.amountPerReview ? req.body.amountPerReview : 0;
+  let rrt_within_deadline = req.body.amountPerReviewWithinDeadline ? req.body.amountPerReviewWithinDeadline : 0;
+  let rrt_after_deadline = req.body.amountPerReviewAfterDeadline ? req.body.amountPerReviewAfterDeadline : 0;
+
 
   if (enable_rrt == 0) {
     rrt_amount_per_review = 0;
+    rrt_within_deadline = 0;
+    rrt_after_deadline = 0;
   }
 
-  let connection;
+  let settings;
   try {
-    connection = await oracledb.getConnection();
+    const existing_settings = await knex('REWARD_SETTINGS')
+                          .where('JOURNAL_HASH', journal_hash)
+                          .first();
 
-    const sql = `select * from reward_settings where journal_hash='${journal_hash}' FETCH FIRST 1 ROWS ONLY`;
+    if (existing_settings && existing_settings.ID) {
+      const id = existing_settings.ID;
 
-    const journal = await connection.execute(sql);
-
-    if (journal && journal.rows && journal.rows[0]) {
-      const settings_details = journal.rows[0];
-      const id = settings_details[0];
-
-      const settings = `UPDATE reward_settings SET enable_rrt='${enable_rrt}', rrt_amount_per_review='${rrt_amount_per_review}'  WHERE id=${id}`;
-
-      await connection.execute(settings);
+      settings = await knex('REWARD_SETTINGS')
+                              .where('ID', id)
+                              .update({
+                                'ENABLE_RRT': enable_rrt,
+                                'RRT_AMOUNT_PER_REVIEW': rrt_amount_per_review,
+                                'RRT_WITHIN_DEADLINE': rrt_within_deadline,
+                                'RRT_AFTER_DEADLINE': rrt_after_deadline
+                              }, ['ID', 'ENABLE_RRT']
+                              );
     } else {
-      const settings = `INSERT INTO reward_settings (journal_hash, enable_rrt, rrt_amount_per_review, time_stamp) VALUES ('${journal_hash}','${enable_rrt}', '${rrt_amount_per_review}', CURRENT_TIMESTAMP)`;
-      await connection.execute(settings);
+      settings = await knex('REWARD_SETTINGS')
+                        .insert({
+                          'JOURNAL_HASH': journal_hash,
+                          'ENABLE_RRT': enable_rrt,
+                          'RRT_AMOUNT_PER_REVIEW': rrt_amount_per_review,
+                          'RRT_WITHIN_DEADLINE': rrt_within_deadline,
+                          'RRT_AFTER_DEADLINE': rrt_after_deadline ,
+                          'TIME_STAMP': knex.raw('CURRENT_TIMESTAMP')
+                        }, ['ID', 'ENABLE_RRT']);
     }
-    connection.commit();
   } catch (err) {
     console.log('err here', err);
-    await connection.close();
-  } finally {
-      if (connection) {
-          try {
-              await connection.close(); // Put the connection back in the pool
-          } catch (err) {
-              throw (err);
-          }
-      }
+    res.send({success: false, error_code: 'SERVERSIDEERROR'});
   }
 
-  res.send({ success: true});
+  res.send({ success: true, settings});
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

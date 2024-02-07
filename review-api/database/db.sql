@@ -42,3 +42,11 @@ CREATE TABLE reward_settings (
   rrt_amount_per_review NUMBER(10) default 0,
   time_stamp timestamp
 );
+
+
+alter table reviewers add deadline DATE;
+alter table reward_settings add rrt_within_deadline NUMBER(10) default 0;
+alter table reward_settings add rrt_after_deadline NUMBER(10) default 0;
+alter table journals add deadline DATE;
+
+-- select to_char(cast(time_stamp as date),'DD-MM-YYYY') from rewards;

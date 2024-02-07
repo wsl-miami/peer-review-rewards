@@ -12,10 +12,14 @@ class AddReveiwersModal extends React.Component {
     constructor(props) {
         super(props);
         const w3 = new Web3(window.ethereum);
+        let currentDate = new Date().toISOString().slice(0,10);
+
         this.state = {
             reviewer: null,
             reviewer_values: [''],
-            web3: w3
+            web3: w3,
+            deadline: null,
+            currentDate: currentDate
         }
         
         this.handleIncrement = this.handleIncrement.bind(this);
@@ -45,7 +49,7 @@ class AddReveiwersModal extends React.Component {
         axios({
             url: `${process.env.REACT_APP_API_URL}/api/add-reviewers`,
             method: "POST",
-            data: {reviewer_hashes: this.state.reviewer_values, article_hash: this.props.ipfs32},
+            data: {reviewer_hashes: this.state.reviewer_values, article_hash: this.props.ipfs32, deadline: this.state.deadline},
             // data: {author: "0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6", file_hash: "QmVZerrmNhQE1gPp4KnX1yFJSHgAfMY6QW5LxGdpRPM2uJ"}
         })
             .then((res) => {console.log('api response', res);})
@@ -124,10 +128,27 @@ class AddReveiwersModal extends React.Component {
                                             </Col>
                                         </Row>
                                     </Form.Group>
+                                    
                                 </Row>
                                 <br />
                             </>
                         ))}
+                        <Form.Group>
+                            <Row className='align-items-center'>
+                            <Col md={{span:2}}>
+                                <Form.Label>Submission Deadline:</Form.Label>
+                            </Col>
+                            <Col md={{span:6}}>
+                                <Form.Control 
+                                    type="date"
+                                    placeholder='Deadline'
+                                    value={this.state.deadline}
+                                    min={this.state.currentDate}
+                                    onChange={(e) => this.setState({deadline: e.target.value})}
+                                />
+                            </Col>
+                            </Row>           
+                        </Form.Group>
                         <br />
                         <Row className='text-center'>
                             <Col>

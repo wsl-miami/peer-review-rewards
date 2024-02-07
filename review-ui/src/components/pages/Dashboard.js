@@ -119,6 +119,8 @@ export default function Dashboard({
                 data: {rewardIds: rewardsIds},
             })
         }
+
+        // @TODO add RRT tokens distribution code logic
     }
 
     const handleShowOpenForm = () => {

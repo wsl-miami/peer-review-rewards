@@ -19,6 +19,8 @@ export default function Settings({
 
     const [tokenAmount, setTokenAmount] = useState(null);
     const [RRTEnabled, setRRTEnabled] = useState(null);
+    const [tokenWithinDeadline, setTokenWithinDeadline] = useState(null);
+    const [tokenAfterDeadline, setTokenAfterDeadline] = useState(null);
 
     useEffect(() => {
         const fetchSettings = async() => {
@@ -31,10 +33,15 @@ export default function Settings({
                 });
     
                 if (settings && settings.data && settings.data.settings) {
-                    const rrt_amount_per_review = settings.data.settings.RRT_AMOUNT_PER_REVIEW;
-                    const enabled = (settings.data.settings.ENABLE_RRT && settings.data.settings.ENABLE_RRT == 1) ? true : false;
+                    const reward_settings = settings.data.settings;
+                    const rrt_amount_per_review = reward_settings.RRT_AMOUNT_PER_REVIEW;
+                    const enabled = (reward_settings.ENABLE_RRT && reward_settings.ENABLE_RRT == 1) ? true : false;
+                    const rrt_within_deadline = reward_settings.RRT_WITHIN_DEADLINE;
+                    const rrt_after_deadline = reward_settings.RRT_AFTER_DEADLINE;
                     setTokenAmount(rrt_amount_per_review);
                     setRRTEnabled(enabled);
+                    setTokenWithinDeadline(rrt_within_deadline);
+                    setTokenAfterDeadline(rrt_after_deadline);
                 }
             }
         };  
@@ -45,7 +52,12 @@ export default function Settings({
         axios({
             url: `${process.env.REACT_APP_API_URL}/api/update-review-settings`,
             method: "POST",
-            data: {journal_hash: account, enableRRT: RRTEnabled, amountPerReview: tokenAmount},
+            data: {journal_hash: account, 
+                    enableRRT: RRTEnabled, 
+                    amountPerReview: tokenAmount,
+                    amountPerReviewWithinDeadline: tokenWithinDeadline,
+                    amountPerReviewAfterDeadline: tokenAfterDeadline
+                },
             // data: {author: "0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6", file_hash: "QmVZerrmNhQE1gPp4KnX1yFJSHgAfMY6QW5LxGdpRPM2uJ"}
         })
             .then((res) => {console.log('api response', res);})
@@ -98,6 +110,36 @@ export default function Settings({
                                         type="text"
                                         value={tokenAmount}
                                         onChange={e => setTokenAmount(e.target.value)}    
+                                    />
+                                </InputGroup>
+                            </Col>
+                            <Col xs="auto">
+                                <Form.Label htmlFor="rrt_within_deadline">
+                                    Review submitted within deadline
+                                </Form.Label>
+                                <InputGroup className="mb-2">
+                                    <InputGroup.Text>RRT</InputGroup.Text>
+                                    <FormControl 
+                                        id="rrt_within_deadline"
+                                        placeholder="Tokens per review" 
+                                        type="text"
+                                        value={tokenWithinDeadline}
+                                        onChange={e => setTokenWithinDeadline(e.target.value)}    
+                                    />
+                                </InputGroup>
+                            </Col>
+                            <Col xs="auto">
+                                <Form.Label htmlFor="rrt_after_deadline">
+                                    Review submited after deadline
+                                </Form.Label>
+                                <InputGroup className="mb-2">
+                                    <InputGroup.Text>RRT</InputGroup.Text>
+                                    <FormControl 
+                                        id="rrt_after_deadline"
+                                        placeholder="Tokens per review" 
+                                        type="text"
+                                        value={tokenAfterDeadline}
+                                        onChange={e => setTokenAfterDeadline(e.target.value)}    
                                     />
                                 </InputGroup>
                             </Col>
