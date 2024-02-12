@@ -158,7 +158,8 @@ async function bulkMintRRTTokens() {
         `${REWARDS_TABLE}.TIME_STAMP as REWARDS_TIME_STAMP`,
         `${REVIEWS_TABLE}.DEADLINE`,
         `${REWARD_SETTINGS_TABLE}.RRT_WITHIN_DEADLINE`,
-        `${REWARD_SETTINGS_TABLE}.RRT_AFTER_DEADLINE`
+        `${REWARD_SETTINGS_TABLE}.RRT_AFTER_DEADLINE`,
+        knex.raw(`CASE WHEN CAST("${REWARDS_TABLE}"."TIME_STAMP" as DATE) < "${REVIEWS_TABLE}"."DEADLINE" THEN 1 ELSE 0 END "SUBMITTED_WITHIN_DEADLINE" `)
       );
 
       const rrtJournalReviewerAddresses = {};
@@ -167,19 +168,59 @@ async function bulkMintRRTTokens() {
         const rewardsId = review.REWARDS_ID;
         const reviewerAddress = review.REVIEWER_HASH;
         const journalAddress = review.JOURNAL_HASH;
+        const submittedWithinDeadline = review.SUBMITTED_WITHIN_DEADLINE;
   
         if (!(journalAddress in rrtJournalReviewerAddresses)) {
-          rrtJournalReviewerAddresses[journalAddress] = {reviewerAddresses: [], rewardsIds: []};
+          rrtJournalReviewerAddresses[journalAddress] = {
+                'withinDeadline': {reviewerAddresses: [], rewardsIds: [], amount: review.RRT_WITHIN_DEADLINE},
+                'afterDeadline': {reviewerAddresses: [], rewardsIds: [], amount: review.RRT_AFTER_DEADLINE}
+              };
         }
-        // @TODO Check if review was submitted before or after deadline and push to corresponding keys
+        // Check if review was submitted before or after deadline and push to corresponding keys
         // reviewerAddressesBeforeDeadline reviewerAddressesAfterDeadline
-        rrtJournalReviewerAddresses[journalAddress]['reviewerAddresses'].push(reviewerAddress);
-        rrtJournalReviewerAddresses[journalAddress]['rewardsIds'].push(rewardsId);
-        rrtJournalReviewerAddresses[journalAddress]['rrtWithinDeadline'] = review.RRT_WITHIN_DEADLINE;
-        rrtJournalReviewerAddresses[journalAddress]['rrtAfterDeadline'] = review.RRT_AFTER_DEADLINE;
+        if (submittedWithinDeadline && submittedWithinDeadline == 1) {
+          rrtJournalReviewerAddresses[journalAddress]['withinDeadline']['reviewerAddresses'].push(reviewerAddress);
+          rrtJournalReviewerAddresses[journalAddress]['withinDeadline']['rewardsIds'].push(rewardsId);
+        } else {
+          rrtJournalReviewerAddresses[journalAddress]['afterDeadline']['reviewerAddresses'].push(reviewerAddress);
+          rrtJournalReviewerAddresses[journalAddress]['afterDeadline']['rewardsIds'].push(rewardsId);
+        }
       });
   
       let journalAddresses = Object.keys(rrtJournalReviewerAddresses);
+      for (const journalAddress of journalAddresses) {
+        // Assiging tokens for reviews submitted within deadline
+        let reviewerAddresses = rrtJournalReviewerAddresses[journalAddress]['withinDeadline']['reviewerAddresses'];
+        let rewardIds = rrtJournalReviewerAddresses[journalAddress]['withinDeadline']['rewardsIds']
+        if (reviewerAddresses && reviewerAddresses.length > 0) {
+          let txhash = await ReviewRewardTokenContract.bulkMint(
+            reviewerAddresses, rrtJournalReviewerAddresses[journalAddress]['withinDeadline'].amount
+          );
+    
+          console.log("RRT transaction hash within deadline: ", txhash);
+          console.log("RRT reviewer addresses: ", reviewerAddresses);
+          const updateRewardsWithinDeadline = await knex(REWARDS_TABLE)
+                                      .whereIn('ID', rewardIds)
+                                      .update({RRT_ASSIGNED: 1});
+        }
+        
+        // Assiging tokens for reviews submitted after deadline
+        let reviewerAddressesAfterDeadline = rrtJournalReviewerAddresses[journalAddress]['afterDeadline']['reviewerAddresses'];
+        let rewardIdsAfterDeadline = rrtJournalReviewerAddresses[journalAddress]['afterDeadline']['rewardsIds'];
+
+        if (reviewerAddressesAfterDeadline && reviewerAddressesAfterDeadline.length > 0) {
+          let txhashAfterDeadline = await ReviewRewardTokenContract.bulkMint(
+            reviewerAddressesAfterDeadline, rrtJournalReviewerAddresses[journalAddress]['afterDeadline'].amount
+          );
+    
+          console.log("RRT transaction hash after deadline: ", txhashAfterDeadline);
+          console.log("RRT reviewer addresses: ", reviewerAddressesAfterDeadline);
+          const updateRewardsAfterDeadline = await knex(REWARDS_TABLE)
+                                      .whereIn('ID', rewardIdsAfterDeadline)
+                                      .update({RRT_ASSIGNED: 1});
+        }
+      }  
+      console.log('RRT tokens distributed');
 
   } catch (err) {
     console.log('err bulk minting RRT tokens', err);
@@ -215,24 +256,22 @@ async function bulkMintSBTTokens() {
         reviewerAddresses, journalAddress
       );
 
+      console.log("SBT transaction hash: ", txhash);
+      console.log("SBT journal address: ", journalAddress);
       const updateRewards = await knex(REWARDS_TABLE)
                                   .whereIn('ID', rewardIds)
                                   .update({SBT_ASSIGNED: 1});
-    }                         
+    }  
+  console.log('Soul bound tokens distributed');
   } catch (err) {
     console.log('err mintingSBT tokens: ', err);
   }
 }
 
-async function bulkMintWithNewDatabase() {
-  bulkMintSBTTokens();
-  bulkMintRRTTokens();
-}
-
 async function massMint() {
   bulkMintSBTTokens();
   bulkMintRRTTokens();
-  console.log('Soul bound tokens and RRT tokens distributed');
+  console.log('Soul bound tokens and RRT tokens distribution initiated');
 }
 
 // Running cron every 30 minutes
@@ -308,7 +347,7 @@ app.post('/api/add-reviewers', async(req, res) => {
   const manuscript_update = await knex(MANUSCRIPTS_TABLE)
                                 .where('ARTICLE_HASH', article_hash)
                                 .update({
-                                  'DEADLINE': knex.raw(`to_date('${deadline}', 'YYYY-MM-DD')`)
+                                  'DEADLINE': knex.raw(`to_date('${deadline}, 11:59 PM', 'YYYY-MM-DD, HH:MI PM')`)
                                 }, ['ID']);
   
   const manuscripts_id = manuscript_update[0].ID;
@@ -331,14 +370,14 @@ app.post('/api/add-reviewers', async(req, res) => {
         const updateReview = await knex(REVIEWS_TABLE)
                               .whereIn('ID', review_ids)
                               .update({
-                                'DEADLINE': knex.raw(`to_date('${deadline}', 'YYYY-MM-DD')`)
+                                'DEADLINE': knex.raw(`to_date('${deadline}, 11:59 PM', 'YYYY-MM-DD, HH:MI PM')`)
                               });
       } else {
         const insertReview = await knex(REVIEWS_TABLE)
                                     .insert({
                                       'REVIEWER_HASH': reviewer,
                                       'ARTICLE_HASH': article_hash,
-                                      'DEADLINE': knex.raw(`to_date('${deadline}', 'YYYY-MM-DD')`),
+                                      'DEADLINE': knex.raw(`to_date('${deadline}, 11:59 PM', 'YYYY-MM-DD, HH:MI PM')`),
                                       'MANUSCRIPTS_ID': manuscripts_id,
                                       'TIME_STAMP': knex.raw('CURRENT_TIMESTAMP')
                                     })
