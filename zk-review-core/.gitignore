@@ -8,3 +8,7 @@ typechain-types
 # Hardhat files
 cache
 artifacts
+
+# foundry filees
+out
+cache_forge
