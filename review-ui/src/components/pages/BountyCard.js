@@ -504,7 +504,7 @@ export default function BountyCard({
                                         style={{}}
                                     >
                                         {
-                                                bounty.review_links.map((link, index) => {
+                                                bounty && bounty.review_links && bounty.review_links.length > 0 && bounty.review_links.map((link, index) => {
                                                     return (
                                                         <Dropdown.Item 
                                                             key={index}

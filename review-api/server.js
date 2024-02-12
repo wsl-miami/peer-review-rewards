@@ -14,6 +14,11 @@ require('dotenv').config();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+const REWARDS_TABLE = 'REWARD_ALLOCATION';
+const REWARD_SETTINGS_TABLE = 'REWARD_SETTINGS';
+const REVIEWS_TABLE = 'REVIEWS';
+const MANUSCRIPTS_TABLE = 'MANUSCRIPTS';
+
 app.use(cors({
   origin: '*'
 }));
@@ -22,6 +27,7 @@ app.use(cors({
 let SoulBoundContract;
 let ReviewRewardTokenContract;
 let signer;
+let provider;
 
 async function run() {
   try {
@@ -74,7 +80,7 @@ async function reviewRewardTokenSetup() {
 
 async function soulBoundSetup() {
   try {
-    const provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_URL);
+    provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_URL);
     const wallet = new ethers.Wallet(process.env.ETHEREUM_PRIVATE_KEY);
     signer = wallet.connect(provider);
     balance = await provider.getBalance(signer.address);
@@ -136,84 +142,102 @@ async function individualMint() {
   console.log('Soul bound tokens distributed');
 }
 
-async function massMint() {
-  let connection;
-  let unassignedReviews;
-
+async function bulkMintRRTTokens() {
   try {
-    connection = await oracledb.getConnection();
-    const sql = `SELECT * FROM rewards WHERE assigned = 0`;
-    unassignedReviews = await connection.execute(sql);
-  } catch (err) {
-    console.log('err: ', err);
-  } finally {
-      if (connection) {
-          try {
+    const unassignedRRTReviews = await knex(REWARDS_TABLE)
+      .join(REWARD_SETTINGS_TABLE, `${REWARD_SETTINGS_TABLE}.JOURNAL_HASH`, `${REWARDS_TABLE}.JOURNAL_HASH`)
+      .join(REVIEWS_TABLE, `${REWARDS_TABLE}.REVIEWS_ID`, `${REVIEWS_TABLE}.ID`)
+      .where('RRT_ASSIGNED', 0)
+      .where('ENABLE_RRT', 1)
+      .where(`${REWARDS_TABLE}.TIME_STAMP`, '>', knex.raw(`TRUNC(SYSDATE) - interval '1' month`))
+      .select(
+        `${REWARDS_TABLE}.ID as REWARDS_ID`,
+        `${REWARDS_TABLE}.REVIEWER_HASH`,
+        `${REWARDS_TABLE}.JOURNAL_HASH`,
+        `${REWARDS_TABLE}.RRT_ASSIGNED`,
+        `${REWARDS_TABLE}.TIME_STAMP as REWARDS_TIME_STAMP`,
+        `${REVIEWS_TABLE}.DEADLINE`,
+        `${REWARD_SETTINGS_TABLE}.RRT_WITHIN_DEADLINE`,
+        `${REWARD_SETTINGS_TABLE}.RRT_AFTER_DEADLINE`
+      );
 
-              // Mass mint
-              const rewardsIds = [];
-              const journalReviewerAddresses = {};
-              unassignedReviews.rows.forEach(async (review) => {
-                const rewardsId = review[0];
-                const reviewerAddress = review[1];
-                const journalAddress = review[5];
+      const rrtJournalReviewerAddresses = {};
 
-                if (!(journalAddress in journalReviewerAddresses)) {
-                  journalReviewerAddresses[journalAddress] = [];
-                }
-                journalReviewerAddresses[journalAddress].push(reviewerAddress);
-    
-                rewardsIds.push(rewardsId);
-              });
-
-              let journalAddresses = Object.keys(journalReviewerAddresses);
-
-              for (const journalAddress of journalAddresses) {
-                const reviewerAddresses = journalReviewerAddresses[journalAddress];
-                await SoulBoundContract.bulkMintFromCron(
-                  reviewerAddresses, journalAddress
-                );
-
-                const reward_setting_sql = `SELECT * from reward_settings where journal_hash='${journalAddress}'`;
-                console.log("reward_setting_sql", reward_setting_sql);
-                const reward_setting = await connection.execute(reward_setting_sql);
-
-                if (reward_setting && reward_setting.rows && reward_setting.rows[0]) {
-                  const settings_details = reward_setting.rows[0];
-                  const enable_rrt = settings_details[2];
-                  const rrt_amount_per_review = settings_details[3];
-
-                  if (enable_rrt == 1 && rrt_amount_per_review > 0) {
-                    // bulk mint RRT tokens here
-                    await ReviewRewardTokenContract.bulkMint(reviewerAddresses, rrt_amount_per_review);
-                  }
-                } 
-
-              }
-
-              if (rewardsIds.length > 0) {
-                const reward_ids_string = rewardsIds.toString();
-                const rewards = `UPDATE rewards SET assigned=1 WHERE id IN (${reward_ids_string})`;
-                await connection.execute(rewards);
-                connection.commit();
+      unassignedRRTReviews.forEach(async (review) => {
+        const rewardsId = review.REWARDS_ID;
+        const reviewerAddress = review.REVIEWER_HASH;
+        const journalAddress = review.JOURNAL_HASH;
   
-                console.log('database updated');
-              }
+        if (!(journalAddress in rrtJournalReviewerAddresses)) {
+          rrtJournalReviewerAddresses[journalAddress] = {reviewerAddresses: [], rewardsIds: []};
+        }
+        // @TODO Check if review was submitted before or after deadline and push to corresponding keys
+        // reviewerAddressesBeforeDeadline reviewerAddressesAfterDeadline
+        rrtJournalReviewerAddresses[journalAddress]['reviewerAddresses'].push(reviewerAddress);
+        rrtJournalReviewerAddresses[journalAddress]['rewardsIds'].push(rewardsId);
+        rrtJournalReviewerAddresses[journalAddress]['rrtWithinDeadline'] = review.RRT_WITHIN_DEADLINE;
+        rrtJournalReviewerAddresses[journalAddress]['rrtAfterDeadline'] = review.RRT_AFTER_DEADLINE;
+      });
+  
+      let journalAddresses = Object.keys(rrtJournalReviewerAddresses);
 
-
-              await connection.close(); // Put the connection back in the pool
-
-          } catch (err) {
-              throw (err);
-          }
-      }
+  } catch (err) {
+    console.log('err bulk minting RRT tokens', err);
   }
-  console.log('Soul bound tokens distributed');
+}
+
+async function bulkMintSBTTokens() {
+  try{
+    const unassignedSBTReviews = await knex(REWARDS_TABLE)
+                                .where('SBT_ASSIGNED', 0)
+                                .select();
+
+    const sbtJournalReviewerAddresses = {};
+
+    unassignedSBTReviews.forEach(async (review) => {
+      const rewardsId = review.ID;
+      const reviewerAddress = review.REVIEWER_HASH;
+      const journalAddress = review.JOURNAL_HASH;
+
+      if (!(journalAddress in sbtJournalReviewerAddresses)) {
+        sbtJournalReviewerAddresses[journalAddress] = {reviewerAddresses: [], rewardsIds: []};
+      }
+      sbtJournalReviewerAddresses[journalAddress]['reviewerAddresses'].push(reviewerAddress);
+      sbtJournalReviewerAddresses[journalAddress]['rewardsIds'].push(rewardsId);
+    });
+
+    let journalAddresses = Object.keys(sbtJournalReviewerAddresses);
+
+    for (const journalAddress of journalAddresses) {
+      const reviewerAddresses = sbtJournalReviewerAddresses[journalAddress]['reviewerAddresses'];
+      const rewardIds = sbtJournalReviewerAddresses[journalAddress]['rewardsIds']
+      let txhash = await SoulBoundContract.bulkMintFromCron(
+        reviewerAddresses, journalAddress
+      );
+
+      const updateRewards = await knex(REWARDS_TABLE)
+                                  .whereIn('ID', rewardIds)
+                                  .update({SBT_ASSIGNED: 1});
+    }                         
+  } catch (err) {
+    console.log('err mintingSBT tokens: ', err);
+  }
+}
+
+async function bulkMintWithNewDatabase() {
+  bulkMintSBTTokens();
+  bulkMintRRTTokens();
+}
+
+async function massMint() {
+  bulkMintSBTTokens();
+  bulkMintRRTTokens();
+  console.log('Soul bound tokens and RRT tokens distributed');
 }
 
 // Running cron every 30 minutes
-cron.schedule('*/30 * * * *', async() => {
-  console.log('running a task every 5 minutes');
+cron.schedule('*/5 * * * *', async() => {
+  console.log('running a task every 30 minutes');
   if (SoulBoundContract) {
     console.log('Soul bound contract is set up.');
 
@@ -231,38 +255,36 @@ app.post('/api/manuscript-submission', async(req, res) => {
   const journal_hash = req.body.journal;
   const file_hash = req.body.file_hash;
 
-  let connection;
   try {
-    connection = await oracledb.getConnection();
-    const sql = `INSERT INTO authors (author_hash, file_hash, time_stamp) VALUES ('${author_hash}','${file_hash}', CURRENT_TIMESTAMP)`;
-    await connection.execute(sql);
-
-    const journals = `INSERT INTO journals (journal_hash, article_hash, time_stamp) VALUES ('${journal_hash}','${file_hash}', CURRENT_TIMESTAMP)`;
-    await connection.execute(journals);
-
-    connection.commit();
+    const insertQuery = await knex(MANUSCRIPTS_TABLE)
+                                .insert({
+                                  'ARTICLE_HASH': file_hash,
+                                  'AUTHOR_HASH': author_hash,
+                                  'JOURNAL_HASH': journal_hash,
+                                  'TIME_STAMP': knex.raw('CURRENT_TIMESTAMP')
+                                }, ['ID']);
+    res.send({ success: true, author_hash: author_hash, file_hash: file_hash, manuscript_id: insertQuery.ID });
   } catch (err) {
     console.log('err here', err);
-  } finally {
-      if (connection) {
-          try {
-              await connection.close(); // Put the connection back in the pool
-          } catch (err) {
-              throw (err);
-          }
-      }
+    res.send({success: false, error_code: 'SERVERSIDEERROR'})
   }
 
-  res.send({ success: true, author_hash: author_hash, file_hash: file_hash });
 });
 
 app.get('/api/get-assigned-reviewers', async(req, res) => {
   const article_hash = req.query.article_hash;
 
   try {
-    const reviewers = await knex('REVIEWERS')
-                                  .where('REVIEWERS.ARTICLE_HASH', article_hash)
-                                  .select();
+    const reviewers = await knex(REVIEWS_TABLE)
+                                  .join(MANUSCRIPTS_TABLE, `${MANUSCRIPTS_TABLE}.ID`,  `${REVIEWS_TABLE}.MANUSCRIPTS_ID`)
+                                  .where(`${MANUSCRIPTS_TABLE}.ARTICLE_HASH`, article_hash)
+                                  .select(
+                                    `${REVIEWS_TABLE}.ID as ID`,
+                                    `${REVIEWS_TABLE}.REVIEWER_HASH`,
+                                    `${MANUSCRIPTS_TABLE}.ARTICLE_HASH`,
+                                    `${REVIEWS_TABLE}.TIME_STAMP as TIME_STAMP`,
+                                    `${REVIEWS_TABLE}.DEADLINE`,
+                                  );
 
     res.send({success: true, reviewers});
   } catch (err) {
@@ -283,43 +305,46 @@ app.post('/api/add-reviewers', async(req, res) => {
   const deadline = req.body.deadline;
   let connection;
 
-  const journal_update = await knex('JOURNALS')
+  const manuscript_update = await knex(MANUSCRIPTS_TABLE)
                                 .where('ARTICLE_HASH', article_hash)
                                 .update({
                                   'DEADLINE': knex.raw(`to_date('${deadline}', 'YYYY-MM-DD')`)
-                                });
+                                }, ['ID']);
+  
+  const manuscripts_id = manuscript_update[0].ID;
 
   reviewer_hashes.forEach(async(reviewer, index) => {
     try {
-      connection = await oracledb.getConnection();
       // insert only if reviewer_hash not present in reviewers table
-      const checkAlreadyPresentReview = `SELECT * from reviewers where reviewer_hash='${reviewer}' and article_hash='${article_hash}'`;
+      const alreadyPresentReview = await knex(REVIEWS_TABLE)
+                                        .where(`${REVIEWS_TABLE}.ARTICLE_HASH`, article_hash)
+                                        .where(`${REVIEWS_TABLE}.REVIEWER_HASH`, reviewer)
+                                        .select(`${REVIEWS_TABLE}.ID as review_id`);
 
-      const alreadyPresentReview = await connection.execute(checkAlreadyPresentReview);
+      if (alreadyPresentReview && alreadyPresentReview.length > 0) {
 
-      if (alreadyPresentReview && alreadyPresentReview.rows && alreadyPresentReview.rows[0] && alreadyPresentReview.rows[0][0]) {
-        const updateReview = await knex('REVIEWERS')
-                              .where('REVIEWER_HASH', reviewer)
-                              .where('ARTICLE_HASH', article_hash)
+        let review_ids = []
+        alreadyPresentReview.forEach((review) => {
+          review_ids.push(review.review_id);
+        });
+
+        const updateReview = await knex(REVIEWS_TABLE)
+                              .whereIn('ID', review_ids)
                               .update({
                                 'DEADLINE': knex.raw(`to_date('${deadline}', 'YYYY-MM-DD')`)
                               });
       } else {
-        const sql = `INSERT INTO reviewers (reviewer_hash, article_hash, time_stamp, deadline) VALUES ('${reviewer}','${article_hash}', CURRENT_TIMESTAMP, to_date('${deadline}', 'YYYY-MM-DD'))`;
-        await connection.execute(sql);
-    
-        connection.commit();
+        const insertReview = await knex(REVIEWS_TABLE)
+                                    .insert({
+                                      'REVIEWER_HASH': reviewer,
+                                      'ARTICLE_HASH': article_hash,
+                                      'DEADLINE': knex.raw(`to_date('${deadline}', 'YYYY-MM-DD')`),
+                                      'MANUSCRIPTS_ID': manuscripts_id,
+                                      'TIME_STAMP': knex.raw('CURRENT_TIMESTAMP')
+                                    })
       }
     } catch (err) {
       console.log('err here', err);
-    } finally {
-      if (connection) {
-        try {
-            await connection.close(); // Put the connection back in the pool
-        } catch (err) {
-            throw (err);
-        }
-      }
     }
   });
   res.send({ success: true, reviewer_hashes: reviewer_hashes, article_hash: article_hash });
@@ -329,17 +354,16 @@ app.post('/api/add-reviewers', async(req, res) => {
 app.get('/api/get-manuscripts-by-author', async(req, res)  => {
   const author_hash = req.query.author_hash;
   try {
-    const manuscripts = await knex('AUTHORS')
-                                  .join('JOURNALS', 'AUTHORS.FILE_HASH', 'JOURNALS.ARTICLE_HASH')
+    const manuscripts = await knex(MANUSCRIPTS_TABLE)
                                   .select(
-                                    'AUTHORS.AUTHOR_HASH',
-                                    'AUTHORS.FILE_HASH AS ARTICLE_HASH',
-                                    'AUTHORS.TIME_STAMP',
-                                    'JOURNALS.JOURNAL_HASH',
-                                    'JOURNALS.REVIEW_HASH',
-                                    knex.raw(`(SELECT COUNT(REVIEWER_HASH) from REVIEWERS where REVIEWERS.ARTICLE_HASH = AUTHORS.FILE_HASH) as REVIEWERS_COUNT`)
+                                    'AUTHOR_HASH',
+                                    'ARTICLE_HASH',
+                                    'TIME_STAMP',
+                                    'JOURNAL_HASH',
+                                    'REVIEW_HASHES as REVIEW_HASH',
+                                    knex.raw(`(SELECT COUNT(REVIEWER_HASH) from ${REVIEWS_TABLE} where ${REVIEWS_TABLE}.ARTICLE_HASH = ${MANUSCRIPTS_TABLE}.ARTICLE_HASH) as REVIEWERS_COUNT`)
                                   )
-                                  .where('AUTHORS.AUTHOR_HASH', author_hash);
+                                  .where('AUTHOR_HASH', author_hash);
 
     res.send({success: true, manuscripts});
   } catch (err) {
@@ -355,15 +379,15 @@ app.get('/api/get-manuscripts-by-reviewer', async(req, res)  => {
   const reviewer_hash = req.query.reviewer_hash;
   try {
     const manuscript_details = await knex.select(
-      'REVIEWERS.REVIEWER_HASH',
-      'REVIEWERS.ARTICLE_HASH',
-      'REVIEWERS.TIME_STAMP',
-      'JOURNALS.JOURNAL_HASH', 
-      'JOURNALS.REVIEW_HASH'
+      'REVIEWER_HASH',
+      `${REVIEWS_TABLE}.ARTICLE_HASH`,
+      `${REVIEWS_TABLE}.TIME_STAMP`,
+      `${MANUSCRIPTS_TABLE}.JOURNAL_HASH`,
+      `${REVIEWS_TABLE}.REVIEW_HASH`
      )
-     .table('REVIEWERS')
-     .join('JOURNALS', 'REVIEWERS.ARTICLE_HASH', 'JOURNALS.ARTICLE_HASH')
-     .where('REVIEWERS.REVIEWER_HASH', reviewer_hash);
+     .table(REVIEWS_TABLE)
+     .join(MANUSCRIPTS_TABLE, `${REVIEWS_TABLE}.MANUSCRIPTS_ID`, `${MANUSCRIPTS_TABLE}.ID`)
+     .where(`${REVIEWS_TABLE}.REVIEWER_HASH`, reviewer_hash);
 
     console.log('manuscript details', manuscript_details);
 
@@ -381,47 +405,76 @@ app.post('/api/review-submission', async(req, res) => {
   const article_hash = req.body.article;
   const review_hashes = req.body.prev_review_links;
   const review_hash = req.body.review;
-  let connection;
   try {
-    connection = await oracledb.getConnection();
-    // @TODO update review_hash if data already present in rewards table
-    const checkAlreadyPresentReview = `SELECT * from rewards where reviewer_hash='${reviewer_hash}' and journal_hash='${journal_hash}'`;
+    // update review_hash if data already present in reward_allocation table
+    const alreadyPresentReview = await knex(REWARDS_TABLE)
+                                        .join(REVIEWS_TABLE, `${REVIEWS_TABLE}.ID`, `${REWARDS_TABLE}.REVIEWS_ID`)
+                                        .join(MANUSCRIPTS_TABLE, `${MANUSCRIPTS_TABLE}.ID`, `${REVIEWS_TABLE}.MANUSCRIPTS_ID`)
+                                        .where(`${REWARDS_TABLE}.REVIEWER_HASH`, reviewer_hash)
+                                        .where(`${REWARDS_TABLE}.JOURNAL_HASH`, journal_hash)
+                                        .where(`${MANUSCRIPTS_TABLE}.ARTICLE_HASH`, article_hash)
+                                        .select(`${REWARDS_TABLE}.ID as rewards_id`, `${REVIEWS_TABLE}.ID as review_id`, `${MANUSCRIPTS_TABLE}.REVIEW_HASHES`)
+                                        .first();
+                          
+                                        console.log("alreadyPResentreview", alreadyPresentReview);
 
-    const alreadyPresentReview = await connection.execute(checkAlreadyPresentReview);
+    if (alreadyPresentReview) {
+      const reward_id = alreadyPresentReview.rewards_id;
+      const review_id = alreadyPresentReview.review_id;
+      const updateRewardAllocationTable = await knex(REWARDS_TABLE)
+                                                  .where('ID', reward_id)
+                                                  .update({
+                                                    'TIME_STAMP': knex.raw('CURRENT_TIMESTAMP')
+                                                  });
 
-    if (alreadyPresentReview && alreadyPresentReview.rows && alreadyPresentReview.rows[0] && alreadyPresentReview.rows[0][0]) {
-      const review_id = alreadyPresentReview.rows[0][0];
-      const sql = `UPDATE rewards set review_hash='${review_hash}' where id='${review_id}'`;
-      await connection.execute(sql);
+      const updateReviewsTable = await knex(REVIEWS_TABLE)
+                                    .where('ID', review_id)
+                                    .update({
+                                      'REVIEW_HASH': review_hash,
+                                      'TIME_STAMP': knex.raw('CURRENT_TIMESTAMP')
+                                    });
     } else {
-      const sql = `INSERT INTO rewards (reviewer_hash, review_hash, journal_hash, time_stamp) VALUES ('${reviewer_hash}','${review_hash}', '${journal_hash}', CURRENT_TIMESTAMP)`;
-      await connection.execute(sql);
+      const review = await knex(REVIEWS_TABLE)
+                            .join(MANUSCRIPTS_TABLE, `${MANUSCRIPTS_TABLE}.ID`, `${REVIEWS_TABLE}.MANUSCRIPTS_ID`)
+                            .where(`${REVIEWS_TABLE}.REVIEWER_HASH`, reviewer_hash)
+                            .where(`${MANUSCRIPTS_TABLE}.ARTICLE_HASH`, article_hash)
+                            .select(`${REVIEWS_TABLE}.ID as review_id`, `${MANUSCRIPTS_TABLE}.REVIEW_HASHES`)
+                            .first();
+      const review_id = review.review_id;
+      console.log('review_id', review_id);
+      const updateReviewsTable = await knex(REVIEWS_TABLE)
+                                        .where('ID', review_id)
+                                        .update(`${REVIEWS_TABLE}.REVIEW_HASH`, review_hash);
+                              
+      const insertIntoRewardAllocationTable = await knex(REWARDS_TABLE)
+                                                      .insert({
+                                                        'REVIEWER_HASH': reviewer_hash,
+                                                        'JOURNAL_HASH': journal_hash,
+                                                        'TIME_STAMP': knex.raw('CURRENT_TIMESTAMP'),
+                                                        'REVIEWS_ID': review_id
+                                                      });
     }
 
-    review_hashes.push(review_hash);
-    let new_review_hashes = review_hashes.map(x => "'" + x + "'").toString();
+    const getReviews = await knex(REVIEWS_TABLE)
+                                .where('ARTICLE_HASH', article_hash)
+                                .select();
+    
+    const all_review_hashes = [];
+    getReviews.forEach((review)=> {
+      const review_hash = review.REVIEW_HASH;
+      if (review_hash) {
+        all_review_hashes.push(review_hash);
+      }
+    });
 
-    // @TODO in case of updated review, delete old hash and change it with new hash
-    // const journals = `UPDATE journals SET review_hash=string_array('${review_hash}', 'new_test') WHERE id=${journal_id}`;
-    const journals = `UPDATE journals SET review_hash=string_array(${new_review_hashes}) WHERE journal_hash='${journal_hash}' AND article_hash LIKE '%${article_hash}'`;
+    let new_review_hashes = all_review_hashes.map(x => "'" + x + "'").toString();
 
-    console.log("journals sql", journals);
-
-    await connection.execute(journals);
-
-    connection.commit();
+    const journalUpdate = await knex(MANUSCRIPTS_TABLE)
+                                  .where('JOURNAL_HASH', journal_hash)
+                                  .where('ARTICLE_HASH', article_hash)
+                                  .update('REVIEW_HASHES', knex.raw(`string_array(${new_review_hashes})`));
   } catch (err) {
     console.log('err here', err);
-    await connection.close();
-
-  } finally {
-      if (connection) {
-          try {
-              await connection.close(); // Put the connection back in the pool
-          } catch (err) {
-              throw (err);
-          }
-      }
   }
 
   res.send({ success: true, reviewer_hash: reviewer_hash, review_hash: review_hash });
@@ -430,17 +483,16 @@ app.post('/api/review-submission', async(req, res) => {
 app.get('/api/get-manuscripts-by-journal', async(req, res)  => {
   const journal_hash = req.query.journal_hash;
   try {
-    const manuscripts = await knex('AUTHORS')
-                                  .join('JOURNALS', 'AUTHORS.FILE_HASH', 'JOURNALS.ARTICLE_HASH')
-                                  .where('JOURNALS.JOURNAL_HASH', journal_hash)
+    const manuscripts = await knex(MANUSCRIPTS_TABLE)
                                   .select(
-                                    'AUTHORS.AUTHOR_HASH',
-                                    'AUTHORS.FILE_HASH AS ARTICLE_HASH',
-                                    'AUTHORS.TIME_STAMP',
-                                    'JOURNALS.JOURNAL_HASH',
-                                    'JOURNALS.REVIEW_HASH',
-                                    knex.raw('(SELECT COUNT(REVIEWER_HASH) from REVIEWERS where REVIEWERS.ARTICLE_HASH = AUTHORS.FILE_HASH) as REVIEWERS_COUNT')
-                                  );
+                                    'AUTHOR_HASH',
+                                    'ARTICLE_HASH',
+                                    'TIME_STAMP',
+                                    'JOURNAL_HASH',
+                                    'REVIEW_HASHES as REVIEW_HASH',
+                                    knex.raw(`(SELECT COUNT(REVIEWER_HASH) from ${REVIEWS_TABLE} where ${REVIEWS_TABLE}.ARTICLE_HASH = ${MANUSCRIPTS_TABLE}.ARTICLE_HASH) as REVIEWERS_COUNT`)
+                                  )
+                                  .where(`${MANUSCRIPTS_TABLE}.JOURNAL_HASH`, journal_hash);
 
     res.send({success: true, manuscripts});
   } catch (err) {
@@ -455,11 +507,10 @@ app.get('/api/get-unassigned-reviews', async(req, res) => {
   const journal_hash = req.query.journal_hash;
 
   try {
-    const unassignedReviews = await knex('REWARDS')
-                                        .where('ASSIGNED', 0)
+    const unassignedReviews = await knex(REWARDS_TABLE)
+                                        .where('SBT_ASSIGNED', 0)
                                         .where('JOURNAL_HASH', journal_hash)
                                         .select();
-    console.log('unassignedReveiws', unassignedReviews);
     res.send({success: true, unassignedReviews});
 
   } catch (err) {
@@ -471,8 +522,6 @@ app.get('/api/get-unassigned-reviews', async(req, res) => {
 
 app.get('/api/get-token-settings', async(req, res) => {
   const journal_hash = req.query.journal_hash;
-
-  console.log("journal_hash", journal_hash);
 
   try {
     const settings = await knex('REWARD_SETTINGS')
@@ -496,7 +545,7 @@ app.post('/api/bulk-update-assigned-reviews', async(req, res) => {
   try {
     connection = await oracledb.getConnection();
 
-    const rewards = `UPDATE rewards SET assigned=1 WHERE id IN (${reward_ids_string})`;
+    const rewards = `UPDATE ${REWARDS_TABLE} SET sbt_assigned=1 WHERE id IN (${reward_ids_string})`;
     console.log("journals sql", rewards);
 
     await connection.execute(rewards);
@@ -525,7 +574,7 @@ app.post('/api/update-assigned-reviews', async(req, res) => {
   try {
     connection = await oracledb.getConnection();
 
-    const rewards = `UPDATE rewards SET assigned=1 WHERE id=${rewards_id}`;
+    const rewards = `UPDATE ${REWARDS_TABLE} SET sbt_assigned=1 WHERE id=${rewards_id}`;
     console.log("journals sql", rewards);
 
     await connection.execute(rewards);
@@ -563,14 +612,14 @@ app.post('/api/update-review-settings', async(req, res) => {
 
   let settings;
   try {
-    const existing_settings = await knex('REWARD_SETTINGS')
+    const existing_settings = await knex(REWARD_SETTINGS_TABLE)
                           .where('JOURNAL_HASH', journal_hash)
                           .first();
 
     if (existing_settings && existing_settings.ID) {
       const id = existing_settings.ID;
 
-      settings = await knex('REWARD_SETTINGS')
+      settings = await knex(REWARD_SETTINGS_TABLE)
                               .where('ID', id)
                               .update({
                                 'ENABLE_RRT': enable_rrt,
@@ -580,7 +629,7 @@ app.post('/api/update-review-settings', async(req, res) => {
                               }, ['ID', 'ENABLE_RRT']
                               );
     } else {
-      settings = await knex('REWARD_SETTINGS')
+      settings = await knex(REWARD_SETTINGS_TABLE)
                         .insert({
                           'JOURNAL_HASH': journal_hash,
                           'ENABLE_RRT': enable_rrt,
