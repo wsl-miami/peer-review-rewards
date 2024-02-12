@@ -638,13 +638,13 @@ app.post('/api/update-assigned-reviews', async(req, res) => {
 app.post('/api/update-review-settings', async(req, res) => {
   const journal_hash = req.body.journal_hash;
   const enable_rrt = (req.body.enableRRT) ? 1 : 0;
-  let rrt_amount_per_review = req.body.amountPerReview ? req.body.amountPerReview : 0;
+  // let rrt_amount_per_review = req.body.amountPerReview ? req.body.amountPerReview : 0;
   let rrt_within_deadline = req.body.amountPerReviewWithinDeadline ? req.body.amountPerReviewWithinDeadline : 0;
   let rrt_after_deadline = req.body.amountPerReviewAfterDeadline ? req.body.amountPerReviewAfterDeadline : 0;
 
 
   if (enable_rrt == 0) {
-    rrt_amount_per_review = 0;
+    // rrt_amount_per_review = 0;
     rrt_within_deadline = 0;
     rrt_after_deadline = 0;
   }
@@ -662,7 +662,7 @@ app.post('/api/update-review-settings', async(req, res) => {
                               .where('ID', id)
                               .update({
                                 'ENABLE_RRT': enable_rrt,
-                                'RRT_AMOUNT_PER_REVIEW': rrt_amount_per_review,
+                                // 'RRT_AMOUNT_PER_REVIEW': rrt_amount_per_review,
                                 'RRT_WITHIN_DEADLINE': rrt_within_deadline,
                                 'RRT_AFTER_DEADLINE': rrt_after_deadline
                               }, ['ID', 'ENABLE_RRT']
@@ -672,7 +672,7 @@ app.post('/api/update-review-settings', async(req, res) => {
                         .insert({
                           'JOURNAL_HASH': journal_hash,
                           'ENABLE_RRT': enable_rrt,
-                          'RRT_AMOUNT_PER_REVIEW': rrt_amount_per_review,
+                          // 'RRT_AMOUNT_PER_REVIEW': rrt_amount_per_review,
                           'RRT_WITHIN_DEADLINE': rrt_within_deadline,
                           'RRT_AFTER_DEADLINE': rrt_after_deadline ,
                           'TIME_STAMP': knex.raw('CURRENT_TIMESTAMP')

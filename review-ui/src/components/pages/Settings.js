@@ -17,7 +17,7 @@ export default function Settings({
     account
 }) {
 
-    const [tokenAmount, setTokenAmount] = useState(null);
+    // const [tokenAmount, setTokenAmount] = useState(null);
     const [RRTEnabled, setRRTEnabled] = useState(null);
     const [tokenWithinDeadline, setTokenWithinDeadline] = useState(null);
     const [tokenAfterDeadline, setTokenAfterDeadline] = useState(null);
@@ -38,7 +38,7 @@ export default function Settings({
                     const enabled = (reward_settings.ENABLE_RRT && reward_settings.ENABLE_RRT == 1) ? true : false;
                     const rrt_within_deadline = reward_settings.RRT_WITHIN_DEADLINE;
                     const rrt_after_deadline = reward_settings.RRT_AFTER_DEADLINE;
-                    setTokenAmount(rrt_amount_per_review);
+                    // setTokenAmount(rrt_amount_per_review);
                     setRRTEnabled(enabled);
                     setTokenWithinDeadline(rrt_within_deadline);
                     setTokenAfterDeadline(rrt_after_deadline);
@@ -54,7 +54,7 @@ export default function Settings({
             method: "POST",
             data: {journal_hash: account, 
                     enableRRT: RRTEnabled, 
-                    amountPerReview: tokenAmount,
+                    // amountPerReview: tokenAmount,
                     amountPerReviewWithinDeadline: tokenWithinDeadline,
                     amountPerReviewAfterDeadline: tokenAfterDeadline
                 },
@@ -98,7 +98,7 @@ export default function Settings({
                                     className="mb-2"
                                 />
                             </Col>
-                            <Col xs="auto">
+                            {/* <Col xs="auto">
                                 <Form.Label htmlFor="rrt_amount" visuallyHidden>
                                     Tokens Per Review
                                 </Form.Label>
@@ -112,7 +112,7 @@ export default function Settings({
                                         onChange={e => setTokenAmount(e.target.value)}    
                                     />
                                 </InputGroup>
-                            </Col>
+                            </Col> */}
                             <Col xs="auto">
                                 <Form.Label htmlFor="rrt_within_deadline">
                                     Review submitted within deadline
