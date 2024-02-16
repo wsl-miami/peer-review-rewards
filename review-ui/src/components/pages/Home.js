@@ -153,7 +153,7 @@ export default function AuthorDashboard({
                 >
                     <h2>Peer Review Rewards</h2>
                 </Row>
-                <Row className='align-items-center'>
+                {/* <Row className='align-items-center'>
                     <Col md={{ span: 4, offset: 2 }}>
                         <h4>{rewards_text}</h4>
                     </Col>
@@ -180,8 +180,8 @@ export default function AuthorDashboard({
                             </LineChart>
                         </ResponsiveContainer>
                     </Col>
-                </Row>
-                <Row className="align-items-center">
+                </Row> */}
+                {/* <Row className="align-items-center">
                     <Col className="text-center" fluid="true" md={{ span: 4, offset: 2 }}>
                         <h2>Total Articles</h2>
                         <ResponsiveContainer width="100%" height={300}>
@@ -209,8 +209,8 @@ export default function AuthorDashboard({
                         <h3>Team Members:</h3>
                         <h4>{team_members_and_citations}</h4>
                     </Col>
-                </Row>
-                <Row className='text-center'>
+                </Row> */}
+                {/* <Row className='text-center'>
                     <Col fluid="true" md={{ span: 4, offset: 2 }}>
                         <h3>Our Inspiration</h3>
                         <ul>
@@ -255,7 +255,7 @@ export default function AuthorDashboard({
                             </LineChart>
                         </ResponsiveContainer>
                     </Col>
-                </Row>
+                </Row> */}
             </Container>
         </div>
     );
