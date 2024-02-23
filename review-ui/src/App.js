@@ -2,6 +2,7 @@ import "./style/NavStyle.css";
 import "./style/AppStyle.css";
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
+import SideNav from "./components/nav/SideNav.js";
 import React, { Component } from "react";
 import Container from "react-bootstrap/Container";
 import Editor from './components/pages/Editor';
@@ -454,8 +455,6 @@ class App extends Component {
         return (
             <div className="App">
                 <BrowserRouter>
-                    <Container fluid>
-                        <Row>
                             <Navbar className="navbar" variant="dark" expand="lg">
                                 <Navbar.Brand as={NavLink} to="/">
                                     {' '}
@@ -471,7 +470,7 @@ class App extends Component {
                                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                                 <Navbar.Collapse id="basic-navbar-nav">
                                     <Nav className="navtext me-auto">
-                                        <Nav.Link as={NavLink} to="/author">
+                                        {/* <Nav.Link as={NavLink} to="/author">
                                             <img
                                                 alt=""
                                                 src={authorButton}
@@ -516,7 +515,7 @@ class App extends Component {
                                                 height="40"
                                             />
                                             {' '}Settings
-                                        </Nav.Link>
+                                        </Nav.Link> */}
                                     </Nav>
                                     <AccountButton
                                         account={this.state.account}
@@ -530,7 +529,20 @@ class App extends Component {
                                     />
                                 </Navbar.Collapse>
                             </Navbar>
-                        </Row>
+                    {/* <SideNavBar /> */}
+                    <SideNav 
+                        account={this.state.account}
+                        web3={this.state.web3}
+                        chainId={this.state.chainId}
+                        authorBounties={this.state.authorBounties}
+                        editorBounties={this.state.editorBounties}
+                        reviewerBounties={this.state.reviewerBounties}
+                        PRContract={this.state.PRContract}
+                        SoulBoundContract={this.state.SoulBoundContract}
+                        profile={this.state.profile}
+                        ReviewRewardTokenContract={this.state.ReviewRewardTokenContract}
+                    />
+                    <Container fluid>
                         <CreateProfile
                             disconnect={this.disconnect}
                             account={this.state.account}
@@ -555,7 +567,7 @@ class App extends Component {
                             chainId={this.state.chainId}
                         />
                     </Container>
-                    <div>
+                    {/* <div>
                         <Routes>
                             <Route path="/author"
                                 element={
@@ -616,7 +628,7 @@ class App extends Component {
                                 />}
                             />
                         </Routes>
-                    </div>
+                    </div> */}
                 </BrowserRouter>
             </div>
         )
