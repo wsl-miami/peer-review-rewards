@@ -47,6 +47,7 @@ export default function Dashboard({
             return bountyList.map((bounty) => {
                 return (
                     <>
+                    <tr>
                                 <Manuscripts
                                     account={account}
                                     bounty={bounty}
@@ -58,6 +59,7 @@ export default function Dashboard({
                                     type={type}
                                     profile={profile}
                                 />
+                    </tr>
                     </>
                 );
             });
@@ -255,9 +257,7 @@ export default function Dashboard({
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
                                            { renderBounties() }                                       
-                                        </tr>
                                     </tbody>
                                 </Table>
                             </div>

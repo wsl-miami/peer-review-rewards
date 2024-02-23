@@ -4,11 +4,12 @@ import Row from 'react-bootstrap/Row';
 import Button from "react-bootstrap/Button";
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-import ERC20ABI from '../../static/ERC20ABI.json';
-import * as IPFS from 'ipfs-http-client';
-import bs58 from 'bs58'
-import {Buffer} from 'buffer';
+// import ERC20ABI from '../../static/ERC20ABI.json';
+// import * as IPFS from 'ipfs-http-client';
+// import bs58 from 'bs58'
+// import {Buffer} from 'buffer';
 import axios from "axios";
+const FormData = require('form-data');
 
 const Web3 = require("web3");
 const { RelayProvider } = require('@opengsn/provider');
@@ -30,9 +31,10 @@ class OpenBountyModal extends React.Component {
         console.log("web3 from modal", this.props.web3);
     }
     async handleOpenBounty() {
-        const projectId = process.env.REACT_APP_IPFS_ID;
-        const projectSecret = process.env.REACT_APP_IPFS_SECRET;
-        const authorization = "Basic " + btoa(projectId + ":" + projectSecret);
+        // const projectId = process.env.REACT_APP_IPFS_ID;
+        // const projectSecret = process.env.REACT_APP_IPFS_SECRET;
+        // const authorization = "Basic " + btoa(projectId + ":" + projectSecret);
+        const authorization = `Bearer ${process.env.REACT_APP_PINATA_API_KEY}`;
 
         const config = { 
             paymasterAddress: '0x7e4123407707516bD7a3aFa4E3ebCeacfcbBb107',
@@ -60,12 +62,52 @@ class OpenBountyModal extends React.Component {
         //     return
         // }
 
-        const node = await IPFS.create({
-            url: process.env.REACT_APP_IPFS_URL,
-            headers: {
-                authorization,
-            },});
-        const results = await node.add(this.state.article);
+        // const node = await IPFS.create({
+        //     url: process.env.REACT_APP_IPFS_URL,
+        //     headers: {
+        //         authorization,
+        //     },});
+        // const results = await node.add(this.state.article);
+
+        const formData = new FormData();
+        formData.append('file', this.state.article);
+
+        const pinataOptions = JSON.stringify({
+            cidVersion: 0,
+        });
+
+        formData.append('pinataOptions', pinataOptions);
+        console.log('form', this.state.article);
+
+        try {
+            const pinataRes = await axios.post("https://api.pinata.cloud/pinning/pinFileToIPFS", formData,
+                {
+                headers: {
+                    authorization
+                }
+            });
+
+            console.log("bounty web3", web3);
+            // const from = this.props.web3.eth.personal.newAccount('pwd');
+            let from = this.props.account;
+    
+            // Connecting to database and updating data
+            axios({
+                url: `${process.env.REACT_APP_API_URL}/api/manuscript-submission`,
+                method: "POST",
+                data: {author: this.props.account, file_hash: pinataRes.data.IpfsHash, journal: this.state.editor},
+                // data: {author: "0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6", file_hash: "QmVZerrmNhQE1gPp4KnX1yFJSHgAfMY6QW5LxGdpRPM2uJ"}
+            })
+                .then((res) => {
+                    console.log('api response', res);
+                    window.location.reload();
+                })
+                .catch((err) => {console.log('api error', err)});
+        } catch(e) {
+            console.log("Error while uploading file: ", e);
+        }
+        
+
         // var tokenContract = new this.state.web3.eth.Contract(
         //     ERC20ABI, this.state.token
         // );
@@ -81,29 +123,6 @@ class OpenBountyModal extends React.Component {
         //     console.log('approved', approve);
         // }
         // const results = {path: 'testpath'};
-        const str = Buffer.from(bs58.decode(results.path)).toString('hex')
-        console.log("ipfs path", results.path);
-        console.log('token details',
-        this.state.editor,
-        '0x'+str.substring(4, str.length))
-
-        console.log("bounty web3", web3);
-        // const from = this.props.web3.eth.personal.newAccount('pwd');
-        let from = this.props.account;
-
-        // Connecting to database and updating data
-        axios({
-            url: `${process.env.REACT_APP_API_URL}/api/manuscript-submission`,
-            method: "POST",
-            data: {author: this.props.account, file_hash: results.path, journal: this.state.editor},
-            // data: {author: "0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6", file_hash: "QmVZerrmNhQE1gPp4KnX1yFJSHgAfMY6QW5LxGdpRPM2uJ"}
-        })
-            .then((res) => {
-                console.log('api response', res);
-                window.location.reload();
-            })
-            .catch((err) => {console.log('api error', err)});
-
 
 
         // from = provider.newAccount().address;

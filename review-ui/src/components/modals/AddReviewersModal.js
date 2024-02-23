@@ -8,7 +8,7 @@ import Web3 from 'web3';
 import bs58 from 'bs58';
 import axios from "axios";
 
-class AddReveiwersModal extends React.Component {
+class AddReviewersModal extends React.Component {
     constructor(props) {
         super(props);
         const w3 = new Web3(window.ethereum);
@@ -174,4 +174,4 @@ class AddReveiwersModal extends React.Component {
     }
 }
 
-export default AddReveiwersModal;
+export default AddReviewersModal;

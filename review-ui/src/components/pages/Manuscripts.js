@@ -441,7 +441,7 @@ export default function Manuscripts({
                 <Ratio aspectRatio="16x9">
                     <IframeResizer
                         // src={bounty ? "https://review-rewards.infura-ipfs.io/ipfs/" + convertBytes32toIpfsHash(bounty.manuscript_link) : ''}
-                        src={bounty ? "https://review-rewards.infura-ipfs.io/ipfs/" + bounty.manuscript_link : ''}
+                        src={bounty ? `${process.env.REACT_APP_PINATA_DEDICATED_GATEWAY_URL}/ipfs/${bounty.manuscript_link}?pinataGatewayToken=${process.env.REACT_APP_PINATA_OPEN_ACCESS_GATEWAY_KEY}` : ''}
                         heightCalculationMethod="lowestElement"
                         style={{ width: '1px', minWidth: '100%' }}
                     />
@@ -542,6 +542,16 @@ export default function Manuscripts({
                                 </Button>
                             </Row>
                         </OverlayTrigger>
+
+                        <AddReviewersModal
+                            showOpenForm={showOpenReviewer}
+                            handleCloseOpenForm={handleCloseOpenReviewer}
+                            account={account}
+                            bountyid={bounty.id}
+                            PRContract={PRContract}
+                            ipfs32={bounty.manuscript_link}
+                            reviewers={reviewers}
+                        />
                     </>
 
                 }
@@ -581,7 +591,7 @@ export default function Manuscripts({
                 <Modal.Body>
                     <IframeResizer
                         // src={bounty ? "https://review-rewards.infura-ipfs.io/ipfs/" + convertBytes32toIpfsHash(ipfs32) : ''}
-                        src={bounty ? "https://review-rewards.infura-ipfs.io/ipfs/" + ipfs32 : ''}
+                        src={bounty ?`${process.env.REACT_APP_PINATA_DEDICATED_GATEWAY_URL}/ipfs/${ipfs32}?pinataGatewayToken=${process.env.REACT_APP_PINATA_OPEN_ACCESS_GATEWAY_KEY}` : ''}
 
                         aspectRatio="1/1"
                         height="700"
