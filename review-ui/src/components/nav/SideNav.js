@@ -103,7 +103,7 @@ export default function SideNav(
 
   return (
     <>
-      <div id="header" style={{ display: 'flex', height: '100%', minHeight: '400px' }}>
+      <div id="header" style={{ display: 'flex', height: '100%', minHeight: '400px', width:'100%' }}>
           {/* collapsed props to change menu size using menucollapse state */}
         <Sidebar collapsed={menuCollapse} >
             <div className="closemenu" onClick={menuIconClick}>
@@ -153,8 +153,8 @@ export default function SideNav(
               <MenuItem icon={<FiLogOut />}>Logout</MenuItem>
             </Menu>
         </Sidebar>
-      <main>
-          <div>
+      <main style={{width: '100%'}}>
+          {/* <div> */}
             <Routes>
                 <Route path="/author"
                     element={
@@ -215,7 +215,7 @@ export default function SideNav(
                     />}
                 />
             </Routes>
-        </div>
+        {/* </div> */}
       </main>
       </div>
     </>

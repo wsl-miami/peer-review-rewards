@@ -17,7 +17,7 @@ class Author extends Component {
                 <Container fluid>
                     <Row>
                         <Tabs className="tabs">
-                            <Tab title='Dashboard' eventKey='dashboard'>
+                            <Tab title='Author Dashboard' eventKey='dashboard'>
                                 <Dashboard
                                     chainId={this.props.chainId}
                                     account={this.props.account}

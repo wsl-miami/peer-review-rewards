@@ -15,7 +15,7 @@ class Editor extends Component {
                 <Container fluid>
                     <Row>
                         <Tabs className="tabs">
-                            <Tab title='Dashboard' eventKey='dashboard'>
+                            <Tab title='Editor Dashboard' eventKey='dashboard'>
                                 <Dashboard
                                     chainId={this.props.chainId}
                                     account={this.props.account}

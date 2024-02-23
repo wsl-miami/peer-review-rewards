@@ -70,15 +70,17 @@ export default function Settings({
                 <h2 className="pb-2 border-bottom" style={{"paddingTop" : "30px"}}>Reviewer Reward Options</h2>
                 <p className="lead">Reviewers that submit quality reviews to your journal can be rewarded in following ways</p>
                 <Row className="row g-4 py-5 row-cols-2 row-cols-lg-3">
-                    
-                    <Col className="col feature">
+                    <Col className="col-lg-2"></Col>
+                    <Col className="col-lg-3 feature">
                         <h3>Soul Bound Tokens</h3>
                         <p>Tokens of recognition assigned to reviewers for each review submitted. The system automatically assigns one token per review.</p>
                     </Col>
-                    <Col className="col feature">
+                    <Col className="col-lg-2"></Col>
+                    <Col className="col-lg-3 feature">
                         <h3>Review Reward Tokens (RRT)</h3>
                         <p>Transferrable utility tokens that reviewers can use for subscriptions. If you want to enable distribution of RRT tokens, please fill in the details below.</p>
                     </Col>
+                    <col className="col-lg-2"></col>
                 </Row>
                 <br/>
                 <Row>

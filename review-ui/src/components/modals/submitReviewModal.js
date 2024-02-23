@@ -317,7 +317,7 @@ class SubmitReviewModal extends Component {
                                 </Row>
                                 <Row className='align-items-center'>
                                     <Row md={{ span: 2 }}>
-                                        <Form.Label>How many pages?</Form.Label>
+                                        <Form.Label>How many words?</Form.Label>
                                     </Row>
                                     <Row>
                                         <Col>

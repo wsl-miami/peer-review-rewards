@@ -9,8 +9,11 @@ import Spinner from 'react-bootstrap/Spinner';
 import openBountyButton from '../../static/createNewButton.png';
 import OpenBountyModal from '../modals/OpenBountyModal.js';
 import BountyCard from "./BountyCard";
+import Manuscripts from "./Manuscripts";
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+import Table from 'react-bootstrap/Table';
+
 import axios from "axios";
 
 export default function Dashboard({
@@ -44,9 +47,7 @@ export default function Dashboard({
             return bountyList.map((bounty) => {
                 return (
                     <>
-                        <Row>
-                            <Col>
-                                <BountyCard
+                                <Manuscripts
                                     account={account}
                                     bounty={bounty}
                                     openFilter={openFilter}
@@ -57,8 +58,6 @@ export default function Dashboard({
                                     type={type}
                                     profile={profile}
                                 />
-                            </Col>
-                        </Row>
                     </>
                 );
             });
@@ -152,7 +151,7 @@ export default function Dashboard({
                                     width="25"
                                     height="25"
                                 />{' '}
-                                Open a Article
+                                Submit a Manuscript
                             </Button>
                         </span>
                     </OverlayTrigger>
@@ -240,8 +239,28 @@ export default function Dashboard({
                                     role="status"
                                     style={{ width: '8rem', height: '8rem' }}
                                 />
-                            ) :
-                            renderBounties()
+                            ) : (bounties.length === 0 || bounties === null) ? <NoBounties type={type} /> :
+                            <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <Table hover responsive>
+                                    <thead>
+                                        <tr>
+                                        <th>Article</th>
+                                        <th>Journal</th>
+                                        {type == 'editor' &&
+                                            <th>Reviewers</th>
+                                        }
+                                        <th>Reviews</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                           { renderBounties() }                                       
+                                        </tr>
+                                    </tbody>
+                                </Table>
+                            </div>
                     }
                 </Row>
                 <OpenBountyModal
