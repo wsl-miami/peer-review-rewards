@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Col from "react-bootstrap/Col";
+import Row from 'react-bootstrap/Row';
 import Card from 'react-bootstrap/Card';
 import axios from "axios";
 
@@ -21,15 +22,23 @@ export default function RewardTokens({tokenId, SoulBoundContract}) {
         <>
         <Col tokenId={tokenId}>
             <Card>
-                <Card.Img variant="top" src={tokenMetadata ? tokenMetadata.image : ''} />
-                <Card.Body>
-                    <Card.Title>{tokenMetadata.name}</Card.Title>
-                    <Card.Text>
-                        {tokenMetadata.description}
-                    </Card.Text>
-                </Card.Body>
-                <Card.Footer>Journal: {tokenMetadata && tokenMetadata.attributes ? tokenMetadata.attributes[0].value : ''}</Card.Footer>
-                
+                <Row className='g-0' tokenId={tokenId}>
+                    <Col className='col-md-4'>
+                        <Card.Img className='sbt-img' variant="top" src={tokenMetadata ? tokenMetadata.image : ''}/>
+                    </Col>
+                    <Col className='col-md-8'>
+                        <Card.Body>
+                            <Card.Title>{tokenMetadata.name}</Card.Title>
+                            <Card.Text>
+                                {tokenMetadata.description}
+                            </Card.Text>
+                        </Card.Body>
+                    </Col>
+                </Row> 
+                <Row className='g-0'>
+                    <Card.Footer>Journal: {tokenMetadata && tokenMetadata.attributes ? tokenMetadata.attributes[0].value : ''}</Card.Footer>
+                </Row>
+
             </Card>
         </Col>
         </>

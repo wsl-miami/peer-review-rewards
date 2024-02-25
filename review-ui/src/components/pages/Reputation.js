@@ -141,11 +141,24 @@ export default function Reputation({
         <>
             <Container>
                 <Row>
-                    <h2 style={{ "margin-top": "5px" }}>Available RRT tokens: {rrtTokens}</h2>
-                    <h2 style={{ "margin-top": "5px" }}>Your reputation based on SBTs: {reputation}</h2>
+                    <div class="d-flex justify-content-between" style={{'margin': '5px'}}>
+                        <h3>
+                            Tokens
+                        </h3>
+                        <div>
+                            <span className="badge bg-primary clickable-badges" style={{'font-size': '16px'}}>
+                                SBT: {reputation} 
+                            </span>
+                            <span>
+                                <span className="badge bg-success clickable-badges" style={{'font-size': '16px'}}>
+                                    RRT: {rrtTokens}
+                                </span> 
+                            </span>
+                        </div>
+                    </div>
                 </Row>
                 {/* {tokens.length !==0 ? tokens.map((item, index) => tokensCard(item, index)) : 'No Tokens accumulated'} */}
-                <Row xs={1} md={4} className="g-4">
+                <Row xs={1} md={2} className="g-2">
                     {tokens.length !==0 ? tokens.map((item, index) => <RewardTokens tokenId={item} SoulBoundContract={SoulBoundContract} key={index} />) : 'No Tokens accumulated'}
                 </Row>
                 {/* {unclaimed.length !== 0 ? unclaimed.map((item, index) => reputationCard(item, index)) : 'No reputation to claim'} */}

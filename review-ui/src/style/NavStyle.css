@@ -24,23 +24,6 @@
   color:white;
 }
 
-.card {
-  color: white !important;
-  /* border-color: black !important; */
-}
-
-.card-header {
-  background: rgba(30,30,30,1) !important;
-}
-
-.card-body {
-  background: rgba(38,37,37,1) !important;
-}
-
-.card-footer {
-  background: rgba(30,30,30,1) !important;
-}
-
 .navtext{
   color:white;
 }

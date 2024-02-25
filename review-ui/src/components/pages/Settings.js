@@ -7,6 +7,7 @@ import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
+import Card from 'react-bootstrap/Card';
 
 import axios from "axios";
 
@@ -66,23 +67,34 @@ export default function Settings({
 
     return (
         <>
-            <Container className="container px-4 py-5 text-center">
+            <Container className="text-center">
                 <h2 className="pb-2 border-bottom" style={{"paddingTop" : "30px"}}>Reviewer Reward Options</h2>
                 <p className="lead">Reviewers that submit quality reviews to your journal can be rewarded in following ways</p>
-                <Row className="row g-4 py-5 row-cols-2 row-cols-lg-3">
-                    <Col className="col-lg-2"></Col>
-                    <Col className="col-lg-3 feature">
-                        <h3>Soul Bound Tokens</h3>
-                        <p>Tokens of recognition assigned to reviewers for each review submitted. The system automatically assigns one token per review.</p>
+                <Row xs={1} md={2} className="g-2">
+                    <Col>
+                        <Card className="border-primary mb-5">
+                            <Card.Body>
+                                <Card.Title className="border-bottom border-primary">Soul Bound Tokens (SBT)</Card.Title>
+                            <Card.Text>
+                            Tokens of recognition assigned to reviewers for each review submitted. 
+                            The system automatically assigns one token per review.
+                            </Card.Text>
+                            </Card.Body>
+                        </Card>
                     </Col>
-                    <Col className="col-lg-2"></Col>
-                    <Col className="col-lg-3 feature">
-                        <h3>Review Reward Tokens (RRT)</h3>
-                        <p>Transferrable utility tokens that reviewers can use for subscriptions. If you want to enable distribution of RRT tokens, please fill in the details below.</p>
+                    <Col>
+                        <Card className="border-success mb-5">
+                            <Card.Body>
+                                <Card.Title className="border-bottom border-success">Review Reward Tokens (RRT)</Card.Title>
+                            <Card.Text>
+                            Transferrable utility tokens that reviewers can use for subscriptions. 
+                            If you want to enable distribution of RRT tokens, please fill in the 
+                            details below.
+                            </Card.Text>
+                            </Card.Body>
+                        </Card>
                     </Col>
-                    <col className="col-lg-2"></col>
                 </Row>
-                <br/>
                 <Row>
                     <h2 className="pb-2 border-bottom">Reward Policy</h2>
                     <p className="lead">Enable this option to automatically assign RRT tokens to reviewers. Once activated, the reviewers will receive RRT tokens for the papers they review. Select the number of tokens that should be assigned per review.</p>

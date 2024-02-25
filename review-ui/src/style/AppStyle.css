@@ -8,6 +8,11 @@
   cursor: pointer;
 }
 
+.sbt-img {
+  max-width: 136px;
+  max-height: 136px;
+}
+
 /* 
 
 .App-header {

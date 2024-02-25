@@ -16,8 +16,9 @@ class Author extends Component {
                 <br />
                 <Container fluid>
                     <Row>
-                        <Tabs className="tabs">
-                            <Tab title='Author Dashboard' eventKey='dashboard'>
+                        <h2>Author Dashboard</h2>
+                        {/* <Tabs className="tabs">
+                            <Tab title='Author Dashboard' eventKey='dashboard'> */}
                                 <Dashboard
                                     chainId={this.props.chainId}
                                     account={this.props.account}
@@ -26,11 +27,11 @@ class Author extends Component {
                                     type={'author'}
                                     web3={this.props.web3}
                                 />
-                            </Tab>
+                            {/* </Tab>
                             <Tab title='Statistics' eventKey='statistics'>
                                 <AuthorStats authorBounties={this.props.authorBounties} />
                             </Tab>
-                        </Tabs>
+                        </Tabs> */}
                     </Row>
                 </Container>
             </>

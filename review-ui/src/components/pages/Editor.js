@@ -14,8 +14,9 @@ class Editor extends Component {
                 <br />
                 <Container fluid>
                     <Row>
-                        <Tabs className="tabs">
-                            <Tab title='Editor Dashboard' eventKey='dashboard'>
+                        <h2>Editor Dashboard</h2>
+                        {/* <Tabs className="tabs">
+                            <Tab title='Editor Dashboard' eventKey='dashboard'> */}
                                 <Dashboard
                                     chainId={this.props.chainId}
                                     account={this.props.account}
@@ -26,11 +27,11 @@ class Editor extends Component {
                                     web3={this.props.web3}
 
                                 />
-                            </Tab>
+                            {/* </Tab>
                             <Tab title='Statistics' eventKey='statistics'>
                                 <EditorStats editorBounties={this.props.editorBounties} />
                             </Tab>
-                        </Tabs>
+                        </Tabs> */}
                     </Row>
                 </Container>
             </>
