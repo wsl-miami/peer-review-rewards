@@ -24,6 +24,10 @@
   color:white;
 }
 
+.navbar-brand {
+  padding-left: 15px;
+}
+
 .navtext{
   color:white;
 }

@@ -149,9 +149,9 @@ export default function SideNav(
               >Reputation</MenuItem>
 
             </Menu>
-            <Menu iconShape="square" menuItemStyles={menuItemStyles}>
+            {/* <Menu iconShape="square" menuItemStyles={menuItemStyles}>
               <MenuItem icon={<FiLogOut />}>Logout</MenuItem>
-            </Menu>
+            </Menu> */}
         </Sidebar>
       <main style={{width: '100%'}}>
           {/* <div> */}
