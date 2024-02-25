@@ -317,7 +317,9 @@ class App extends Component {
                     open: true,
                     review_links: review_links,
                     reviewers: [],
-                    reviewers_count: reviewers_count
+                    reviewers_count: reviewers_count,
+                    submission_date: manuscript.TIME_STAMP,
+                    review_deadline: manuscript.DEADLINE
                 });
             // }
             authorManuscriptId = authorManuscriptId+1;
@@ -373,8 +375,9 @@ class App extends Component {
                     review_links: review_links,
                     reviewers: [],
                     reviewers_count: reviewers_count,
-                    blockManuscriptId: null
-
+                    blockManuscriptId: null,
+                    submission_date: manuscript.TIME_STAMP,
+                    review_deadline: manuscript.DEADLINE
                 });
             // }
 
@@ -430,7 +433,9 @@ class App extends Component {
                     open: true,
                     review_links: review_links,
                     reviewers: [],
-                    reviewers_count: 0
+                    reviewers_count: 0,
+                    submission_date: manuscript.TIME_STAMP,
+                    review_deadline: manuscript.DEADLINE
                 });
             // }
 

@@ -246,13 +246,18 @@ export default function Dashboard({
                                 <Table hover responsive style={{'text-align': 'center'}}>
                                     <thead>
                                         <tr>
+                                        <th>Submission Date</th>
                                         <th>Manuscript</th>
                                         <th>Journal</th>
                                         {type == 'editor' &&
                                             <th>Reviewers</th>
                                         }
                                         <th>Reviews</th>
+                                        {type != 'author' &&
+                                            <th>Review Deadline</th>
+                                        }
                                         <th>Status</th>
+                                        <th>View</th>
                                         <th>Actions</th>
                                         </tr>
                                     </thead>

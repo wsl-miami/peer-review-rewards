@@ -400,6 +400,7 @@ app.get('/api/get-manuscripts-by-author', async(req, res)  => {
                                     'TIME_STAMP',
                                     'JOURNAL_HASH',
                                     'REVIEW_HASHES as REVIEW_HASH',
+                                    `${MANUSCRIPTS_TABLE}.DEADLINE`,
                                     knex.raw(`(SELECT COUNT(REVIEWER_HASH) from ${REVIEWS_TABLE} where ${REVIEWS_TABLE}.ARTICLE_HASH = ${MANUSCRIPTS_TABLE}.ARTICLE_HASH) as REVIEWERS_COUNT`)
                                   )
                                   .where('AUTHOR_HASH', author_hash);
@@ -422,7 +423,8 @@ app.get('/api/get-manuscripts-by-reviewer', async(req, res)  => {
       `${REVIEWS_TABLE}.ARTICLE_HASH`,
       `${REVIEWS_TABLE}.TIME_STAMP`,
       `${MANUSCRIPTS_TABLE}.JOURNAL_HASH`,
-      `${REVIEWS_TABLE}.REVIEW_HASH`
+      `${REVIEWS_TABLE}.REVIEW_HASH`,
+      `${MANUSCRIPTS_TABLE}.DEADLINE`
      )
      .table(REVIEWS_TABLE)
      .join(MANUSCRIPTS_TABLE, `${REVIEWS_TABLE}.MANUSCRIPTS_ID`, `${MANUSCRIPTS_TABLE}.ID`)
@@ -529,6 +531,7 @@ app.get('/api/get-manuscripts-by-journal', async(req, res)  => {
                                     'TIME_STAMP',
                                     'JOURNAL_HASH',
                                     'REVIEW_HASHES as REVIEW_HASH',
+                                    `${MANUSCRIPTS_TABLE}.DEADLINE`,
                                     knex.raw(`(SELECT COUNT(REVIEWER_HASH) from ${REVIEWS_TABLE} where ${REVIEWS_TABLE}.ARTICLE_HASH = ${MANUSCRIPTS_TABLE}.ARTICLE_HASH) as REVIEWERS_COUNT`)
                                   )
                                   .where(`${MANUSCRIPTS_TABLE}.JOURNAL_HASH`, journal_hash);

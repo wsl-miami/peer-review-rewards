@@ -408,6 +408,12 @@ export default function Manuscripts({
         var hashStr = bs58.encode(hashBytes);
         return hashStr;
     }
+
+    const convertTimestampToDate = (date) => {
+        const dateFormat = new Date(date);
+        return `${dateFormat.getMonth() + 1}/${dateFormat.getDate()}/${dateFormat.getFullYear()}`;
+    }
+
     const checkState = () => {
         if (bounty && bounty.review_links && bounty.review_links.length == 0 && !bounty.open) {
             return (
@@ -447,6 +453,9 @@ export default function Manuscripts({
     return (
         <>
             <td>
+                {bounty.submission_date ? convertTimestampToDate(bounty.submission_date) : "N/A"}
+            </td>
+            <td>
                 <Ratio aspectRatio="16x9">
                     <IframeResizer
                         // src={bounty ? "https://review-rewards.infura-ipfs.io/ipfs/" + convertBytes32toIpfsHash(bounty.manuscript_link) : ''}
@@ -464,7 +473,7 @@ export default function Manuscripts({
                 </OverlayTrigger>
             </td>
             {type == 'editor' &&
-                <td style={{'text-align': 'left'}}> 
+                <td> 
                     {reviewers.map((reviewer, index) => {
                         return (
                             <OverlayTrigger overlay= {<Tooltip id="tooltip-disabled">{`${reviewer.REVIEWER_HASH}`}</Tooltip>}>
@@ -504,6 +513,12 @@ export default function Manuscripts({
 
                 }
             </td>
+
+            { type != 'author' &&
+                <td>
+                    {bounty.review_deadline ? convertTimestampToDate(bounty.review_deadline) : "N/A"}     
+                </td>
+            }
             <td>
                 {checkState()}
             </td>
@@ -516,8 +531,10 @@ export default function Manuscripts({
                     title="View Manuscript"
                     className="action"
                 >
-                    <SiCodereview /> View Manuscript
+                    View Manuscript
                 </Button>
+            </td>
+            <td>
 
                 {type == "author" &&
                     <OverlayTrigger overlay={isAuthorDisabled() ? <Tooltip id="tooltip-disabled">{authorDisabledString()}</Tooltip> : <div></div>}>
