@@ -243,10 +243,10 @@ export default function Dashboard({
                                 />
                             ) : (bounties.length === 0 || bounties === null) ? <NoBounties type={type} /> :
                             <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                <Table hover responsive>
+                                <Table hover responsive style={{'text-align': 'center'}}>
                                     <thead>
                                         <tr>
-                                        <th>Article</th>
+                                        <th>Manuscript</th>
                                         <th>Journal</th>
                                         {type == 'editor' &&
                                             <th>Reviewers</th>

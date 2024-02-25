@@ -16,7 +16,10 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import Dropdown from 'react-bootstrap/Dropdown';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import DropdownButton from 'react-bootstrap/DropdownButton';
+import { BsFillSendArrowUpFill } from "react-icons/bs";
+import { MdCancel } from "react-icons/md";
 import axios from "axios";
+import { SiCodereview } from "react-icons/si";
 
 export default function Manuscripts({
     account,
@@ -409,28 +412,34 @@ export default function Manuscripts({
         if (bounty && bounty.review_links && bounty.review_links.length == 0 && !bounty.open) {
             return (
                 <>
-                    <span className="close">Cancelled</span>
+                    {/* <span className="close">Cancelled</span> */}
+                    <span className="badge rounded-pill bg-warning">Cancelled</span>
+
                 </>
             );
         }
         if (bounty.open) {
             return (
                 <>
-                    <span className="open">Open</span>
+                    {/* <span className="open">Open</span> */}
+                    <span className="badge rounded-pill bg-primary">Open</span>
                 </>
             );
         }
         if (bounty.accepted) {
             return (
                 <>
-                    <span className="passed">Accepted</span>
+                    {/* <span className="passed">Accepted</span> */}
+                    <span className="badge rounded-pill bg-success">Accepted</span>
+
                 </>
             );
         }
         else {
             return (
                 <>
-                    <span className="failed">Failed</span>
+                    {/* <span className="failed">Failed</span> */}
+                    <span className="badge rounded-pill bg-danger">Failed</span>
                 </>
             );
         }
@@ -448,50 +457,52 @@ export default function Manuscripts({
                 </Ratio>
             </td>
             <td>
-                {bounty && bounty.journal && bounty.journal.substring(0, 10) + '...'}
+                <OverlayTrigger overlay= {<Tooltip id="tooltip-disabled">{`${bounty.journal}`}</Tooltip>}>
+                    <span>
+                        {bounty && bounty.journal && `${bounty.journal.substring(0, 5)}...${bounty.journal.substring(bounty.journal.length - 4, bounty.journal.length)}`}
+                    </span>
+                </OverlayTrigger>
             </td>
             {type == 'editor' &&
-               <td>
-                    <DropdownButton
-                        as={ButtonGroup}
-                        title="View Reviewers"
-                        style={{}}
-                    >
-                        {
-                                reviewers.map((reviewer, index) => {
-                                    return (
-                                        <Dropdown.Item 
-                                            key={index}
-                                        >
-                                            {reviewer.REVIEWER_HASH}
-                                        </Dropdown.Item>
-                                    )
-                                })
-
-                            }
-                    </DropdownButton>
+                <td style={{'text-align': 'left'}}> 
+                    {reviewers.map((reviewer, index) => {
+                        return (
+                            <OverlayTrigger overlay= {<Tooltip id="tooltip-disabled">{`${reviewer.REVIEWER_HASH}`}</Tooltip>}>
+                                <span key={index} className="badge bg-light text-dark clickable-badges">
+                                    {reviewer && reviewer.REVIEWER_HASH && `${reviewer.REVIEWER_HASH.substring(0, 5)}...${reviewer.REVIEWER_HASH.substring(reviewer.REVIEWER_HASH.length - 4, reviewer.REVIEWER_HASH.length)}`}
+                                </span>
+                            </OverlayTrigger>
+                        )
+                    })}
                </td>
+            //         <DropdownButton
+            //             as={ButtonGroup}
+            //             title="View Reviewers"
+            //             style={{}}
+            //         >
+            //             {
+            //                     reviewers.map((reviewer, index) => {
+            //                         return (
+            //                             <Dropdown.Item 
+            //                                 key={index}
+            //                             >
+            //                                 {reviewer.REVIEWER_HASH}
+            //                             </Dropdown.Item>
+            //                         )
+            //                     })
+
+            //                 }
+            //         </DropdownButton>
             }
             <td>
-                <DropdownButton
-                    as={ButtonGroup}
-                    title="View Reviews"
-                    style={{}}
-                >
-                    {
-                            bounty && bounty.review_links && bounty.review_links.length > 0 && bounty.review_links.map((link, index) => {
-                                return (
-                                    <Dropdown.Item 
-                                        key={index}
-                                        onClick={() => handleShow(link)}
-                                    >
-                                        Review {index + 1}
-                                    </Dropdown.Item>
-                                )
-                            })
+                {
+                    bounty && bounty.review_links && bounty.review_links.length > 0 && bounty.review_links.map((link, index) => {
+                        return (
+                                <span className="badge rounded-pill bg-info text-dark clickable-badges" onClick={() => handleShow(link)}>Review {index + 1}</span>
+                        )
+                    })
 
-                        }
-                </DropdownButton>
+                }
             </td>
             <td>
                 {checkState()}
@@ -499,48 +510,55 @@ export default function Manuscripts({
             <td>
                 <Button
                     onClick={() => handleShow(bounty.manuscript_link)}
-                    variant='primary'
+                    variant='info'
+                    data-toggle="tooltip" 
+                    data-placement="bottom" 
+                    title="View Manuscript"
+                    className="action"
                 >
-                    View Article
+                    <SiCodereview /> View Manuscript
                 </Button>
 
                 {type == "author" &&
                     <OverlayTrigger overlay={isAuthorDisabled() ? <Tooltip id="tooltip-disabled">{authorDisabledString()}</Tooltip> : <div></div>}>
-                        <Row class='text-right'>
+                        <span> 
                             <Button
                                 disabled={isAuthorDisabled()}
                                 onClick={handleOpenConfirm}
-                                variant='outline-danger'
+                                variant='danger'
+                                className="action"
                             >
-                                Cancel Article
+                               <MdCancel />Cancel Submission
                             </Button>
-                        </Row>
+                        </span>
                     </OverlayTrigger>
                 }
                 {type == "editor" &&
                     <>
                         <OverlayTrigger overlay={isEditorDisabled() ? <Tooltip id="tooltip-disabled">{editorDisabledString()}</Tooltip> : <div></div>}>
-                            <Row class='text-right'>
+                            <span>
                                 <Button
                                     disabled={isEditorDisabled()}
                                     onClick={handleShowOpenReviewer}
-                                    variant='outline-primary'
+                                    variant='primary'
+                                    className="action"
                                 >
                                     Add Reviewers
                                 </Button>
-                            </Row>
+                            </span>
                         </OverlayTrigger>
 
                         <OverlayTrigger overlay={isEditorClosedDisabled() ? <Tooltip id="tooltip-disabled">{editorClosedDisabledString()}</Tooltip> : <div></div>}>
-                            <Row class='text-right' className="butt">
+                            <span className="butt">
                                 <Button
                                     disabled={isEditorClosedDisabled()}
                                     onClick={handleOpenConfirm}
-                                    variant='outline-success'
+                                    variant='success'
+                                    className="action"
                                 >
-                                    Close Article
+                                    Close Manuscript
                                 </Button>
-                            </Row>
+                            </span>
                         </OverlayTrigger>
 
                         <AddReviewersModal
@@ -560,9 +578,13 @@ export default function Manuscripts({
                     <>
                         <Button
                             onClick={handleShowOpenReview}
-                            variant='outline-primary'
+                            variant='primary'
+                            data-toggle="tooltip" 
+                            data-placement="bottom" 
+                            title="Submit Review"
+                            className="action"
                         >
-                            Submit Review
+                            <BsFillSendArrowUpFill /> Submit Review
                         </Button>
                         <SubmitReviewModal
                             showOpenForm={showOpenReview}

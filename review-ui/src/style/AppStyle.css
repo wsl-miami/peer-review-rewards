@@ -1,3 +1,13 @@
+.action {
+  margin: 3px;
+  font-size: 14px !important;
+}
+
+.clickable-badges {
+  margin: 3px;
+  cursor: pointer;
+}
+
 /* 
 
 .App-header {
