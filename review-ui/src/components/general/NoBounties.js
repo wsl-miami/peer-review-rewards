@@ -15,8 +15,8 @@ class NoBounties extends React.Component {
                         className="text-center"
                         style={{ "margin-top": "10%" }}
                     >
-                        <h1>Not Assigned to Review Any articles!</h1>
-                        <h3> You must be assigned a article from the editor of the article. Once you are assinged a article they will be displayed here.</h3>
+                        <h1>No Review Requests!</h1>
+                        <h3> You have not received any request to review a manuscript. Once you are assinged a manuscript they will be displayed here.</h3>
                     </Row>
                 </>
             );
@@ -29,8 +29,8 @@ class NoBounties extends React.Component {
                         className="text-center"
                         style={{ "margin-top": "10%" }}
                     >
-                        <h1> Not Assigned to Edit Any Articles!</h1>
-                        <h3> You must be assigned a article from the author of the article. Once you are assinged a article they will be displayed here.</h3>
+                        <h1> No Manuscript Submissions!</h1>
+                        <h3> You haven't received any manuscript for review. Once you receive a manuscript, they will be displayed here.</h3>
                     </Row>
                 </>
             );
@@ -43,8 +43,8 @@ class NoBounties extends React.Component {
                         className="text-center"
                         style={{ "margin-top": "10%" }}
                     >
-                        <h1> No Authored Articles!</h1>
-                        <h3> You must click on the "Open a Article" button in the top right to create a new article. Once finshed, your authored articles will be displayed here.</h3>
+                        <h1> No Manuscript Submissions!</h1>
+                        <h3> You must click on the "Submit a Manuscript" button in the top right to submit a new manuscript. Once submitted, your authored articles will be displayed here.</h3>
                     </Row>
                 </>
             );

@@ -4,10 +4,13 @@ import Row from 'react-bootstrap/Row';
 import Button from "react-bootstrap/Button";
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-import * as IPFS from 'ipfs-http-client';
-import bs58 from 'bs58'
+// import * as IPFS from 'ipfs-http-client';
+// import bs58 from 'bs58'
 import { Buffer } from 'buffer';
-import { Identity } from "@semaphore-protocol/identity";
+// import { Identity } from "@semaphore-protocol/identity";
+import axios from "axios";
+const FormData = require('form-data');
+
 
 class SubmitReviewModal extends Component {
     constructor(props) {
@@ -46,25 +49,25 @@ class SubmitReviewModal extends Component {
         e.preventDefault();
         this.setState({ isReviewed: true });
         const msg = `0x${Buffer.from(this.state.note, 'utf8').toString('hex')}`;
-        const sign = await window.ethereum.request({
-            method: 'personal_sign',
-            params: [msg, this.props.account, 'Example password'],
-        });
+        // const sign = await window.ethereum.request({
+        //     method: 'personal_sign',
+        //     params: [msg, this.props.account, 'Example password'],
+        // });
 
-        var identity = new Identity(sign);
-        var idArray = JSON.parse(localStorage.getItem('review-identities'));
-        var obj = {
-            note: this.state.note,
-            date: new Date()
-        }
-        if (idArray === null) {
-            idArray = [obj]
-        } else {
-            idArray.push(obj);
-        }
-        localStorage.setItem('review-identities', JSON.stringify(idArray));
+        // var identity = new Identity(sign);
+        // var idArray = JSON.parse(localStorage.getItem('review-identities'));
+        // var obj = {
+        //     note: this.state.note,
+        //     date: new Date()
+        // }
+        // if (idArray === null) {
+        //     idArray = [obj]
+        // } else {
+        //     idArray.push(obj);
+        // }
+        // localStorage.setItem('review-identities', JSON.stringify(idArray));
 
-        const results = await this.ipfsUpload(identity);
+        const results = await this.ipfsUpload();
         this.props.handleCloseOpenForm();
     }
 
@@ -86,31 +89,75 @@ class SubmitReviewModal extends Component {
         `;
     }
 
-    async ipfsUpload(identity) {
+    async ipfsUpload() {
         // Connect to IPFS
-        const projectId = process.env.REACT_APP_IPFS_ID;
-        const projectSecret = process.env.REACT_APP_IPFS_SECRET;
-        const authorization = "Basic " + btoa(projectId + ":" + projectSecret);
+        // const projectId = process.env.REACT_APP_IPFS_ID;
+        // const projectSecret = process.env.REACT_APP_IPFS_SECRET;
+        // const authorization = "Basic " + btoa(projectId + ":" + projectSecret);
+        const authorization = `Bearer ${process.env.REACT_APP_PINATA_API_KEY}`;
 
-        const node = await IPFS.create({
-            url: process.env.REACT_APP_IPFS_URL,
-            headers: {
-                authorization,
-            },
-        });
+        // const node = await IPFS.create({
+        //     url: process.env.REACT_APP_IPFS_URL,
+        //     headers: {
+        //         authorization,
+        //     },
+        // });
+
         // Send file to ipfs
         const reader = new FileReader()
         reader.onload = async (e) => {
             var text = (e.target.result)
             var text = this.formContent() + text;
-            const results = await node.add(text)
-            const str = Buffer.from(bs58.decode(results.path)).toString('hex')
-            this.props.PRContract.methods.claimBounty(
-                this.props.bountyid, '0x' + str.substring(4, str.length), identity.commitment
-            ).send({ from: this.props.account })
-                .on('confirmation', (receipt) => {
-                    window.location.reload();
+            // const results = await node.add(text);
+            // const str = Buffer.from(bs58.decode(results.path)).toString('hex');
+
+            try {
+                const blob = new Blob([text], { type: "text/plain" });
+                const formData = new FormData();
+                formData.append('file', blob);
+                const pinataOptions = JSON.stringify({
+                    cidVersion: 0,
                 });
+        
+                formData.append('pinataOptions', pinataOptions);
+
+                const currentDate = Date.now();
+                const pinataMetadata = JSON.stringify({
+                    name: `review-${currentDate}`,
+                });
+                formData.append("pinataMetadata", pinataMetadata);
+    
+                const pinataRes = await axios.post("https://api.pinata.cloud/pinning/pinFileToIPFS", formData,
+                    {
+                    headers: {
+                        authorization
+                    }
+                });
+    
+                // this.props.PRContract.methods.claimBounty(
+                //     this.props.bountyid, '0x' + str.substring(4, str.length), identity.commitment
+                // ).send({ from: this.props.account })
+                //     .on('confirmation', (receipt) => {
+                //         window.location.reload();
+                //     });
+                
+                        // Connecting to database and updating data
+                axios({
+                    url: `${process.env.REACT_APP_API_URL}/api/review-submission`,
+                    method: "POST",
+                    data: {reviewer: this.props.account, prev_review_links: this.props.prevReviewLinks, review: pinataRes.data.IpfsHash, journal: this.props.journal, article: this.props.ipfs32},
+                })
+                    .then((res) => {
+                        console.log('api response', res);
+                        window.location.reload();
+                    })
+                    .catch((err) => {console.log('api error', err)});
+            } catch (e) {
+                console.log("Error while uploading review: ", e);
+            }
+
+
+            
         };
         reader.readAsText(this.state.review)
     }
@@ -301,7 +348,7 @@ class SubmitReviewModal extends Component {
                                 </Row>
                                 <Row className='align-items-center'>
                                     <Row md={{ span: 2 }}>
-                                        <Form.Label>How many pages?</Form.Label>
+                                        <Form.Label>How many words?</Form.Label>
                                     </Row>
                                     <Row>
                                         <Col>

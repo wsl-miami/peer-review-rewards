@@ -14,8 +14,9 @@ class Review extends Component {
                 <br />
                 <Container fluid>
                     <Row>
-                        <Tabs className="tabs">
-                            <Tab title='Dashboard' eventKey='dashboard'>
+                        <h2>Reviewer Dashboard</h2>
+                        {/* <Tabs className="tabs"> */}
+                            {/* <Tab title='Reviewer Dashboard' eventKey='dashboard'> */}
                                 <Dashboard
                                     chainId={this.props.chainId}
                                     account={this.props.account}
@@ -23,12 +24,14 @@ class Review extends Component {
                                     PRContract={this.props.PRContract}
                                     type={"reviewer"}
                                     profile={this.props.profile}
+                                    web3={this.props.web3}
+
                                 />
-                            </Tab>
-                            <Tab title='Statistics' eventKey='statistics'>
-                                <ReviewerStats reviewerBounties={this.props.reviewerBounties} />
-                            </Tab>
-                        </Tabs>
+                            {/* </Tab> */}
+                            {/* <Tab title='Statistics' eventKey='statistics'> */}
+                                {/* <ReviewerStats reviewerBounties={this.props.reviewerBounties} /> */}
+                            {/* </Tab> */}
+                        {/* </Tabs> */}
                     </Row>
                 </Container>
             </>

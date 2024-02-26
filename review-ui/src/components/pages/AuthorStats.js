@@ -13,7 +13,9 @@ export default function AuthorStats({
           return arr;
         }
         for (let i = 0; i < authorBounties.length; i++) {
-          arr[i] = new Date(authorBounties[i].gen_time * 1000).toLocaleDateString("en-US");
+        //   arr[i] = new Date(authorBounties[i].gen_time * 1000).toLocaleDateString("en-US");
+        // @TODO: work on actual time later
+            arr[i] = new Date().toLocaleDateString("en-US");
         }
       
         var dateCounts = {};
@@ -58,8 +60,8 @@ export default function AuthorStats({
     if (authorBounties === null){
         return authorBounties;
     } else {
+        // console.log('here this is it');
         var openBounts = getTotalBounties()
-        console.log('test', openBounts)
         var TotalBounts = openBounts.length ? openBounts[openBounts.length - 1]['count'] : 0
         var closedBounts = getCountOfClosed()
         var totalClosedBounts = closedBounts.length ? closedBounts[closedBounts.length - 1]['amount'] : 0

@@ -1,4 +1,7 @@
 const { expect } = require("chai");
+const address = require('../tasks/address');
+
+// @TODO: Update the test for GSN implementation
 
 describe("Soulbound Token Test", function () {
     let owner;
@@ -12,14 +15,19 @@ describe("Soulbound Token Test", function () {
         soulbound = await Soulbound.deploy();
 
         // Mint token ID 1 to owner address
-        await soulbound.safeMint(owner.address);
+        await soulbound.safeMint(owner.address, '0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6');
+        console.log('minted');
         
     });
 
     it("check the owner is correct", async () => {
         // Check that owner address owns the token ID 0
         const value = await soulbound.ownerOf(1);
+        console.log('value', value);
         expect(value).to.equal(owner.address);
+
+        var totalTokens = await soulbound.balanceOf(owner.address);
+        console.log('totalTokens', totalTokens);
     });
 
     it("should not allow transfer using safeTransferFrom", async () => {

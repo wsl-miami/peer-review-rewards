@@ -5,16 +5,21 @@ import Button from "react-bootstrap/Button";
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Web3 from 'web3';
+import bs58 from 'bs58';
+import axios from "axios";
 
-class AddReveiwersModal extends React.Component {
-    // Place holder constructor 
+class AddReviewersModal extends React.Component {
     constructor(props) {
         super(props);
         const w3 = new Web3(window.ethereum);
+        let currentDate = new Date().toISOString().slice(0,10);
+
         this.state = {
             reviewer: null,
             reviewer_values: [''],
-            web3: w3
+            web3: w3,
+            deadline: null,
+            currentDate: currentDate
         }
         
         this.handleIncrement = this.handleIncrement.bind(this);
@@ -30,10 +35,32 @@ class AddReveiwersModal extends React.Component {
                 return
             }
         }
-        this.props.PRContract.methods.addReviewersToBounty(
-            this.props.bountyid, this.state.reviewer_values
-        ).send({from: this.props.account})
+        // this.props.PRContract.methods.addReviewersToBounty(
+        //     this.props.bountyid, this.state.reviewer_values
+        // ).send({from: this.props.account})
+        // .on('confirmation', (receipt) => {
+        //     window.location.reload();
+        // });
+
+        const str = Buffer.from(bs58.decode(this.props.ipfs32)).toString('hex');
+        console.log("ipfs32 props", this.props.ipfs32);
+
+        // Connecting to database and updating data
+        axios({
+            url: `${process.env.REACT_APP_API_URL}/api/add-reviewers`,
+            method: "POST",
+            data: {reviewer_hashes: this.state.reviewer_values, article_hash: this.props.ipfs32, deadline: this.state.deadline},
+            // data: {author: "0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6", file_hash: "QmVZerrmNhQE1gPp4KnX1yFJSHgAfMY6QW5LxGdpRPM2uJ"}
+        })
+            .then((res) => {console.log('api response', res);})
+            .catch((err) => {console.log('api error', err)});
+
+        this.props.PRContract.methods.submitManuscript(
+            this.props.account,
+            '0x'+str.substring(4, str.length)
+        ).send({from: this.props.account, gas: 210000})
         .on('confirmation', (receipt) => {
+            console.log("done!");
             window.location.reload();
         });
     }
@@ -101,10 +128,27 @@ class AddReveiwersModal extends React.Component {
                                             </Col>
                                         </Row>
                                     </Form.Group>
+                                    
                                 </Row>
                                 <br />
                             </>
                         ))}
+                        <Form.Group>
+                            <Row className='align-items-center'>
+                            <Col md={{span:2}}>
+                                <Form.Label>Submission Deadline:</Form.Label>
+                            </Col>
+                            <Col md={{span:6}}>
+                                <Form.Control 
+                                    type="date"
+                                    placeholder='Deadline'
+                                    value={this.state.deadline}
+                                    min={this.state.currentDate}
+                                    onChange={(e) => this.setState({deadline: e.target.value})}
+                                />
+                            </Col>
+                            </Row>           
+                        </Form.Group>
                         <br />
                         <Row className='text-center'>
                             <Col>
@@ -130,4 +174,4 @@ class AddReveiwersModal extends React.Component {
     }
 }
 
-export default AddReveiwersModal;
+export default AddReviewersModal;

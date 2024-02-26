@@ -10,6 +10,22 @@ Welcome to the Decentralized Educated Review Protocol. DERP is an application bu
 
 For information on how to interface with application see the usage tutorial [here](https://gitlab.csi.miamioh.edu/2023-capstone/Alternate_BlockChain_Project/peer-review-system/-/blob/master/docs/guide/usage.rst), or the project wiki [here](https://gitlab.csi.miamioh.edu/2023-capstone/Alternate_BlockChain_Project/peer-review-system/-/wikis/home).
 
+
+## Tokenization
+There are two main types of tokens implemented in this peer review system.
+
+### Soul Bound Tokens
+Soul bound tokens are immutatable non-fungible tokens that act as a reference to the contribution of a reviewer. They act as recognition tokens which can not be transferred once awarded. In this iteration of the project, each reviewer is rewarded 1 SBT for each review that they submit regardless of the journal.
+
+### ERC 20 based utility tokens
+Unlike SBTs, these tokens can be transferred between different user addresses. Journals can decide to assign zero to any number of utility tokens to the reviewer for each review submission. These utility tokens (RRT) can be exchanged in the future iterations for journal subscriptions and other utilities.
+
+### Token Economics
+1. Contract owner will have initial supply of 1000 tokens.
+2. Journal can enable distribution of tokens from their UI along with the number of tokens for each review(tracked in external database).
+3. Every month, a cron job will check for the reviews that have been submitted. Each review will get exactly 1 SBT. If the journal has opted for utility tokens, they will also be assigned to the reviewers.
+
+
 ## Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

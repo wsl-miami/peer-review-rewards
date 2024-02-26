@@ -4,20 +4,27 @@ import Row from 'react-bootstrap/Row';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import bigLogo from '../../static/derpLogoBig.png';
 import Container from 'react-bootstrap/Container';
+// const oracledb = require('oracledb');
+
 
 export default function AuthorDashboard({
     PRContract
 }) {
     const [bounties, setBounties] = useState(null);
     useEffect(() => {
-        getBounties()
-            .then(data =>
-                setBounties(data)
-            );
-    }, []);
+        console.log("here");
+        if (PRContract) {
+            console.log("then here");
+            getBounties() 
+                .then(data =>
+                    setBounties(data)
+                );
+        }
+    }, [PRContract]);
 
     const getBounties = async () => {
-        const ret = (await PRContract.methods.allBounties().call());
+        const ret = (await PRContract.methods.allManuscripts().call());
+        console.log('bounties', ret);
         return (ret);
     }
 
@@ -27,7 +34,9 @@ export default function AuthorDashboard({
           return arr;
         }
         for (let i = 0; i < bounties.length; i++) {
-          arr[i] = new Date(bounties[i].gen_time * 1000).toLocaleDateString("en-US");
+        // @TODO: Sort this out later
+        //   arr[i] = new Date(bounties[i].gen_time * 1000).toLocaleDateString("en-US");
+          arr[i] = new Date().toLocaleDateString("en-US");
         }
       
         var dateCounts = {};
@@ -111,7 +120,7 @@ export default function AuthorDashboard({
       }
     const intro_text = 'From 2 professors and 5 students at Miami University, the DERP is aimed to democratize and provide efficiency to all forms of science.';
 
-    const rewards_text = 'As an author on the DERP, you can provide rewards for reviewers. The more rewards you provide, the faster your paper could be reviewed.'
+    const rewards_text = 'Peer-Review rewards system is a platform to reward reviewers for their contributions to the academic research community.'
     const team_members_and_citations =
         <>
             <ul>
@@ -126,128 +135,114 @@ export default function AuthorDashboard({
         </>
     const config = { displayModeBar: false }
     return (
-
-        <div>
-            <Container fluid>
-                <Row className='text-center align-items-center'>
-                    <div>
-                        <img
-                            alt=""
-                            src={bigLogo}
-                            width="500"
-                            height="300"
-                        />
-                    </div>
-                </Row>
-                <Row
-                    className='text-center align-items-center'
-                >
-                    <h2>Decentralized Educated Review Protocol</h2>
-                </Row>
-                <Row className='align-items-center'>
-                    <Col md={{ span: 4, offset: 2 }}>
-                        <h4>{rewards_text}</h4>
-                    </Col>
-                    <Col className="text-center" md={{ span: 4 }}>
-                        <h2>Tokens Over Time</h2>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <LineChart
-                                width={500}
-                                height={300}
-                                data={getTotalTokens()}
-                                margin={{
-                                    top: 5,
-                                    right: 30,
-                                    left: 20,
-                                    bottom: 5,
-                                }}
+        <Container fluid className="px-4 py-5 my-5 text-center">
+            <h1 className="display-5 fw-bold">Review Rewards</h1>
+            <div className="col-lg-8 mx-auto">
+            <p className="lead mb-4">ReviewRewards introduces a flexible framework for journals to tailor review reward schemes to their unique criteria and review processes. This platform acknowledges that different journals can have different review methodologies and incentive preferences, offering them the freedom to decide upon the most appropriate reward mechanism.</p>
+            </div>
+            {/* <Row className='align-items-center'>
+                <Col md={{ span: 4, offset: 2 }}>
+                    <h4>{rewards_text}</h4>
+                </Col>
+                <Col className="text-center" md={{ span: 4 }}>
+                    <h2>Tokens Over Time</h2>
+                    <ResponsiveContainer width="100%" height={300}>
+                        <LineChart
+                            width={500}
+                            height={300}
+                            data={getTotalTokens()}
+                            margin={{
+                                top: 5,
+                                right: 30,
+                                left: 20,
+                                bottom: 5,
+                            }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="date" />
+                            <YAxis tickFormatter={DataFormater}/>
+                            <Tooltip />
+                            <Legend />
+                            <Line type="monotone" dataKey="amount" stroke="#8884d8" activeDot={{ r: 8 }} />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </Col>
+            </Row> */}
+            {/* <Row className="align-items-center">
+                <Col className="text-center" fluid="true" md={{ span: 4, offset: 2 }}>
+                    <h2>Total Articles</h2>
+                    <ResponsiveContainer width="100%" height={300}>
+                        <LineChart
+                            width={500}
+                            height={300}
+                            data={getTotalBounties()}
+                            margin={{
+                                top: 5,
+                                right: 30,
+                                left: 20,
+                                bottom: 5,
+                            }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="date" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Line type="monotone" dataKey="count" stroke="#8884d8" activeDot={{ r: 8 }} />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </Col>
+                <Col md={{ span: 4 }}>
+                    <h3>Team Members:</h3>
+                    <h4>{team_members_and_citations}</h4>
+                </Col>
+            </Row> */}
+            {/* <Row className='text-center'>
+                <Col fluid="true" md={{ span: 4, offset: 2 }}>
+                    <h3>Our Inspiration</h3>
+                    <ul>
+                        <li>
+                            <a
+                                target="_blank"
+                                href="https://aisel.aisnet.org/cais/vol42/iss1/28/"
                             >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="date" />
-                                <YAxis tickFormatter={DataFormater}/>
-                                <Tooltip />
-                                <Legend />
-                                <Line type="monotone" dataKey="amount" stroke="#8884d8" activeDot={{ r: 8 }} />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    </Col>
-                </Row>
-                <Row className="align-items-center">
-                    <Col className="text-center" fluid="true" md={{ span: 4, offset: 2 }}>
-                        <h2>Total Articles</h2>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <LineChart
-                                width={500}
-                                height={300}
-                                data={getTotalBounties()}
-                                margin={{
-                                    top: 5,
-                                    right: 30,
-                                    left: 20,
-                                    bottom: 5,
-                                }}
+                                Peer Review: Toward a Blockchain-enabled Market-based Ecosystem
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                target="_blank"
+                                href="https://scholarspace.manoa.hawaii.edu/server/api/core/bitstreams/f67443e9-96d2-40e7-8675-aff625526c7b/content"
                             >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="date" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
-                                <Line type="monotone" dataKey="count" stroke="#8884d8" activeDot={{ r: 8 }} />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    </Col>
-                    <Col md={{ span: 4 }}>
-                        <h3>Team Members:</h3>
-                        <h4>{team_members_and_citations}</h4>
-                    </Col>
-                </Row>
-                <Row className='text-center'>
-                    <Col fluid="true" md={{ span: 4, offset: 2 }}>
-                        <h3>Our Inspiration</h3>
-                        <ul>
-                            <li>
-                                <a
-                                    target="_blank"
-                                    href="https://aisel.aisnet.org/cais/vol42/iss1/28/"
-                                >
-                                    Peer Review: Toward a Blockchain-enabled Market-based Ecosystem
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    target="_blank"
-                                    href="https://scholarspace.manoa.hawaii.edu/server/api/core/bitstreams/f67443e9-96d2-40e7-8675-aff625526c7b/content"
-                                >
-                                    Towards a Decentralized Process for Scientific Publication and Peer Review using Blockchain and IPFS
-                                </a>
-                            </li>
-                        </ul>
-                    </Col>
-                    <Col className="text-center" fluid="true" md={{ span: 4 }}>
-                        <h2>Total Reviews</h2>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <LineChart
-                                width={500}
-                                height={300}
-                                data={getCountOfReviews()}
-                                margin={{
-                                    top: 5,
-                                    right: 30,
-                                    left: 20,
-                                    bottom: 5,
-                                }}
-                            >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="date" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
-                                <Line type="monotone" dataKey="amount" stroke="#8884d8" activeDot={{ r: 8 }} />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    </Col>
-                </Row>
-            </Container>
-        </div>
+                                Towards a Decentralized Process for Scientific Publication and Peer Review using Blockchain and IPFS
+                            </a>
+                        </li>
+                    </ul>
+                </Col>
+                <Col className="text-center" fluid="true" md={{ span: 4 }}>
+                    <h2>Total Reviews</h2>
+                    <ResponsiveContainer width="100%" height={300}>
+                        <LineChart
+                            width={500}
+                            height={300}
+                            data={getCountOfReviews()}
+                            margin={{
+                                top: 5,
+                                right: 30,
+                                left: 20,
+                                bottom: 5,
+                            }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="date" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Line type="monotone" dataKey="amount" stroke="#8884d8" activeDot={{ r: 8 }} />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </Col>
+            </Row> */}
+        </Container>
     );
 }

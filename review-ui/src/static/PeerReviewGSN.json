@@ -1,0 +1,1155 @@
+[
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_forwarder",
+				"type": "address"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "by",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "to",
+				"type": "uint256"
+			}
+		],
+		"name": "Increment",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "manuscriptId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "journal",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "manuscript_link",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "review_links",
+						"type": "bytes32[]"
+					},
+					{
+						"internalType": "address",
+						"name": "author",
+						"type": "address"
+					},
+					{
+						"internalType": "address[]",
+						"name": "reviewers",
+						"type": "address[]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "rewardAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "openForReview",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "accepted",
+						"type": "bool"
+					}
+				],
+				"indexed": false,
+				"internalType": "struct PeerReviewGSN.ManuscriptReview",
+				"name": "manuscript",
+				"type": "tuple"
+			}
+		],
+		"name": "ManuscriptReviewClaimed",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "manuscriptId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "journal",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "manuscript_link",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "review_links",
+						"type": "bytes32[]"
+					},
+					{
+						"internalType": "address",
+						"name": "author",
+						"type": "address"
+					},
+					{
+						"internalType": "address[]",
+						"name": "reviewers",
+						"type": "address[]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "rewardAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "openForReview",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "accepted",
+						"type": "bool"
+					}
+				],
+				"indexed": false,
+				"internalType": "struct PeerReviewGSN.ManuscriptReview",
+				"name": "manuscript",
+				"type": "tuple"
+			}
+		],
+		"name": "ManuscriptReviewClosed",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "manuscriptId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "journal",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "manuscript_link",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "review_links",
+						"type": "bytes32[]"
+					},
+					{
+						"internalType": "address",
+						"name": "author",
+						"type": "address"
+					},
+					{
+						"internalType": "address[]",
+						"name": "reviewers",
+						"type": "address[]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "rewardAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "openForReview",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "accepted",
+						"type": "bool"
+					}
+				],
+				"indexed": false,
+				"internalType": "struct PeerReviewGSN.ManuscriptReview",
+				"name": "manuscript",
+				"type": "tuple"
+			}
+		],
+		"name": "ManuscriptReviewOpened",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "manuscriptId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "journal",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "manuscript_link",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "review_links",
+						"type": "bytes32[]"
+					},
+					{
+						"internalType": "address",
+						"name": "author",
+						"type": "address"
+					},
+					{
+						"internalType": "address[]",
+						"name": "reviewers",
+						"type": "address[]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "rewardAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "openForReview",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "accepted",
+						"type": "bool"
+					}
+				],
+				"indexed": false,
+				"internalType": "struct PeerReviewGSN.ManuscriptReview",
+				"name": "manuscript",
+				"type": "tuple"
+			}
+		],
+		"name": "ManuscriptSubmitted",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "allManuscripts",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "manuscriptId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "journal",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "manuscript_link",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "review_links",
+						"type": "bytes32[]"
+					},
+					{
+						"internalType": "address",
+						"name": "author",
+						"type": "address"
+					},
+					{
+						"internalType": "address[]",
+						"name": "reviewers",
+						"type": "address[]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "rewardAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "openForReview",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "accepted",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct PeerReviewGSN.ManuscriptReview[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_manuscriptId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address[]",
+				"name": "reviewerAddresses",
+				"type": "address[]"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_rewardAmount",
+				"type": "uint256"
+			}
+		],
+		"name": "assignReviewers",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "manuscriptId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "journal",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "manuscript_link",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "review_links",
+						"type": "bytes32[]"
+					},
+					{
+						"internalType": "address",
+						"name": "author",
+						"type": "address"
+					},
+					{
+						"internalType": "address[]",
+						"name": "reviewers",
+						"type": "address[]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "rewardAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "openForReview",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "accepted",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct PeerReviewGSN.ManuscriptReview",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "signal",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "uint256",
+				"name": "merkleTreeRoot",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "nullifierHash",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256[8]",
+				"name": "proof",
+				"type": "uint256[8]"
+			}
+		],
+		"name": "claimReputation",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "counter",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bool",
+				"name": "verified",
+				"type": "bool"
+			}
+		],
+		"name": "distributeRewardToken",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "manuscriptId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "journal",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "manuscript_link",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "review_links",
+						"type": "bytes32[]"
+					},
+					{
+						"internalType": "address",
+						"name": "author",
+						"type": "address"
+					},
+					{
+						"internalType": "address[]",
+						"name": "reviewers",
+						"type": "address[]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "rewardAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "openForReview",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "accepted",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct PeerReviewGSN.ManuscriptReview",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_manuscriptId",
+				"type": "uint256"
+			}
+		],
+		"name": "getManuscript",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "manuscriptId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "journal",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "manuscript_link",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "review_links",
+						"type": "bytes32[]"
+					},
+					{
+						"internalType": "address",
+						"name": "author",
+						"type": "address"
+					},
+					{
+						"internalType": "address[]",
+						"name": "reviewers",
+						"type": "address[]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "rewardAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "openForReview",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "accepted",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct PeerReviewGSN.ManuscriptReview",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_account",
+				"type": "address"
+			}
+		],
+		"name": "getManuscriptsByAuthor",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "manuscriptId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "journal",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "manuscript_link",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "review_links",
+						"type": "bytes32[]"
+					},
+					{
+						"internalType": "address",
+						"name": "author",
+						"type": "address"
+					},
+					{
+						"internalType": "address[]",
+						"name": "reviewers",
+						"type": "address[]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "rewardAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "openForReview",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "accepted",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct PeerReviewGSN.ManuscriptReview[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_account",
+				"type": "address"
+			}
+		],
+		"name": "getManuscriptsByJournal",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "manuscriptId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "journal",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "manuscript_link",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "review_links",
+						"type": "bytes32[]"
+					},
+					{
+						"internalType": "address",
+						"name": "author",
+						"type": "address"
+					},
+					{
+						"internalType": "address[]",
+						"name": "reviewers",
+						"type": "address[]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "rewardAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "openForReview",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "accepted",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct PeerReviewGSN.ManuscriptReview[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_account",
+				"type": "address"
+			}
+		],
+		"name": "getManuscriptsByReviewer",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "manuscriptId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "journal",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "manuscript_link",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "review_links",
+						"type": "bytes32[]"
+					},
+					{
+						"internalType": "address",
+						"name": "author",
+						"type": "address"
+					},
+					{
+						"internalType": "address[]",
+						"name": "reviewers",
+						"type": "address[]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "rewardAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "openForReview",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "accepted",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct PeerReviewGSN.ManuscriptReview[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getTrustedForwarder",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "forwarder",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "increment",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "forwarder",
+				"type": "address"
+			}
+		],
+		"name": "isTrustedForwarder",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "lastCaller",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "manuscriptExists",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "manuscripts",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "manuscriptId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "journal",
+				"type": "address"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "manuscript_link",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "address",
+				"name": "token",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "author",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "rewardAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "openForReview",
+				"type": "bool"
+			},
+			{
+				"internalType": "bool",
+				"name": "accepted",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "reviewedGroupId",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes",
+				"name": "file",
+				"type": "bytes"
+			}
+		],
+		"name": "submitFile",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_journal",
+				"type": "address"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "_manuscriptHash",
+				"type": "bytes32"
+			}
+		],
+		"name": "submitManuscript",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "manuscriptId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "journal",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "manuscript_link",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "review_links",
+						"type": "bytes32[]"
+					},
+					{
+						"internalType": "address",
+						"name": "author",
+						"type": "address"
+					},
+					{
+						"internalType": "address[]",
+						"name": "reviewers",
+						"type": "address[]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "rewardAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "openForReview",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "accepted",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct PeerReviewGSN.ManuscriptReview",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_manuscriptId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_journalId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "_ipfsHash",
+				"type": "bytes32"
+			}
+		],
+		"name": "submitReview",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "manuscriptId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "journal",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "manuscript_link",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "review_links",
+						"type": "bytes32[]"
+					},
+					{
+						"internalType": "address",
+						"name": "author",
+						"type": "address"
+					},
+					{
+						"internalType": "address[]",
+						"name": "reviewers",
+						"type": "address[]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "rewardAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "openForReview",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "accepted",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct PeerReviewGSN.ManuscriptReview",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "versionRecipient",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]

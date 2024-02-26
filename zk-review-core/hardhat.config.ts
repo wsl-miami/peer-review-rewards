@@ -8,6 +8,9 @@ import { NetworksUserConfig } from "hardhat/types"
 import "./tasks/deploy"
 require("hardhat-gas-reporter");
 
+// For some reason foundry is interfering with hardhat. To use hardhat commands, simply comment this require code snippet
+require("@nomicfoundation/hardhat-foundry");
+
 dotenvConfig()
 
 function getNetworks(): NetworksUserConfig {

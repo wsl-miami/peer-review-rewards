@@ -73,9 +73,13 @@ export default function EditorStats({
         return editorBounties;
     } else {
         var reviewCount = getCountOfEditors()
-        var Totalreviews = reviewCount[reviewCount.length - 1]['amount']
+        // var Totalreviews = reviewCount[reviewCount.length - 1]['amount']
+        var Totalreviews = reviewCount.length ? reviewCount[reviewCount.length - 1]['amount'] : 0
+
         var tokensCount = getTotalTokens()
-        var totalTokens = tokensCount[tokensCount.length - 1]['amount']
+        // var totalTokens = tokensCount[tokensCount.length - 1]['amount']
+        var totalTokens = tokensCount.length ? tokensCount[tokensCount.length - 1]['amount'] : 0
+
     }
     return(
         <>
