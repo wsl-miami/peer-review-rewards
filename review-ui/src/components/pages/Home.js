@@ -137,7 +137,7 @@ export default function AuthorDashboard({
     return (
         <Container fluid className="px-4 py-5 my-5 text-center">
             <h1 className="display-5 fw-bold">Review Rewards</h1>
-            <div className="col-lg-6 mx-auto">
+            <div className="col-lg-8 mx-auto">
             <p className="lead mb-4">ReviewRewards introduces a flexible framework for journals to tailor review reward schemes to their unique criteria and review processes. This platform acknowledges that different journals can have different review methodologies and incentive preferences, offering them the freedom to decide upon the most appropriate reward mechanism.</p>
             </div>
             {/* <Row className='align-items-center'>

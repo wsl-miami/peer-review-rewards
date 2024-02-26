@@ -187,8 +187,11 @@ async function bulkMintRRTTokens() {
         }
       });
   
+      // console.log('rrtJournalReviewerAddresses', rrtJournalReviewerAddresses);
+  
       let journalAddresses = Object.keys(rrtJournalReviewerAddresses);
-      for (const journalAddress of journalAddresses) {
+      for(let i=0; i < journalAddresses.length; i++) {
+        let journalAddress = journalAddresses[i];
         // Assiging tokens for reviews submitted within deadline
         let reviewerAddresses = rrtJournalReviewerAddresses[journalAddress]['withinDeadline']['reviewerAddresses'];
         let rewardIds = rrtJournalReviewerAddresses[journalAddress]['withinDeadline']['rewardsIds']
@@ -207,7 +210,7 @@ async function bulkMintRRTTokens() {
         // Assiging tokens for reviews submitted after deadline
         let reviewerAddressesAfterDeadline = rrtJournalReviewerAddresses[journalAddress]['afterDeadline']['reviewerAddresses'];
         let rewardIdsAfterDeadline = rrtJournalReviewerAddresses[journalAddress]['afterDeadline']['rewardsIds'];
-
+  
         if (reviewerAddressesAfterDeadline && reviewerAddressesAfterDeadline.length > 0) {
           let txhashAfterDeadline = await ReviewRewardTokenContract.bulkMint(
             reviewerAddressesAfterDeadline, rrtJournalReviewerAddresses[journalAddress]['afterDeadline'].amount
@@ -219,7 +222,9 @@ async function bulkMintRRTTokens() {
                                       .whereIn('ID', rewardIdsAfterDeadline)
                                       .update({RRT_ASSIGNED: 1});
         }
-      }  
+      }
+      // for (const journalAddress of journalAddresses) {
+      // }  
       console.log('RRT tokens distributed');
 
   } catch (err) {
@@ -269,8 +274,8 @@ async function bulkMintSBTTokens() {
 }
 
 async function massMint() {
-  bulkMintSBTTokens();
-  bulkMintRRTTokens();
+  await bulkMintSBTTokens();
+  await bulkMintRRTTokens();
   console.log('Soul bound tokens and RRT tokens distribution initiated');
 }
 
