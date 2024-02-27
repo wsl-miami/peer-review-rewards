@@ -15,6 +15,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import Table from 'react-bootstrap/Table';
 
 import axios from "axios";
+import STRING_CONSTANTS from "../../constants.js";
 
 export default function Dashboard({
     chainId,
@@ -172,7 +173,7 @@ export default function Dashboard({
             <>
                 <br />
                 <br />
-                <Col style={{ 'text-align': 'right' }}>
+                {/* <Col style={{ 'text-align': 'right' }}>
                     <OverlayTrigger overlay={account == null ? <Tooltip id="tooltip-disabled">Account Connection Required</Tooltip> : <div></div>}>
                         <span>
                             <Button
@@ -184,12 +185,18 @@ export default function Dashboard({
                         </span>
                     </OverlayTrigger>
 
-                </Col>
+                </Col> */}
             </>
         );
     }
 
     const filterTypes = ['passedFilter', 'failedFilter', 'openFilter', 'closedFilter'];
+    const filterStatus = {
+        'passedFilter': STRING_CONSTANTS.ACCEPTED,
+        'failedFilter': STRING_CONSTANTS.REJECTED,
+        'openFilter': STRING_CONSTANTS.PENDING,
+        'closedFilter': STRING_CONSTANTS.WITHDRAWN
+    }
     return (
         <>
             <Container fluid>
@@ -210,7 +217,7 @@ export default function Dashboard({
                                             onClick={() => handleFilterChange(type)}
                                         />
                                         &nbsp;
-                                        <Form.Check.Label>{type.substring(0, type.length - 6)}</Form.Check.Label>
+                                        <Form.Check.Label>{filterStatus[type]}</Form.Check.Label>
                                     </Col>
                                 </>
                             ))}

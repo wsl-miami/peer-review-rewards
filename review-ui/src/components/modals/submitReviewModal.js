@@ -48,7 +48,7 @@ class SubmitReviewModal extends Component {
     async handleReview(e) {
         e.preventDefault();
         this.setState({ isReviewed: true });
-        const msg = `0x${Buffer.from(this.state.note, 'utf8').toString('hex')}`;
+        // const msg = `0x${Buffer.from(this.state.note, 'utf8').toString('hex')}`;
         // const sign = await window.ethereum.request({
         //     method: 'personal_sign',
         //     params: [msg, this.props.account, 'Example password'],
@@ -170,26 +170,13 @@ class SubmitReviewModal extends Component {
                 centered
             >
                 <Modal.Header closeButton>
-                    <Modal.Title>Confirm Review Submission</Modal.Title>
+                    <Modal.Title>Review Submission</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form onSubmit={(e) => this.handleReview(e)}>
                         <Row>
                             <Form.Group as={Col}>
-                                <Row className='align-items-center'>
-                                    <Col md={{ span: 2 }}>
-                                        <Form.Label>File:</Form.Label>
-                                    </Col>
-                                    <Col>
-                                        <Form.Control
-                                            type="file"
-                                            onChange={e => this.setState({ review: e.target.files[0] })}
-                                            required
-                                        />
-                                    </Col>
-                                </Row>
-                                <br />
-                                <Row className='align-items-center'>
+                                {/* <Row className='align-items-center'>
                                     <Col md={{ span: 2 }}>
                                         <Form.Label>Note:</Form.Label>
                                     </Col>
@@ -201,8 +188,7 @@ class SubmitReviewModal extends Component {
                                             placeholder="Unique note used to claim reputation"
                                         />
                                     </Col>
-                                </Row>
-                                <br />
+                                </Row> */}
                                 <Row>
                                     <Col>
                                         <strong>Reader Interest:</strong>
@@ -455,6 +441,19 @@ class SubmitReviewModal extends Component {
                                             </Form.Control>
                                         </Col>
                                     </Row>
+                                </Row>
+                                <br />
+                                <Row className='align-items-center'>
+                                    <Col md={{ span: 4 }}>
+                                        <Form.Label>Upload Review Comments:</Form.Label>
+                                    </Col>
+                                    <Col>
+                                        <Form.Control
+                                            type="file"
+                                            onChange={e => this.setState({ review: e.target.files[0] })}
+                                            required
+                                        />
+                                    </Col>
                                 </Row>
                             </Form.Group>
                         </Row>

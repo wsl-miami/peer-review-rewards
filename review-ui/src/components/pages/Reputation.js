@@ -9,6 +9,7 @@ import Button from 'react-bootstrap/Button';
 import Web3 from 'web3';
 import RewardTokens from "./RewardTokens";
 import Container from 'react-bootstrap/Container';
+import STRING_CONSTANTS from "../../constants";
 
 
 export default function Reputation({
@@ -143,7 +144,7 @@ export default function Reputation({
                 <Row>
                     <div class="d-flex justify-content-between" style={{'margin': '5px'}}>
                         <h3>
-                            Tokens
+                            {STRING_CONSTANTS.TOKENS}
                         </h3>
                         <div>
                             <span className="badge bg-primary clickable-badges" style={{'font-size': '16px'}}>
