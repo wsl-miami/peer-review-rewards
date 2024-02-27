@@ -15,13 +15,14 @@ import { FaList, FaHome, FaBookReader, FaEdit, FaMedal } from "react-icons/fa";
 import { FiHome, FiLogOut, FiArrowLeftCircle, FiArrowRightCircle } from "react-icons/fi";
 import {SiCodereview} from "react-icons/si";
 import { MdSettingsSuggest } from "react-icons/md";
-import { BiCog } from "react-icons/bi";
+import { TiInfoLarge } from "react-icons/ti";
 
 import Editor from '../pages/Editor';
 import Review from '../pages/Review';
 import Author from '../pages/Author';
 import Home from '../pages/Home.js';
 import Reputation from "../pages/Reputation";
+import About from "../pages/About"
 import Settings from "../pages/Settings";
 
 
@@ -149,9 +150,13 @@ export default function SideNav(
               >Reputation</MenuItem>
 
             </Menu>
-            {/* <Menu iconShape="square" menuItemStyles={menuItemStyles}>
-              <MenuItem icon={<FiLogOut />}>Logout</MenuItem>
-            </Menu> */}
+            <Menu iconShape="square" menuItemStyles={menuItemStyles}>
+              <MenuItem 
+                icon={<TiInfoLarge />}
+                active={useLocation().pathname.includes('about')}
+                component={<Link to="/about" className="link" />}
+              >About Us</MenuItem>
+            </Menu>
         </Sidebar>
       <main style={{width: '100%'}}>
           {/* <div> */}
@@ -212,6 +217,11 @@ export default function SideNav(
                         SoulBoundContract={SoulBoundContract}
                         ReviewRewardTokenContract={ReviewRewardTokenContract}
                         account={account}
+                    />}
+                />
+                <Route path="/about"
+                    element={<About
+                        PRContract={PRContract}
                     />}
                 />
             </Routes>
