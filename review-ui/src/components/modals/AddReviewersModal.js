@@ -98,7 +98,7 @@ class AddReviewersModal extends React.Component {
                 centered
             >
                 <Modal.Header closeButton>
-                    <Modal.Title>Add Reviewers</Modal.Title>
+                    <Modal.Title>Assign Reviewers</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form onSubmit={(e) => e.preventDefault()}>
@@ -155,7 +155,7 @@ class AddReviewersModal extends React.Component {
                                 <Button
                                     onClick={this.handleIncrement}
                                 >
-                                    Add Entry
+                                    Add More Reviewers
                                 </Button>
                             </Col>
                             <Col>
@@ -163,7 +163,7 @@ class AddReviewersModal extends React.Component {
                                     onClick={() => this.handleAddReviewers()}
                                     variant='success'
                                 >
-                                    Submit Reviewer
+                                    Assign Reviewers
                                 </Button>
                             </Col>
                         </Row>

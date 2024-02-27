@@ -20,7 +20,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import { BsFillSendArrowUpFill } from "react-icons/bs";
 import { MdCancel } from "react-icons/md";
 import axios from "axios";
-import { SiCodereview } from "react-icons/si";
+import STRING_CONSTANTS from '../../constants.js'
 
 export default function Manuscripts({
     account,
@@ -156,7 +156,7 @@ export default function Manuscripts({
                     <Form.Group as={Col}>
                         <Row>
                             <Col>
-                                <Form.Label>Publish or Deny?</Form.Label>
+                                <Form.Label>Accept for publication or Reject</Form.Label>
                             </Col>
                             <Col>
                                 <Form.Select
@@ -164,8 +164,8 @@ export default function Manuscripts({
                                     onChange={e => setPassedOrFailed(e.target.value)}
                                     required
                                 >
-                                    <option>Publish</option>
-                                    <option>Deny</option>
+                                    <option>Accept</option>
+                                    <option>Reject</option>
                                 </Form.Select>
                             </Col>
                         </Row>
@@ -183,12 +183,12 @@ export default function Manuscripts({
                 centered
             >
                 <Modal.Header closeButton>
-                    <Modal.Title>Confirm Article {type === 'author' ? 'Cancellation' : 'Closure'}</Modal.Title>
+                    <Modal.Title>Confirm Manuscript {type === 'author' ? 'Withdrawal' : 'Decision'}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Row>
                         <Col>
-                            <h6>Are you sure want to {type === 'author' ? 'cancel' : 'close'} the article with id: {bounty.blockManuscriptId}?</h6>
+                            <h6>Are you sure want to {type === 'author' ? 'withdraw' : 'submit a decision for'} the manuscript?</h6>
                         </Col>
                     </Row>
                     <Form onSubmit={(e) => e.preventDefault()}>
@@ -313,7 +313,7 @@ export default function Manuscripts({
                                 onClick={handleShowOpenReviewer}
                                 variant='outline-primary'
                             >
-                                Add Reviewers
+                                Assign Reviewers
                             </Button>
                         </Row>
                     </OverlayTrigger>
@@ -420,7 +420,7 @@ export default function Manuscripts({
             return (
                 <>
                     {/* <span className="close">Cancelled</span> */}
-                    <span className="badge rounded-pill bg-warning">Cancelled</span>
+                    <span className="badge rounded-pill bg-warning">Withdrawn</span>
 
                 </>
             );
@@ -429,7 +429,7 @@ export default function Manuscripts({
             return (
                 <>
                     {/* <span className="open">Open</span> */}
-                    <span className="badge rounded-pill bg-primary">Open</span>
+                    <span className="badge rounded-pill bg-primary">Pending</span>
                 </>
             );
         }
@@ -446,7 +446,7 @@ export default function Manuscripts({
             return (
                 <>
                     {/* <span className="failed">Failed</span> */}
-                    <span className="badge rounded-pill bg-danger">Failed</span>
+                    <span className="badge rounded-pill bg-danger">Rejected</span>
                 </>
             );
         }
@@ -546,7 +546,7 @@ export default function Manuscripts({
                                 variant='danger'
                                 className="action"
                             >
-                               <MdCancel />Cancel Submission
+                               <MdCancel />{ STRING_CONSTANTS.WITHDRAW_ACTION }
                             </Button>
                         </span>
                     </OverlayTrigger>
@@ -574,7 +574,7 @@ export default function Manuscripts({
                                     variant='success'
                                     className="action"
                                 >
-                                    Close Manuscript
+                                    {STRING_CONSTANTS.DECISION_ACTION}
                                 </Button>
                             </span>
                         </OverlayTrigger>

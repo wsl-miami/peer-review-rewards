@@ -9,6 +9,7 @@ import Modal from 'react-bootstrap/Modal';
 // import bs58 from 'bs58'
 // import {Buffer} from 'buffer';
 import axios from "axios";
+import STRING_CONSTANTS from "../../constants";
 const FormData = require('form-data');
 
 const Web3 = require("web3");
@@ -154,15 +155,15 @@ class OpenBountyModal extends React.Component {
                 centered
             >
                 <Modal.Header closeButton>
-                    <Modal.Title>Open a Article</Modal.Title>
+                    <Modal.Title>Submit a Manuscript</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
                         <Row>
                             <Form.Group as={Col}>
                                 <Row className='align-items-center'>
-                                    <Col md={{span:2}}>
-                                        <Form.Label>Article:</Form.Label>
+                                    <Col md={{span:3}}>
+                                        <Form.Label>Manuscript:</Form.Label>
                                     </Col>
                                     <Col>
                                         <Form.Control 
@@ -175,7 +176,7 @@ class OpenBountyModal extends React.Component {
                             <Form.Group as={Col}>
                                 <Row className='align-items-center'>
                                     <Col md={{span:2}}>
-                                        <Form.Label>Editor:</Form.Label>
+                                        <Form.Label>Journal:</Form.Label>
                                     </Col>
                                     <Col>
                                         <Form.Control 
@@ -228,7 +229,7 @@ class OpenBountyModal extends React.Component {
                                 <Button
                                     onClick={this.handleOpenBounty}
                                 >
-                                    Submit Article
+                                    {STRING_CONSTANTS.SUBMIT_ACTION}
                                 </Button>
                             </Col>
                         </Row>
