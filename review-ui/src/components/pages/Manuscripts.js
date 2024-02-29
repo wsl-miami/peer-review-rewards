@@ -266,7 +266,9 @@ export default function Manuscripts({
         );
     }
     const isEditorDisabled = () => {
-        if (!bounty.open || bounty.review_links.length > 0) {
+        // if (!bounty.open || bounty.review_links.length > 0) {
+        if (!bounty.open) {
+
             return true;
         }
         else {
@@ -285,9 +287,9 @@ export default function Manuscripts({
         if (!bounty.open) {
             return 'Article is closed.';
         }
-        else if (bounty.review_links.length > 0) {
-            return 'Reviews have been submitted.';
-        }
+        // else if (bounty.review_links.length > 0) {
+        //     return 'Reviews have been submitted.';
+        // }
     }
     const editorClosedDisabledString = () => {
         if (!bounty.open) {
@@ -420,7 +422,7 @@ export default function Manuscripts({
             return (
                 <>
                     {/* <span className="close">Cancelled</span> */}
-                    <span className="badge rounded-pill bg-warning">Withdrawn</span>
+                    <span className="badge rounded-pill bg-warning">{STRING_CONSTANTS.STATUS.WITHDRAWN.text}</span>
 
                 </>
             );
@@ -429,7 +431,7 @@ export default function Manuscripts({
             return (
                 <>
                     {/* <span className="open">Open</span> */}
-                    <span className="badge rounded-pill bg-primary">Pending</span>
+                    <span className="badge rounded-pill bg-primary">{STRING_CONSTANTS.STATUS.PENDING.text}</span>
                 </>
             );
         }
@@ -437,7 +439,7 @@ export default function Manuscripts({
             return (
                 <>
                     {/* <span className="passed">Accepted</span> */}
-                    <span className="badge rounded-pill bg-success">Accepted</span>
+                    <span className="badge rounded-pill bg-success">{STRING_CONSTANTS.STATUS.ACCEPTED.text}</span>
 
                 </>
             );
@@ -446,7 +448,7 @@ export default function Manuscripts({
             return (
                 <>
                     {/* <span className="failed">Failed</span> */}
-                    <span className="badge rounded-pill bg-danger">Rejected</span>
+                    <span className="badge rounded-pill bg-danger">{STRING_CONSTANTS.STATUS.REJECTED.text}</span>
                 </>
             );
         }
@@ -469,7 +471,8 @@ export default function Manuscripts({
             <td>
                 <OverlayTrigger overlay= {<Tooltip id="tooltip-disabled">{`${bounty.journal}`}</Tooltip>}>
                     <span>
-                        {bounty && bounty.journal && `${bounty.journal.substring(0, 5)}...${bounty.journal.substring(bounty.journal.length - 4, bounty.journal.length)}`}
+                        {bounty && bounty.journal_name 
+                        || bounty && bounty.journal && `${bounty.journal.substring(0, 5)}...${bounty.journal.substring(bounty.journal.length - 4, bounty.journal.length)}`}
                     </span>
                 </OverlayTrigger>
             </td>
@@ -479,7 +482,8 @@ export default function Manuscripts({
                         return (
                             <OverlayTrigger overlay= {<Tooltip id="tooltip-disabled">{`${reviewer.REVIEWER_HASH}`}</Tooltip>}>
                                 <span key={index} className="badge bg-light text-dark clickable-badges">
-                                    {reviewer && reviewer.REVIEWER_HASH && `${reviewer.REVIEWER_HASH.substring(0, 5)}...${reviewer.REVIEWER_HASH.substring(reviewer.REVIEWER_HASH.length - 4, reviewer.REVIEWER_HASH.length)}`}
+                                    {reviewer && reviewer.FIRST_NAME && reviewer.LAST_NAME && `${reviewer.FIRST_NAME} ${reviewer.LAST_NAME}` 
+                                    || reviewer && reviewer.REVIEWER_HASH && `${reviewer.REVIEWER_HASH.substring(0, 5)}...${reviewer.REVIEWER_HASH.substring(reviewer.REVIEWER_HASH.length - 4, reviewer.REVIEWER_HASH.length)}`}
                                 </span>
                             </OverlayTrigger>
                         )

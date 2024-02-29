@@ -10,6 +10,7 @@ import FormControl from 'react-bootstrap/FormControl';
 import Card from 'react-bootstrap/Card';
 
 import axios from "axios";
+import STRING_CONSTANTS from "../../constants";
 
 export default function Settings({
     PRContract,
@@ -74,7 +75,7 @@ export default function Settings({
                     <Col>
                         <Card className="border-primary mb-5">
                             <Card.Body>
-                                <Card.Title className="border-bottom border-primary">Soul Bound Tokens (SBT)</Card.Title>
+                                <Card.Title className="border-bottom border-primary">{STRING_CONSTANTS.SBT}</Card.Title>
                             <Card.Text>
                             Tokens of recognition assigned to reviewers for each review submitted. 
                             The system automatically assigns one token per review.
@@ -85,10 +86,10 @@ export default function Settings({
                     <Col>
                         <Card className="border-success mb-5">
                             <Card.Body>
-                                <Card.Title className="border-bottom border-success">Review Reward Tokens (RRT)</Card.Title>
+                                <Card.Title className="border-bottom border-success">{STRING_CONSTANTS.RRT}</Card.Title>
                             <Card.Text>
                             Transferrable utility tokens that reviewers can use for subscriptions. 
-                            If you want to enable distribution of RRT tokens, please fill in the 
+                            If you want to enable distribution of {STRING_CONSTANTS.RRT}, please fill in the 
                             details below.
                             </Card.Text>
                             </Card.Body>
@@ -97,7 +98,7 @@ export default function Settings({
                 </Row>
                 <Row>
                     <h2 className="pb-2 border-bottom">Reward Policy</h2>
-                    <p className="lead">Enable this option to automatically assign RRT tokens to reviewers. Once activated, the reviewers will receive RRT tokens for the papers they review. Select the number of tokens that should be assigned per review.</p>
+                    <p className="lead">Enable this option to automatically assign {STRING_CONSTANTS.RRT} to reviewers. Once activated, the reviewers will receive {STRING_CONSTANTS.RRT} for the papers they review. Select the number of tokens that should be assigned per review.</p>
 
 
                     <Form>
@@ -132,7 +133,7 @@ export default function Settings({
                                     Review submitted within deadline
                                 </Form.Label>
                                 <InputGroup className="mb-2">
-                                    <InputGroup.Text>RRT</InputGroup.Text>
+                                    <InputGroup.Text>{STRING_CONSTANTS.RRT_SHORTENED}</InputGroup.Text>
                                     <FormControl 
                                         id="rrt_within_deadline"
                                         placeholder="Tokens per review" 
@@ -147,7 +148,7 @@ export default function Settings({
                                     Review submited after deadline
                                 </Form.Label>
                                 <InputGroup className="mb-2">
-                                    <InputGroup.Text>RRT</InputGroup.Text>
+                                    <InputGroup.Text>{STRING_CONSTANTS.RRT_SHORTENED}</InputGroup.Text>
                                     <FormControl 
                                         id="rrt_after_deadline"
                                         placeholder="Tokens per review" 

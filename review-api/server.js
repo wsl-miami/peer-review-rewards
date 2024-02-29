@@ -18,6 +18,8 @@ const REWARDS_TABLE = 'REWARD_ALLOCATION';
 const REWARD_SETTINGS_TABLE = 'REWARD_SETTINGS';
 const REVIEWS_TABLE = 'REVIEWS';
 const MANUSCRIPTS_TABLE = 'MANUSCRIPTS';
+const JOURNALS_TABLE = 'JOURNALS';
+const USERS_TABLE = 'USERS';
 
 app.use(cors({
   origin: '*'
@@ -321,6 +323,7 @@ app.get('/api/get-assigned-reviewers', async(req, res) => {
   try {
     const reviewers = await knex(REVIEWS_TABLE)
                                   .join(MANUSCRIPTS_TABLE, `${MANUSCRIPTS_TABLE}.ID`,  `${REVIEWS_TABLE}.MANUSCRIPTS_ID`)
+                                  .join(USERS_TABLE, `${USERS_TABLE}.USER_HASH`, `${REVIEWS_TABLE}.REVIEWER_HASH`)
                                   .where(`${MANUSCRIPTS_TABLE}.ARTICLE_HASH`, article_hash)
                                   .select(
                                     `${REVIEWS_TABLE}.ID as ID`,
@@ -328,6 +331,9 @@ app.get('/api/get-assigned-reviewers', async(req, res) => {
                                     `${MANUSCRIPTS_TABLE}.ARTICLE_HASH`,
                                     `${REVIEWS_TABLE}.TIME_STAMP as TIME_STAMP`,
                                     `${REVIEWS_TABLE}.DEADLINE`,
+                                    `${USERS_TABLE}.FIRST_NAME`,
+                                    `${USERS_TABLE}.MIDDLE_NAME`,
+                                    `${USERS_TABLE}.LAST_NAME`,
                                   );
 
     res.send({success: true, reviewers});
@@ -399,13 +405,15 @@ app.get('/api/get-manuscripts-by-author', async(req, res)  => {
   const author_hash = req.query.author_hash;
   try {
     const manuscripts = await knex(MANUSCRIPTS_TABLE)
+                                  .join(JOURNALS_TABLE, `${JOURNALS_TABLE}.JOURNAL_HASH`, `${MANUSCRIPTS_TABLE}.JOURNAL_HASH`)
                                   .select(
                                     'AUTHOR_HASH',
                                     'ARTICLE_HASH',
                                     'TIME_STAMP',
-                                    'JOURNAL_HASH',
+                                    `${MANUSCRIPTS_TABLE}.JOURNAL_HASH`,
                                     'REVIEW_HASHES as REVIEW_HASH',
                                     `${MANUSCRIPTS_TABLE}.DEADLINE`,
+                                    `${JOURNALS_TABLE}.JOURNAL_NAME`,
                                     knex.raw(`(SELECT COUNT(REVIEWER_HASH) from ${REVIEWS_TABLE} where ${REVIEWS_TABLE}.ARTICLE_HASH = ${MANUSCRIPTS_TABLE}.ARTICLE_HASH) as REVIEWERS_COUNT`)
                                   )
                                   .where('AUTHOR_HASH', author_hash);
@@ -429,10 +437,12 @@ app.get('/api/get-manuscripts-by-reviewer', async(req, res)  => {
       `${REVIEWS_TABLE}.TIME_STAMP`,
       `${MANUSCRIPTS_TABLE}.JOURNAL_HASH`,
       `${REVIEWS_TABLE}.REVIEW_HASH`,
-      `${MANUSCRIPTS_TABLE}.DEADLINE`
+      `${MANUSCRIPTS_TABLE}.DEADLINE`,
+      `${JOURNALS_TABLE}.JOURNAL_NAME`
      )
      .table(REVIEWS_TABLE)
      .join(MANUSCRIPTS_TABLE, `${REVIEWS_TABLE}.MANUSCRIPTS_ID`, `${MANUSCRIPTS_TABLE}.ID`)
+     .join(JOURNALS_TABLE, `${JOURNALS_TABLE}.JOURNAL_HASH`, `${MANUSCRIPTS_TABLE}.JOURNAL_HASH`)
      .where(`${REVIEWS_TABLE}.REVIEWER_HASH`, reviewer_hash);
 
     console.log('manuscript details', manuscript_details);
@@ -530,13 +540,15 @@ app.get('/api/get-manuscripts-by-journal', async(req, res)  => {
   const journal_hash = req.query.journal_hash;
   try {
     const manuscripts = await knex(MANUSCRIPTS_TABLE)
+                                  .join(JOURNALS_TABLE, `${JOURNALS_TABLE}.JOURNAL_HASH`, `${MANUSCRIPTS_TABLE}.JOURNAL_HASH`)
                                   .select(
                                     'AUTHOR_HASH',
                                     'ARTICLE_HASH',
                                     'TIME_STAMP',
-                                    'JOURNAL_HASH',
+                                    `${MANUSCRIPTS_TABLE}.JOURNAL_HASH`,
                                     'REVIEW_HASHES as REVIEW_HASH',
                                     `${MANUSCRIPTS_TABLE}.DEADLINE`,
+                                    `${JOURNALS_TABLE}.JOURNAL_NAME`,
                                     knex.raw(`(SELECT COUNT(REVIEWER_HASH) from ${REVIEWS_TABLE} where ${REVIEWS_TABLE}.ARTICLE_HASH = ${MANUSCRIPTS_TABLE}.ARTICLE_HASH) as REVIEWERS_COUNT`)
                                   )
                                   .where(`${MANUSCRIPTS_TABLE}.JOURNAL_HASH`, journal_hash);
@@ -692,6 +704,51 @@ app.post('/api/update-review-settings', async(req, res) => {
   }
 
   res.send({ success: true, settings});
+});
+
+app.get('/api/get-journals', async(req, res) => {
+  try {
+
+    const journals = await knex(JOURNALS_TABLE).select();
+    console.log('journals', journals);
+
+    res.send({success: true, journals});
+
+  } catch (err) {
+    console.log('err here', err);
+    res.send({success: false, error_code: 'SERVERSIDEERROR', message: err});
+  }
+});
+
+app.get('/api/get-reviewers', async(req, res) => {
+  try {
+
+    const reviewers = await knex(USERS_TABLE)
+                            .where('USER_ROLE', 'reviewer')
+                            .select();
+
+    res.send({success: true, reviewers});
+
+  } catch (err) {
+    console.log('err here', err);
+    res.send({success: false, error_code: 'SERVERSIDEERROR', message: err});
+  }
+});
+
+app.get('/api/get-journal-detail', async(req, res) => {
+  try {
+    const journal_hash = req.query.journal_hash;
+
+    const journal = await knex(JOURNALS_TABLE)
+                            .where('journal_hash', journal_hash)
+                            .first();
+
+    res.send({success: true, journal});
+
+  } catch (err) {
+    console.log('err here', err);
+    res.send({success: false, error_code: 'SERVERSIDEERROR', message: err});
+  }
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

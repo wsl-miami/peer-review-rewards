@@ -99,3 +99,39 @@ CREATE TABLE REWARD_ALLOCATION (
     FOREIGN KEY (reviews_id)
     REFERENCES reviews(id)
 );
+
+-- users: id, user_hash, first_name, middle_name, last_name, dob, role[author, editor, reviewer], email
+-- journals: id, journal_hash, journal_name
+
+
+CREATE TABLE users (
+  id NUMBER GENERATED ALWAYS AS IDENTITY,
+  user_hash VARCHAR2(100),
+  first_name VARCHAR2(100),
+  middle_name VARCHAR2(100),
+  last_name VARCHAR2(100),
+  date_of_birth DATE,
+  user_role VARCHAR(10),
+  email VARCHAR(100),
+  time_stamp timestamp
+);
+
+CREATE TABLE journals (
+  id NUMBER GENERATED ALWAYS AS IDENTITY,
+  journal_hash VARCHAR(100),
+  journal_name VARCHAR(100)
+);
+
+INSERT INTO JOURNALS (JOURNAL_HASH, JOURNAL_NAME)
+VALUES ('0xcc5e48A23A7Db6FFda9facc76Db4A2aB5a89c80A', 'IEEV Journal');
+
+INSERT INTO users (USER_HASH, FIRST_NAME, LAST_NAME, DATE_OF_BIRTH, USER_ROLE, EMAIL, TIME_STAMP)
+VALUES
+('0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6', 'Pratiksha', 'Shrestha', TO_DATE('1997/07/16', 'yyyy/mm/dd'), 'author', 'shrestp9@miamioh.edu', CURRENT_TIMESTAMP);
+
+
+INSERT INTO users (USER_HASH, FIRST_NAME, LAST_NAME, DATE_OF_BIRTH, USER_ROLE, EMAIL, TIME_STAMP)
+VALUES
+('0xcc5e48A23A7Db6FFda9facc76Db4A2aB5a89c80A', 'Arthur', 'Carvalho', TO_DATE('1980/02/12', 'yyyy/mm/dd'), 'editor', 'test1@gmail.com', CURRENT_TIMESTAMP),
+('0x9ae658c7300849D0A8E61d7098848750afDA88eF', 'Suman', 'Bhunia', TO_DATE('1990/04/11', 'yyyy/mm/dd'), 'reviewer', 'test2@gmail.com', CURRENT_TIMESTAMP),
+('0x93Ca3d98200a35ba6a7d703188C200b000B9FDb7', 'Gabe', 'Lee', TO_DATE('1983/11/23', 'yyyy/mm/dd'), 'reviewer', 'test3@gmail.com', CURRENT_TIMESTAMP);

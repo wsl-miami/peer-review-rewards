@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Container from 'react-bootstrap/Container';
+import STRING_CONSTANTS from "../../constants";
 // const oracledb = require('oracledb');
 
 
@@ -8,7 +9,7 @@ export default function About({
 }) {
     return (
         <Container fluid className="px-4 py-5 my-5 text-center">
-            <h1 className="display-5 fw-bold">Review Rewards</h1>
+            <h1 className="display-5 fw-bold">{STRING_CONSTANTS.PROJECT_NAME}</h1>
             <div className="col-lg-8 mx-auto">
             <p>
                 Peer review in academia often relies on a “culture of service” as reviewers 

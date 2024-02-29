@@ -8,7 +8,6 @@ import NoBounties from '../general/NoBounties.js';
 import Spinner from 'react-bootstrap/Spinner';
 import openBountyButton from '../../static/createNewButton.png';
 import OpenBountyModal from '../modals/OpenBountyModal.js';
-import BountyCard from "./BountyCard";
 import Manuscripts from "./Manuscripts";
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
@@ -192,10 +191,10 @@ export default function Dashboard({
 
     const filterTypes = ['passedFilter', 'failedFilter', 'openFilter', 'closedFilter'];
     const filterStatus = {
-        'passedFilter': STRING_CONSTANTS.ACCEPTED,
-        'failedFilter': STRING_CONSTANTS.REJECTED,
-        'openFilter': STRING_CONSTANTS.PENDING,
-        'closedFilter': STRING_CONSTANTS.WITHDRAWN
+        'passedFilter': STRING_CONSTANTS.STATUS.ACCEPTED.text,
+        'failedFilter': STRING_CONSTANTS.STATUS.REJECTED.text,
+        'openFilter': STRING_CONSTANTS.STATUS.PENDING.text,
+        'closedFilter': STRING_CONSTANTS.STATUS.WITHDRAWN.text
     }
     return (
         <>

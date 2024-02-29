@@ -38,6 +38,7 @@ import WrongChain from "./components/modals/WrongChain";
 import Reputation from "./components/pages/Reputation";
 import Settings from "./components/pages/Settings";
 import axios from "axios";
+import STRING_CONSTANTS from "./constants.js";
 
 const { RelayProvider } = require('@opengsn/provider');
 // const oracledb = require('oracledb');
@@ -319,7 +320,8 @@ class App extends Component {
                     reviewers: [],
                     reviewers_count: reviewers_count,
                     submission_date: manuscript.TIME_STAMP,
-                    review_deadline: manuscript.DEADLINE
+                    review_deadline: manuscript.DEADLINE,
+                    journal_name: manuscript.JOURNAL_NAME
                 });
             // }
             authorManuscriptId = authorManuscriptId+1;
@@ -377,7 +379,8 @@ class App extends Component {
                     reviewers_count: reviewers_count,
                     blockManuscriptId: null,
                     submission_date: manuscript.TIME_STAMP,
-                    review_deadline: manuscript.DEADLINE
+                    review_deadline: manuscript.DEADLINE,
+                    journal_name: manuscript.JOURNAL_NAME
                 });
             // }
 
@@ -435,7 +438,8 @@ class App extends Component {
                     reviewers: [],
                     reviewers_count: 0,
                     submission_date: manuscript.TIME_STAMP,
-                    review_deadline: manuscript.DEADLINE
+                    review_deadline: manuscript.DEADLINE,
+                    journal_name: manuscript.JOURNAL_NAME
                 });
             // }
 
@@ -470,7 +474,7 @@ class App extends Component {
                                         height="40"
                                     //className="d-inline-block align-top"
                                     />{' '}
-                                    Review Rewards
+                                    {STRING_CONSTANTS.PROJECT_NAME}
                                 </Navbar.Brand>
                                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                                 <Navbar.Collapse id="basic-navbar-nav">
