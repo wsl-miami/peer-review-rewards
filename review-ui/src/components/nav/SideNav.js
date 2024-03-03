@@ -13,17 +13,15 @@ import {
 
 //import icons from react icons
 import { FaList, FaHome, FaBookReader, FaEdit, FaMedal } from "react-icons/fa";
-import { FiHome, FiLogOut, FiArrowLeftCircle, FiArrowRightCircle } from "react-icons/fi";
+import { FiArrowLeftCircle, FiArrowRightCircle } from "react-icons/fi";
 import {SiCodereview} from "react-icons/si";
-import { MdSettingsSuggest } from "react-icons/md";
-import { TiInfoLarge } from "react-icons/ti";
+import { MdSettingsSuggest, MdDashboard } from "react-icons/md";
 
 import Editor from '../pages/Editor';
 import Review from '../pages/Review';
 import Author from '../pages/Author';
 import Home from '../pages/Home.js';
 import Reputation from "../pages/Reputation";
-import About from "../pages/About"
 import Settings from "../pages/Settings";
 
 
@@ -137,7 +135,7 @@ export default function SideNav(
               >
                 <MenuItem 
                   active={location.includes('editor')} 
-                  icon={<FaBookReader />}
+                  icon={<MdDashboard />}
                   component={<Link to="/editor" className="link" />}
                 >Dashboard</MenuItem>
                 <MenuItem 
@@ -153,9 +151,9 @@ export default function SideNav(
                 label="Reviewer">
                 <MenuItem 
                   active={location.includes('review')} 
-                  icon={<SiCodereview />} 
+                  icon={<MdDashboard />} 
                   component={<Link to="/review" className="link" />}
-                >Reviewer</MenuItem>
+                >Dashboard</MenuItem>
                 <MenuItem 
                   active={location.includes('reputation')} 
                   icon={<FaMedal />} 
