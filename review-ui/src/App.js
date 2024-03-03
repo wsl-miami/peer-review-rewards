@@ -321,7 +321,9 @@ class App extends Component {
                     reviewers_count: reviewers_count,
                     submission_date: manuscript.TIME_STAMP,
                     review_deadline: manuscript.DEADLINE,
-                    journal_name: manuscript.JOURNAL_NAME
+                    journal_name: manuscript.JOURNAL_NAME,
+                    decision_status: manuscript.DECISION_STATUS,
+                    editor_note: manuscript.EDITOR_NOTE
                 });
             // }
             authorManuscriptId = authorManuscriptId+1;
@@ -380,7 +382,9 @@ class App extends Component {
                     blockManuscriptId: null,
                     submission_date: manuscript.TIME_STAMP,
                     review_deadline: manuscript.DEADLINE,
-                    journal_name: manuscript.JOURNAL_NAME
+                    journal_name: manuscript.JOURNAL_NAME,
+                    decision_status: manuscript.DECISION_STATUS,
+                    editor_note: manuscript.EDITOR_NOTE
                 });
             // }
 
@@ -439,7 +443,9 @@ class App extends Component {
                     reviewers_count: 0,
                     submission_date: manuscript.TIME_STAMP,
                     review_deadline: manuscript.DEADLINE,
-                    journal_name: manuscript.JOURNAL_NAME
+                    journal_name: manuscript.JOURNAL_NAME,
+                    decision_status: manuscript.DECISION_STATUS,
+                    editor_note: manuscript.EDITOR_NOTE
                 });
             // }
 

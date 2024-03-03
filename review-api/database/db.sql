@@ -135,3 +135,7 @@ VALUES
 ('0xcc5e48A23A7Db6FFda9facc76Db4A2aB5a89c80A', 'Arthur', 'Carvalho', TO_DATE('1980/02/12', 'yyyy/mm/dd'), 'editor', 'test1@gmail.com', CURRENT_TIMESTAMP),
 ('0x9ae658c7300849D0A8E61d7098848750afDA88eF', 'Suman', 'Bhunia', TO_DATE('1990/04/11', 'yyyy/mm/dd'), 'reviewer', 'test2@gmail.com', CURRENT_TIMESTAMP),
 ('0x93Ca3d98200a35ba6a7d703188C200b000B9FDb7', 'Gabe', 'Lee', TO_DATE('1983/11/23', 'yyyy/mm/dd'), 'reviewer', 'test3@gmail.com', CURRENT_TIMESTAMP);
+
+alter table manuscripts add decision_status NUMBER(1) default 0;
+alter table manuscripts add editor_note NCLOB;
+

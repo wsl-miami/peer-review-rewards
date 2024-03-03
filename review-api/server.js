@@ -414,6 +414,8 @@ app.get('/api/get-manuscripts-by-author', async(req, res)  => {
                                     'REVIEW_HASHES as REVIEW_HASH',
                                     `${MANUSCRIPTS_TABLE}.DEADLINE`,
                                     `${JOURNALS_TABLE}.JOURNAL_NAME`,
+                                    `${MANUSCRIPTS_TABLE}.DECISION_STATUS`,
+                                    `${MANUSCRIPTS_TABLE}.EDITOR_NOTE`,
                                     knex.raw(`(SELECT COUNT(REVIEWER_HASH) from ${REVIEWS_TABLE} where ${REVIEWS_TABLE}.ARTICLE_HASH = ${MANUSCRIPTS_TABLE}.ARTICLE_HASH) as REVIEWERS_COUNT`)
                                   )
                                   .where('AUTHOR_HASH', author_hash);
@@ -438,7 +440,9 @@ app.get('/api/get-manuscripts-by-reviewer', async(req, res)  => {
       `${MANUSCRIPTS_TABLE}.JOURNAL_HASH`,
       `${REVIEWS_TABLE}.REVIEW_HASH`,
       `${MANUSCRIPTS_TABLE}.DEADLINE`,
-      `${JOURNALS_TABLE}.JOURNAL_NAME`
+      `${JOURNALS_TABLE}.JOURNAL_NAME`,
+      `${MANUSCRIPTS_TABLE}.DECISION_STATUS`,
+      `${MANUSCRIPTS_TABLE}.EDITOR_NOTE`,
      )
      .table(REVIEWS_TABLE)
      .join(MANUSCRIPTS_TABLE, `${REVIEWS_TABLE}.MANUSCRIPTS_ID`, `${MANUSCRIPTS_TABLE}.ID`)
@@ -549,6 +553,8 @@ app.get('/api/get-manuscripts-by-journal', async(req, res)  => {
                                     'REVIEW_HASHES as REVIEW_HASH',
                                     `${MANUSCRIPTS_TABLE}.DEADLINE`,
                                     `${JOURNALS_TABLE}.JOURNAL_NAME`,
+                                    `${MANUSCRIPTS_TABLE}.DECISION_STATUS`,
+                                    `${MANUSCRIPTS_TABLE}.EDITOR_NOTE`,
                                     knex.raw(`(SELECT COUNT(REVIEWER_HASH) from ${REVIEWS_TABLE} where ${REVIEWS_TABLE}.ARTICLE_HASH = ${MANUSCRIPTS_TABLE}.ARTICLE_HASH) as REVIEWERS_COUNT`)
                                   )
                                   .where(`${MANUSCRIPTS_TABLE}.JOURNAL_HASH`, journal_hash);
@@ -740,11 +746,31 @@ app.get('/api/get-journal-detail', async(req, res) => {
     const journal_hash = req.query.journal_hash;
 
     const journal = await knex(JOURNALS_TABLE)
-                            .where('journal_hash', journal_hash)
+                            .where('JOURNAL_HASH', journal_hash)
                             .first();
 
     res.send({success: true, journal});
 
+  } catch (err) {
+    console.log('err here', err);
+    res.send({success: false, error_code: 'SERVERSIDEERROR', message: err});
+  }
+});
+
+app.post('/api/update-decision-status', async(req, res) => {
+  try {
+    const decision_status = req.body.decision_status;
+    const manuscript_hash = req.body.manuscript_hash;
+    const editor_note = req.body.editor_note || 'test';
+
+    const updated_manuscript = await knex(MANUSCRIPTS_TABLE)
+            .where('ARTICLE_HASH', manuscript_hash)
+            .update({
+              'DECISION_STATUS': decision_status,
+              'EDITOR_NOTE': editor_note
+            }, ['ID']);
+    
+    res.send({ success: true, manuscript: updated_manuscript });
   } catch (err) {
     console.log('err here', err);
     res.send({success: false, error_code: 'SERVERSIDEERROR', message: err});
