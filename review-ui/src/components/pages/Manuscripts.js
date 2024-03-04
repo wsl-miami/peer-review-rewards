@@ -21,6 +21,7 @@ import { BsFillSendArrowUpFill } from "react-icons/bs";
 import { MdCancel } from "react-icons/md";
 import axios from "axios";
 import STRING_CONSTANTS from '../../constants.js'
+const FormData = require('form-data');
 
 export default function Manuscripts({
     account,
@@ -38,6 +39,8 @@ export default function Manuscripts({
     const [showOpenReviewer, setShowOpenReviewer] = useState(false);
     const [showOpenReview, setShowOpenReview] = useState(false);
     const [passedOrFailed, setPassedOrFailed] = useState("Publish");
+    const [editorDecision, setEditorDecision] = useState(STRING_CONSTANTS.STATUS.ACCEPTED.value);
+    const [editorNote, setEditorNote] = useState(null);
     const [show, setShow] = useState(false);
     const [ipfs32, setIpfs32] = useState('');
     const [reviewers, setReviewers] = useState([]);
@@ -98,20 +101,82 @@ export default function Manuscripts({
             return;
         }
         if (type === 'author') {
-            PRContract.methods.cancelBounty(
-                bounty.id
-            ).send({ from: account })
-                .on('confirmation', (receipt) => {
-                    window.location.reload();
-                });
-        } else if (type === 'editor' && bounty.blockManuscriptId) {
-            PRContract.methods.closeReview(
-                bounty.blockManuscriptId, passedOrFailed == 'Publish'
-            ).send({from: account, gas: 210000})
-            .on('confirmation', (receipt) => {
-                console.log("done!");
-                window.location.reload();
+            const response = await axios({
+                url: `${process.env.REACT_APP_API_URL}/api/update-decision-status`,
+                method: "POST",
+                data: {
+                    decision_status: STRING_CONSTANTS.STATUS.WITHDRAWN.value,
+                    manuscript_hash: bounty.manuscript_link
+                },
             });
+
+            if (response.data && response.data.success) {
+                window.location.reload();
+            } else {
+                alert('Something went wrong. Please try again.');
+            }
+
+            // PRContract.methods.cancelBounty(
+            //     bounty.id
+            // ).send({ from: account })
+            //     .on('confirmation', (receipt) => {
+            //         window.location.reload();
+            //     });
+        } else if (type === 'editor') {
+            let editor_note = editorNote;
+            let decision_status = editorDecision;
+            console.log('decision_status', decision_status);
+            console.log('editor_note', editor_note);
+
+            let pinataRes = null;
+    
+            try {
+                let formData;
+                const authorization = `Bearer ${process.env.REACT_APP_PINATA_API_KEY}`;
+                if (editor_note && editor_note != null) {
+                    formData = new FormData();
+                    formData.append('file', editor_note);
+            
+                    const pinataOptions = JSON.stringify({
+                        cidVersion: 0,
+                    });
+            
+                    formData.append('pinataOptions', pinataOptions);
+                    
+                    pinataRes = await axios.post("https://api.pinata.cloud/pinning/pinFileToIPFS", formData,
+                    {
+                        headers: {
+                            authorization
+                        }
+                    });                   
+                }
+
+                const response = await axios({
+                    url: `${process.env.REACT_APP_API_URL}/api/update-decision-status`,
+                    method: "POST",
+                    data: {
+                        decision_status: decision_status,
+                        manuscript_hash: bounty.manuscript_link,
+                        editor_note: pinataRes.data.IpfsHash
+                    },
+                });
+
+                if (response.data && response.data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Something went wrong. Please try again.');
+                }
+            } catch (err) {
+                alert('Something went wrong. Please try again.');
+                console.log("Error while uploading file: ", err);
+            }
+            // PRContract.methods.closeReview(
+            //     bounty.blockManuscriptId, passedOrFailed == 'Publish'
+            // ).send({from: account, gas: 210000})
+            // .on('confirmation', (receipt) => {
+            //     console.log("done!");
+            //     window.location.reload();
+            // });
             
             // PRContract.methods.closeBounty(
             //     bounty.id, passedOrFailed == 'Publish'
@@ -145,7 +210,7 @@ export default function Manuscripts({
         setShowOpenReview(false);
     }
 
-    const editorPassOrFail = () => {
+    const editorDecisionOptions = () => {
         if (type != 'editor') {
             return '';
         }
@@ -160,13 +225,29 @@ export default function Manuscripts({
                             </Col>
                             <Col>
                                 <Form.Select
-                                    type="text"
-                                    onChange={e => setPassedOrFailed(e.target.value)}
+                                    onChange={e => setEditorDecision(e.target.value)}
                                     required
                                 >
-                                    <option>Accept</option>
-                                    <option>Reject</option>
+                                    <option value={STRING_CONSTANTS.STATUS.ACCEPTED.value}>{STRING_CONSTANTS.DECISION.ACCEPT}</option>
+                                    <option value={STRING_CONSTANTS.STATUS.REJECTED.value}>{STRING_CONSTANTS.DECISION.REJECT}</option>
+                                    <option value={STRING_CONSTANTS.STATUS.NEEDS_REVISION.value}>{STRING_CONSTANTS.DECISION.REVISE}</option>
+                                    <option value={STRING_CONSTANTS.STATUS.NEEDS_REVISION.value}>{STRING_CONSTANTS.DECISION.RESUBMIT}</option>
                                 </Form.Select>
+                            </Col>
+                        </Row>
+                    </Form.Group>
+                </Row>
+                <Row>
+                    <Form.Group as={Col}>
+                        <Row>
+                            <Col>
+                                <Form.Label>Notes: </Form.Label>
+                            </Col>
+                            <Col>
+                                <Form.Control 
+                                    type="file"
+                                    onChange={e => setEditorNote(e.target.files[0])}
+                                />
                             </Col>
                         </Row>
                     </Form.Group>
@@ -209,7 +290,7 @@ export default function Manuscripts({
                             </Form.Group>
                         </Row>
                         <br />
-                        {editorPassOrFail()}
+                        {editorDecisionOptions()}
                         <br />
                         <Row className='text-center'>
                             <Col>
@@ -229,7 +310,7 @@ export default function Manuscripts({
     }
 
     const isAuthorDisabled = () => {
-        if (bounty.review_links.length > 0 || !bounty.open) {
+        if (bounty.decision_status != STRING_CONSTANTS.STATUS.PENDING.value) {
             return true;
         }
         else {
@@ -237,8 +318,8 @@ export default function Manuscripts({
         }
     }
     const authorDisabledString = () => {
-        if (!bounty.open) {
-            return 'Article is closed';
+        if (bounty.decision_status != STRING_CONSTANTS.STATUS.PENDING.value) {
+            return 'Decision has already been made';
         }
         else if (bounty.review_links.length > 0) {
             return 'Reviews have been submitted';
@@ -266,7 +347,8 @@ export default function Manuscripts({
         );
     }
     const isEditorDisabled = () => {
-        if (!bounty.open || bounty.review_links.length > 0) {
+        if (bounty.decision_status != STRING_CONSTANTS.STATUS.PENDING.value) {
+
             return true;
         }
         else {
@@ -274,7 +356,7 @@ export default function Manuscripts({
         }
     }
     const isEditorClosedDisabled = () => {
-        if (!bounty.open || bounty.review_links.length < bounty.reviewers_count) {
+        if (bounty.decision_status != STRING_CONSTANTS.STATUS.PENDING.value) {
             return true;
         }
         else {
@@ -282,20 +364,24 @@ export default function Manuscripts({
         }
     }
     const editorDisabledString = () => {
-        if (!bounty.open) {
-            return 'Article is closed.';
+        if (bounty.decision_status == STRING_CONSTANTS.STATUS.WITHDRAWN.value) {
+            return 'Author has withdrawn the manuscript';
+        }else if (bounty.decision_status != STRING_CONSTANTS.STATUS.PENDING.value) {
+            return 'Decision has already been made.';
         }
         else if (bounty.review_links.length > 0) {
             return 'Reviews have been submitted.';
         }
     }
     const editorClosedDisabledString = () => {
-        if (!bounty.open) {
-            return 'Article is closed.';
+        if (bounty.decision_status == STRING_CONSTANTS.STATUS.WITHDRAWN.value) {
+            return 'Author has withdrawn the manuscript';
+        }else if (bounty.decision_status != STRING_CONSTANTS.STATUS.PENDING.value) {
+            return 'Decision has already been made.';
         }
-        else if (bounty.review_links.length < bounty.reviewers_count) {
-            return 'Reviewers are still working on their reviews.';
-        }
+        // else if (bounty.review_links.length < bounty.reviewers_count) {
+        //     return 'Reviewers are still working on their reviews.';
+        // }
     }
     const editorContent = () => {
         if (type !== 'editor') {
@@ -416,40 +502,35 @@ export default function Manuscripts({
     }
 
     const checkState = () => {
-        if (bounty && bounty.review_links && bounty.review_links.length == 0 && !bounty.open) {
-            return (
-                <>
-                    {/* <span className="close">Cancelled</span> */}
-                    <span className="badge rounded-pill bg-warning">Withdrawn</span>
+        let stateText = '';
+        let classText = 'badge rounded-pill ';
+        switch (Number(bounty.decision_status)) {
+            case STRING_CONSTANTS.STATUS.ACCEPTED.value:
+                stateText = STRING_CONSTANTS.STATUS.ACCEPTED.text;
+                classText += 'bg-success';
+                break;
+            case STRING_CONSTANTS.STATUS.REJECTED.value:
+                stateText = STRING_CONSTANTS.STATUS.REJECTED.text;
+                classText += 'bg-danger';
+                break;
+            case STRING_CONSTANTS.STATUS.WITHDRAWN.value:
+                stateText = STRING_CONSTANTS.STATUS.WITHDRAWN.text;
+                classText += 'bg-warning';
+                break;
+            case STRING_CONSTANTS.STATUS.NEEDS_REVISION.value:
+                stateText = STRING_CONSTANTS.STATUS.NEEDS_REVISION.text;
+                break;
+            case STRING_CONSTANTS.STATUS.PENDING.value:
+                stateText = STRING_CONSTANTS.STATUS.PENDING.text;
+                classText += 'bg-primary';
+                break;
+        }
 
-                </>
-            );
-        }
-        if (bounty.open) {
-            return (
-                <>
-                    {/* <span className="open">Open</span> */}
-                    <span className="badge rounded-pill bg-primary">Pending</span>
-                </>
-            );
-        }
-        if (bounty.accepted) {
-            return (
-                <>
-                    {/* <span className="passed">Accepted</span> */}
-                    <span className="badge rounded-pill bg-success">Accepted</span>
-
-                </>
-            );
-        }
-        else {
-            return (
-                <>
-                    {/* <span className="failed">Failed</span> */}
-                    <span className="badge rounded-pill bg-danger">Rejected</span>
-                </>
-            );
-        }
+        return (
+            <>
+                <span className={classText}>{stateText}</span>
+            </>
+        );
     }
     return (
         <>
@@ -469,7 +550,8 @@ export default function Manuscripts({
             <td>
                 <OverlayTrigger overlay= {<Tooltip id="tooltip-disabled">{`${bounty.journal}`}</Tooltip>}>
                     <span>
-                        {bounty && bounty.journal && `${bounty.journal.substring(0, 5)}...${bounty.journal.substring(bounty.journal.length - 4, bounty.journal.length)}`}
+                        {bounty && bounty.journal_name 
+                        || bounty && bounty.journal && `${bounty.journal.substring(0, 5)}...${bounty.journal.substring(bounty.journal.length - 4, bounty.journal.length)}`}
                     </span>
                 </OverlayTrigger>
             </td>
@@ -479,7 +561,8 @@ export default function Manuscripts({
                         return (
                             <OverlayTrigger overlay= {<Tooltip id="tooltip-disabled">{`${reviewer.REVIEWER_HASH}`}</Tooltip>}>
                                 <span key={index} className="badge bg-light text-dark clickable-badges">
-                                    {reviewer && reviewer.REVIEWER_HASH && `${reviewer.REVIEWER_HASH.substring(0, 5)}...${reviewer.REVIEWER_HASH.substring(reviewer.REVIEWER_HASH.length - 4, reviewer.REVIEWER_HASH.length)}`}
+                                    {reviewer && reviewer.FIRST_NAME && reviewer.LAST_NAME && `${reviewer.FIRST_NAME} ${reviewer.LAST_NAME}` 
+                                    || reviewer && reviewer.REVIEWER_HASH && `${reviewer.REVIEWER_HASH.substring(0, 5)}...${reviewer.REVIEWER_HASH.substring(reviewer.REVIEWER_HASH.length - 4, reviewer.REVIEWER_HASH.length)}`}
                                 </span>
                             </OverlayTrigger>
                         )
@@ -512,6 +595,10 @@ export default function Manuscripts({
                         )
                     })
 
+                }
+                {
+                    bounty && bounty.editor_note && 
+                    <span className="badge rounded-pill bg-success clickable-badges" onClick={() => handleShow(bounty.editor_note)}>Editor Note</span>
                 }
             </td>
 

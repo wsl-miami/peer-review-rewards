@@ -25,12 +25,30 @@ class OpenBountyModal extends React.Component {
             editor: null,
             token:null,
             amount:null,
-            web3: null
+            web3: null,
+            journals: []
         }
         
         this.handleOpenBounty = this.handleOpenBounty.bind(this);
         console.log("web3 from modal", this.props.web3);
     }
+
+    componentDidMount() {
+        const getJournal = async () => {
+            const journals = await axios({
+                url: `${process.env.REACT_APP_API_URL}/api/get-journals`,
+                method: "GET",
+            });
+
+            this.setState({'journals': journals.data.journals});
+            console.log('test', journals);
+            console.log('journal', this.state.journals);
+        }
+
+        getJournal();
+
+    }
+
     async handleOpenBounty() {
         // const projectId = process.env.REACT_APP_IPFS_ID;
         // const projectSecret = process.env.REACT_APP_IPFS_SECRET;
@@ -51,6 +69,7 @@ class OpenBountyModal extends React.Component {
         //     alert('Token entered is not a valid eth address!')
         //     return
         // } else 
+
         if (!web3.utils.isAddress(this.state.editor)) {
             alert('Editor entered is not a valid eth address!')
             return
@@ -178,13 +197,25 @@ class OpenBountyModal extends React.Component {
                                     <Col md={{span:2}}>
                                         <Form.Label>Journal:</Form.Label>
                                     </Col>
-                                    <Col>
+                                    {/* <Col>
                                         <Form.Control 
                                             type="text"
                                             placeholder='editor address'
                                             value={this.state.editor}
                                             onChange={e => this.setState({ editor: e.target.value })}
                                         />
+                                    </Col> */}
+                                    <Col>
+                                        <Form.Select
+                                            type="text"
+                                            onChange={e => this.setState({ editor: e.target.value })}
+                                            required
+                                        >
+                                            <option>-- SELECT JOURNAL --</option>
+                                            {this.state.journals && this.state.journals.length >0 && this.state.journals.map((journal) => (
+                                                <option value={journal.JOURNAL_HASH}>{journal.JOURNAL_NAME}</option>
+                                            ))}
+                                        </Form.Select>
                                     </Col>
                                 </Row>
                             </Form.Group>

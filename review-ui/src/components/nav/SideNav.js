@@ -7,22 +7,21 @@ import {
   Menu,
   MenuItem,
   menuClasses, 
-  MenuItemStyles
+  MenuItemStyles,
+  SubMenu
 } from "react-pro-sidebar";
 
 //import icons from react icons
 import { FaList, FaHome, FaBookReader, FaEdit, FaMedal } from "react-icons/fa";
-import { FiHome, FiLogOut, FiArrowLeftCircle, FiArrowRightCircle } from "react-icons/fi";
+import { FiArrowLeftCircle, FiArrowRightCircle } from "react-icons/fi";
 import {SiCodereview} from "react-icons/si";
-import { MdSettingsSuggest } from "react-icons/md";
-import { TiInfoLarge } from "react-icons/ti";
+import { MdSettingsSuggest, MdDashboard } from "react-icons/md";
 
 import Editor from '../pages/Editor';
 import Review from '../pages/Review';
 import Author from '../pages/Author';
 import Home from '../pages/Home.js';
 import Reputation from "../pages/Reputation";
-import About from "../pages/About"
 import Settings from "../pages/Settings";
 
 
@@ -36,6 +35,7 @@ import {
   Link,
   useLocation
 } from "react-router-dom";
+import STRING_CONSTANTS from "../../constants.js";
 
 export default function SideNav(
   {account,
@@ -52,6 +52,7 @@ export default function SideNav(
   //create initial menuCollapse state using useState hook
   const [menuCollapse, setMenuCollapse] = useState(false);
   const [hasImage, setHasImage] = React.useState(false);
+  let location = useLocation().pathname;
 
   // hex to rgba converter
   const hexToRgba = (hex, alpha) => {
@@ -123,39 +124,44 @@ export default function SideNav(
                 Home
               </MenuItem>
               <MenuItem 
-                active={useLocation().pathname.includes('author')} 
+                active={location.includes('author')} 
                 icon={<FaEdit />} 
                 component={<Link to="/author" className="link" />}
               >Author</MenuItem>
-              <MenuItem 
-                active={useLocation().pathname.includes('editor')} 
-                icon={<FaBookReader />}
-                component={<Link to="/editor" className="link" />}
-              >Editor</MenuItem>
-              <MenuItem 
-                active={useLocation().pathname.includes('review')} 
+              <SubMenu 
+                active={location.includes('editor') || location.includes('settings')} 
+                icon={<FaBookReader />} 
+                label="Editor"
+              >
+                <MenuItem 
+                  active={location.includes('editor')} 
+                  icon={<MdDashboard />}
+                  component={<Link to="/editor" className="link" />}
+                >Dashboard</MenuItem>
+                <MenuItem 
+                  active={location.includes('settings')} 
+                  icon={<MdSettingsSuggest />} 
+                  component={<Link to="/settings" className="link" />}
+
+                >{STRING_CONSTANTS.SETTINGS_PAGE}</MenuItem>
+              </SubMenu>
+              <SubMenu 
+                active={location.includes('review') || location.includes('reputation')} 
                 icon={<SiCodereview />} 
-                component={<Link to="/review" className="link" />}
-              >Reviewer</MenuItem>
-              <MenuItem 
-                active={useLocation().pathname.includes('settings')} 
-                icon={<MdSettingsSuggest />} 
-                component={<Link to="/settings" className="link" />}
+                label="Reviewer">
+                <MenuItem 
+                  active={location.includes('review')} 
+                  icon={<MdDashboard />} 
+                  component={<Link to="/review" className="link" />}
+                >Dashboard</MenuItem>
+                <MenuItem 
+                  active={location.includes('reputation')} 
+                  icon={<FaMedal />} 
+                  component={<Link to="/reputation" className="link" />}
+                >Reputation</MenuItem>
 
-              >Settings</MenuItem>
-              <MenuItem 
-                active={useLocation().pathname.includes('reputation')} 
-                icon={<FaMedal />} 
-                component={<Link to="/reputation" className="link" />}
-              >Reputation</MenuItem>
+              </SubMenu>
 
-            </Menu>
-            <Menu iconShape="square" menuItemStyles={menuItemStyles}>
-              <MenuItem 
-                icon={<TiInfoLarge />}
-                active={useLocation().pathname.includes('about')}
-                component={<Link to="/about" className="link" />}
-              >About Us</MenuItem>
             </Menu>
         </Sidebar>
       <main style={{width: '100%'}}>
@@ -217,11 +223,6 @@ export default function SideNav(
                         SoulBoundContract={SoulBoundContract}
                         ReviewRewardTokenContract={ReviewRewardTokenContract}
                         account={account}
-                    />}
-                />
-                <Route path="/about"
-                    element={<About
-                        PRContract={PRContract}
                     />}
                 />
             </Routes>

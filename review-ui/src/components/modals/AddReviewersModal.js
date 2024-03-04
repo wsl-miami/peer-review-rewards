@@ -19,13 +19,29 @@ class AddReviewersModal extends React.Component {
             reviewer_values: [''],
             web3: w3,
             deadline: null,
-            currentDate: currentDate
+            currentDate: currentDate,
+            available_reviewers: []
         }
         
         this.handleIncrement = this.handleIncrement.bind(this);
         this.handleDecrement = this.handleDecrement.bind(this);
         this.handleReviewerChange = this.handleReviewerChange.bind(this);
         this.handleAddReviewers = this.handleAddReviewers.bind(this);
+    }
+
+    componentDidMount() {
+        const getReviewers = async () => {
+            const reviewers = await axios({
+                url: `${process.env.REACT_APP_API_URL}/api/get-reviewers`,
+                method: "GET",
+            });
+
+            this.setState({'available_reviewers': reviewers.data.reviewers});
+            console.log('test', reviewers);
+            console.log('reviewers', this.state.available_reviewers);
+        }
+
+        getReviewers();
     }
 
     async handleAddReviewers() {
@@ -54,15 +70,18 @@ class AddReviewersModal extends React.Component {
         })
             .then((res) => {console.log('api response', res);})
             .catch((err) => {console.log('api error', err)});
+        
+        window.location.reload();
+        
 
-        this.props.PRContract.methods.submitManuscript(
-            this.props.account,
-            '0x'+str.substring(4, str.length)
-        ).send({from: this.props.account, gas: 210000})
-        .on('confirmation', (receipt) => {
-            console.log("done!");
-            window.location.reload();
-        });
+        // this.props.PRContract.methods.submitManuscript(
+        //     this.props.account,
+        //     '0x'+str.substring(4, str.length)
+        // ).send({from: this.props.account, gas: 210000})
+        // .on('confirmation', (receipt) => {
+        //     console.log("done!");
+        //     window.location.reload();
+        // });
     }
 
     handleIncrement() {
@@ -111,13 +130,24 @@ class AddReviewersModal extends React.Component {
                                                 <Form.Label>Reviewer:</Form.Label>
                                             </Col>
                                             <Col>
-                                                <Form.Control 
+                                                {/* <Form.Control 
                                                     type="text"
                                                     value={item}
                                                     placeholder='Reviewer address'
                                                     onChange={(e) => this.handleReviewerChange(e.target.value, i)}
-                                                />
+                                                /> */}
+                                                <Form.Select
+                                                    type="text"
+                                                    onChange={e => this.handleReviewerChange(e.target.value, i)}
+                                                    required
+                                                >
+                                                    <option>-- SELECT REVIEWER --</option>
+                                                    {this.state.available_reviewers && this.state.available_reviewers.length >0 && this.state.available_reviewers.map((reviewer) => (
+                                                        <option value={reviewer.USER_HASH}>{`${reviewer.FIRST_NAME} ${reviewer.LAST_NAME}`}</option>
+                                                    ))}
+                                                </Form.Select>
                                             </Col>
+
                                             
                                             <Col>
                                                 <Button
