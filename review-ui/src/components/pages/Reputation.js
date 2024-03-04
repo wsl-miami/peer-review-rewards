@@ -115,12 +115,6 @@ export default function Reputation({
                     </Col>
 
                 </Row>
-                <Row>
-                    
-                </Row>
-                <Row xs={1} md={2} className="g-2">
-                    {tokens.length !==0 ? tokens.map((item, index) => <RewardTokens tokenId={item} SoulBoundContract={SoulBoundContract} key={index} />) : 'No reputation tokens accumulated'}
-                </Row>
             </Container>
         </>
     )

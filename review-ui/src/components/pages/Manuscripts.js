@@ -21,6 +21,7 @@ import { BsFillSendArrowUpFill } from "react-icons/bs";
 import { MdCancel } from "react-icons/md";
 import axios from "axios";
 import STRING_CONSTANTS from '../../constants.js'
+const FormData = require('form-data');
 
 export default function Manuscripts({
     account,
@@ -39,7 +40,7 @@ export default function Manuscripts({
     const [showOpenReview, setShowOpenReview] = useState(false);
     const [passedOrFailed, setPassedOrFailed] = useState("Publish");
     const [editorDecision, setEditorDecision] = useState(STRING_CONSTANTS.STATUS.ACCEPTED.value);
-    const [editorNote, setEditorNote] = useState('');
+    const [editorNote, setEditorNote] = useState(null);
     const [show, setShow] = useState(false);
     const [ipfs32, setIpfs32] = useState('');
     const [reviewers, setReviewers] = useState([]);
@@ -127,20 +128,47 @@ export default function Manuscripts({
             console.log('decision_status', decision_status);
             console.log('editor_note', editor_note);
 
-            const response = await axios({
-                url: `${process.env.REACT_APP_API_URL}/api/update-decision-status`,
-                method: "POST",
-                data: {
-                    decision_status: decision_status,
-                    manuscript_hash: bounty.manuscript_link,
-                    editor_note: editor_note
-                },
-            });
+            let pinataRes = null;
+    
+            try {
+                let formData;
+                const authorization = `Bearer ${process.env.REACT_APP_PINATA_API_KEY}`;
+                if (editor_note && editor_note != null) {
+                    formData = new FormData();
+                    formData.append('file', editor_note);
+            
+                    const pinataOptions = JSON.stringify({
+                        cidVersion: 0,
+                    });
+            
+                    formData.append('pinataOptions', pinataOptions);
+                    
+                    pinataRes = await axios.post("https://api.pinata.cloud/pinning/pinFileToIPFS", formData,
+                    {
+                        headers: {
+                            authorization
+                        }
+                    });                   
+                }
 
-            if (response.data && response.data.success) {
-                window.location.reload();
-            } else {
+                const response = await axios({
+                    url: `${process.env.REACT_APP_API_URL}/api/update-decision-status`,
+                    method: "POST",
+                    data: {
+                        decision_status: decision_status,
+                        manuscript_hash: bounty.manuscript_link,
+                        editor_note: pinataRes.data.IpfsHash
+                    },
+                });
+
+                if (response.data && response.data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Something went wrong. Please try again.');
+                }
+            } catch (err) {
                 alert('Something went wrong. Please try again.');
+                console.log("Error while uploading file: ", err);
             }
             // PRContract.methods.closeReview(
             //     bounty.blockManuscriptId, passedOrFailed == 'Publish'
@@ -216,10 +244,9 @@ export default function Manuscripts({
                                 <Form.Label>Notes: </Form.Label>
                             </Col>
                             <Col>
-                                <Form.Control
-                                    type='text'
-                                    value={editorNote}
-                                    onChange={e => setEditorNote(e.target.value)}
+                                <Form.Control 
+                                    type="file"
+                                    onChange={e => setEditorNote(e.target.files[0])}
                                 />
                             </Col>
                         </Row>
@@ -568,6 +595,10 @@ export default function Manuscripts({
                         )
                     })
 
+                }
+                {
+                    bounty && bounty.editor_note && 
+                    <span className="badge rounded-pill bg-success clickable-badges" onClick={() => handleShow(bounty.editor_note)}>Editor Note</span>
                 }
             </td>
 
