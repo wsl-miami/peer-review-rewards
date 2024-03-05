@@ -5,9 +5,6 @@
   "dependencies": {
     "@opengsn/contracts": "^3.0.0-beta.6",
     "@opengsn/provider": "^3.0.0-beta.6",
-    "@semaphore-protocol/group": "^3.0.0",
-    "@semaphore-protocol/identity": "^3.0.0",
-    "@semaphore-protocol/proof": "^3.0.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -18,7 +15,6 @@
     "buffer": "^6.0.3",
     "fs": "^0.0.1-security",
     "iframe-resizer-react": "^1.1.0",
-    "ipfs-http-client": "^58.0.1",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "react": "^18.2.0",
     "react-bootstrap": "^2.5.0",
