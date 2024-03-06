@@ -395,6 +395,8 @@ app.post('/api/add-reviewers', async(req, res) => {
       }
     } catch (err) {
       console.log('err here', err);
+      res.status(500).send({ success: false, error: err });
+
     }
   });
   res.send({ success: true, reviewer_hashes: reviewer_hashes, article_hash: article_hash });
@@ -418,7 +420,8 @@ app.get('/api/get-manuscripts-by-author', async(req, res)  => {
                                     `${MANUSCRIPTS_TABLE}.EDITOR_NOTE`,
                                     knex.raw(`(SELECT COUNT(REVIEWER_HASH) from ${REVIEWS_TABLE} where ${REVIEWS_TABLE}.ARTICLE_HASH = ${MANUSCRIPTS_TABLE}.ARTICLE_HASH) as REVIEWERS_COUNT`)
                                   )
-                                  .where('AUTHOR_HASH', author_hash);
+                                  .where('AUTHOR_HASH', author_hash)
+                                  .orderBy(`${MANUSCRIPTS_TABLE}.TIME_STAMP`, 'desc');
 
     res.send({success: true, manuscripts});
   } catch (err) {
@@ -447,7 +450,8 @@ app.get('/api/get-manuscripts-by-reviewer', async(req, res)  => {
      .table(REVIEWS_TABLE)
      .join(MANUSCRIPTS_TABLE, `${REVIEWS_TABLE}.MANUSCRIPTS_ID`, `${MANUSCRIPTS_TABLE}.ID`)
      .join(JOURNALS_TABLE, `${JOURNALS_TABLE}.JOURNAL_HASH`, `${MANUSCRIPTS_TABLE}.JOURNAL_HASH`)
-     .where(`${REVIEWS_TABLE}.REVIEWER_HASH`, reviewer_hash);
+     .where(`${REVIEWS_TABLE}.REVIEWER_HASH`, reviewer_hash)
+     .orderBy(`${MANUSCRIPTS_TABLE}.TIME_STAMP`, 'desc');
 
     console.log('manuscript details', manuscript_details);
 
@@ -557,7 +561,8 @@ app.get('/api/get-manuscripts-by-journal', async(req, res)  => {
                                     `${MANUSCRIPTS_TABLE}.EDITOR_NOTE`,
                                     knex.raw(`(SELECT COUNT(REVIEWER_HASH) from ${REVIEWS_TABLE} where ${REVIEWS_TABLE}.ARTICLE_HASH = ${MANUSCRIPTS_TABLE}.ARTICLE_HASH) as REVIEWERS_COUNT`)
                                   )
-                                  .where(`${MANUSCRIPTS_TABLE}.JOURNAL_HASH`, journal_hash);
+                                  .where(`${MANUSCRIPTS_TABLE}.JOURNAL_HASH`, journal_hash)
+                                  .orderBy(`${MANUSCRIPTS_TABLE}.TIME_STAMP`, 'desc');
 
     res.send({success: true, manuscripts});
   } catch (err) {
@@ -706,7 +711,7 @@ app.post('/api/update-review-settings', async(req, res) => {
     }
   } catch (err) {
     console.log('err here', err);
-    res.send({success: false, error_code: 'SERVERSIDEERROR'});
+    res.status(500).send({success: false, error_code: 'SERVERSIDEERROR'});
   }
 
   res.send({ success: true, settings});

@@ -139,3 +139,7 @@ VALUES
 alter table manuscripts add decision_status NUMBER(1) default 0;
 alter table manuscripts add editor_note NCLOB;
 
+
+INSERT INTO JOURNALS (JOURNAL_HASH, JOURNAL_NAME)
+VALUES ('0xfcDa3161CB37feAf39F4d323dB882cCbb1b05F07', 'Journal of Neural Engineering');
+
