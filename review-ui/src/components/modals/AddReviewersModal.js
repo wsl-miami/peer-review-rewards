@@ -68,10 +68,15 @@ class AddReviewersModal extends React.Component {
             data: {reviewer_hashes: this.state.reviewer_values, article_hash: this.props.ipfs32, deadline: this.state.deadline},
             // data: {author: "0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6", file_hash: "QmVZerrmNhQE1gPp4KnX1yFJSHgAfMY6QW5LxGdpRPM2uJ"}
         })
-            .then((res) => {console.log('api response', res);})
-            .catch((err) => {console.log('api error', err)});
+            .then((res) => {
+                console.log('api response', res);
+                window.location.reload();
+            })
+            .catch((err) => {
+                console.log('api error', err);
+                alert("Something went wrong. Please try again");
+            });
         
-        window.location.reload();
         
 
         // this.props.PRContract.methods.submitManuscript(
