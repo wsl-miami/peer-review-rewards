@@ -43,6 +43,11 @@ import STRING_CONSTANTS from "./constants.js";
 const { RelayProvider } = require('@opengsn/provider');
 // const oracledb = require('oracledb');
 
+const NETWORK = process.env.REACT_APP_TEST_NETWORK;
+const NETWORK_URL = process.env[`REACT_APP_${NETWORK}_URL`];
+const SOUL_BOUND_TOKEN_CONTRACT = process.env[`REACT_APP_SOUL_BOUND_TOKEN_CONTRACT_${NETWORK}`];
+const REVIEW_REWARD_TOKEN_CONTRACT = process.env[`REACT_APP_REVIEW_REWARD_TOKEN_CONTRACT_${NETWORK}`];
+
 class App extends Component {
     constructor(props) {
         super(props);
@@ -163,16 +168,19 @@ class App extends Component {
             minViewableGasLimit: 0
         }
 
-        const provider = await RelayProvider.newProvider({ provider: window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(process.env.REACT_APP_GOERLI_URL), config }).init();
+        // @TODO: Implementation of provider for opengsn network
+        // const provider = await RelayProvider.newProvider({ provider: window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(process.env.REACT_APP_GOERLI_URL), config }).init();
+        // const provider = await RelayProvider.newProvider({ provider: window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(process.env.REACT_APP_SEPOLIA_URL), config }).init();
 
         try {
 
-            // const web3 = new Web3(window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(process.env.REACT_APP_GOERLI_URL))
-            const web3 = new Web3(provider);
+            const web3 = new Web3(window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(NETWORK_URL));
+            // @TODO: Implementation of provider for opengsn network
+            // const web3 = new Web3(provider);
             this.setState({ web3: web3 }, () => {
                 console.log('state', this.state.web3);
-                this.setPRContract();
-                this.setProfilesContract();
+                // this.setPRContract();
+                // this.setProfilesContract();
                 this.setSoulBoundContract();
                 this.setReviewRewardTokenContract();
                 this.setAccount();
@@ -202,15 +210,19 @@ class App extends Component {
 
     async setSoulBoundContract() {
         // Keeping SoulBoundContract without OpenGSN
-        const web3 = new Web3(window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(process.env.REACT_APP_GOERLI_URL));
-        const soulBoundAddress = process.env.REACT_APP_SOUL_BOUND_TOKEN_CONTRACT;
+        // const web3 = new Web3(window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(process.env.REACT_APP_GOERLI_URL));
+        const web3 = new Web3(window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(NETWORK_URL));
+        // const soulBoundAddress = process.env.REACT_APP_SOUL_BOUND_TOKEN_CONTRACT;
+        const soulBoundAddress = SOUL_BOUND_TOKEN_CONTRACT;
         var SoulBoundContract = new web3.eth.Contract(SoulBoundABI, soulBoundAddress);
         this.setState({SoulBoundContract: SoulBoundContract});
     }
 
     async setReviewRewardTokenContract() {
-        const web3 = new Web3(window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(process.env.REACT_APP_GOERLI_URL));
-        const reviewRewardTokenAddress = process.env.REACT_APP_REVIEW_REWARD_TOKEN_CONTRACT;
+        // const web3 = new Web3(window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(process.env.REACT_APP_GOERLI_URL));
+        const web3 = new Web3(window.ethereum ? window.ethereum : new Web3.providers.HttpProvider(NETWORK_URL));
+        // const reviewRewardTokenAddress = process.env.REACT_APP_REVIEW_REWARD_TOKEN_CONTRACT;
+        const reviewRewardTokenAddress = REVIEW_REWARD_TOKEN_CONTRACT;
         var ReviewRewardTokenContract = new web3.eth.Contract(ReviewRewardTokenABI, reviewRewardTokenAddress);
         this.setState({ReviewRewardTokenContract: ReviewRewardTokenContract});
     }
@@ -245,7 +257,7 @@ class App extends Component {
     async getAccountData() {
         var cid = await this.state.web3.eth.getChainId();
         this.setState({ chainId: cid })
-        this.getProfile();
+        // this.getProfile();
         this.getBounties();
     }
 

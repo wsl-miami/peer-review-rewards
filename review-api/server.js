@@ -74,7 +74,8 @@ knex.raw("SELECT 1 from DUAL").then(() => {
 });
 
 async function reviewRewardTokenSetup() {
-  const reviewRewardTokenAddress = process.env.REVIEW_REWARD_TOKEN_CONTRACT;
+  // const reviewRewardTokenAddress = process.env.REVIEW_REWARD_TOKEN_CONTRACT;
+  const reviewRewardTokenAddress = process.env.TEST_NETWORK == 'sepolia' ? process.env.REVIEW_REWARD_TOKEN_CONTRACT_SEPOLIA: process.env.REVIEW_REWARD_TOKEN_CONTRACT_GOERLI;
   ReviewRewardTokenContract = new ethers.Contract(reviewRewardTokenAddress, ReviewRewardTokenABI, signer);
   console.log('Review reward token contract set up!')
 
@@ -82,12 +83,14 @@ async function reviewRewardTokenSetup() {
 
 async function soulBoundSetup() {
   try {
-    provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_URL);
+    // provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_URL);
+    provider = new ethers.JsonRpcProvider(process.env.TEST_NETWORK == 'sepolia' ? process.env.SEPOLIA_URL : ETHEREUM_URL);
     const wallet = new ethers.Wallet(process.env.ETHEREUM_PRIVATE_KEY);
     signer = wallet.connect(provider);
     balance = await provider.getBalance(signer.address);
     console.log('balance', balance);
-    const soulBoundAddress = process.env.SOUL_BOUND_TOKEN_CONTRACT;
+    // const soulBoundAddress = process.env.SOUL_BOUND_TOKEN_CONTRACT;
+    const soulBoundAddress = process.env.TEST_NETWORK == 'sepolia' ? process.env.SOUL_BOUND_TOKEN_CONTRACT_SEPOLIA: SOUL_BOUND_TOKEN_CONTRACT_GOERLI;
     SoulBoundContract = new ethers.Contract(soulBoundAddress, SoulBoundABI, signer);
 
     reviewRewardTokenSetup();

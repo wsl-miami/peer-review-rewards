@@ -5,6 +5,9 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 
+const NETWORK = process.env.REACT_APP_TEST_NETWORK;
+const CHAIN_ID = NETWORK == 'SEPOLIA' ? 11155111 : 5;
+
 export default function WrongChain({
     account,
     disconnect,
@@ -13,7 +16,7 @@ export default function WrongChain({
 
     const showWrongChain = () => {
         var ret = true;
-        ret = ret && (account !== null && chainId !== 5);
+        ret = ret && (account !== null && chainId !== CHAIN_ID);
         return ret;
     }
 
@@ -29,7 +32,7 @@ export default function WrongChain({
                 </Modal.Header>
                 <Modal.Body>
                     <Row>
-                        <h5>Please switch to the goerli network</h5>
+                        <h5>Please switch to the sepolia network</h5>
                     </Row>
                     <br />
                     <Button
