@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/static/css/main.9ba92550.css",
-    "main.js": "/static/js/main.d1d61745.js",
+    "main.js": "/static/js/main.6ebf0b99.js",
     "static/media/derpLogoBig.png": "/static/media/derpLogoBig.db286e4427c1fe701ea6.png",
     "static/media/ReviewerButton.png": "/static/media/ReviewerButton.351228436a387cada7d8.png",
     "static/media/DERPMINI.png": "/static/media/DERPMINI.2ea21482df0f1dfce328.png",
     "index.html": "/index.html",
     "main.9ba92550.css.map": "/static/css/main.9ba92550.css.map",
-    "main.d1d61745.js.map": "/static/js/main.d1d61745.js.map"
+    "main.6ebf0b99.js.map": "/static/js/main.6ebf0b99.js.map"
   },
   "entrypoints": [
     "static/css/main.9ba92550.css",
-    "static/js/main.d1d61745.js"
+    "static/js/main.6ebf0b99.js"
   ]
 }
