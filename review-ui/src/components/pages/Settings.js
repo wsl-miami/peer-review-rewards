@@ -62,8 +62,13 @@ export default function Settings({
                 },
             // data: {author: "0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6", file_hash: "QmVZerrmNhQE1gPp4KnX1yFJSHgAfMY6QW5LxGdpRPM2uJ"}
         })
-            .then((res) => {console.log('api response', res);})
-            .catch((err) => {console.log('api error', err)});
+            .then((res) => {
+                console.log('api response', res);
+                })
+            .catch((err) => {
+                console.log('api error', err);
+                alert('Something went wrong. Please try again.');
+            });
     }
 
     return (
@@ -159,7 +164,7 @@ export default function Settings({
                                 </InputGroup>
                             </Col>
                             <Col xs="auto">
-                                <Button type="submit" className="mb-2" onClick={handleSettingsUpdate}>
+                                <Button className="mb-2" onClick={handleSettingsUpdate}>
                                     Submit
                                 </Button>
                             </Col>
