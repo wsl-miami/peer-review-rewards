@@ -15,11 +15,11 @@ export default function AuthorDashboard({
     useEffect(() => {
         console.log("here");
         if (PRContract) {
-            console.log("then here");
-            getBounties() 
-                .then(data =>
-                    setBounties(data)
-                );
+            // console.log("then here");
+            // getBounties() 
+            //     .then(data =>
+            //         setBounties(data)
+            //     );
         }
     }, [PRContract]);
 

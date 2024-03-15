@@ -110,7 +110,7 @@ export default function AccountButton(
                     // onMouseEnter={show} broke
                     // onMouseLeave={hide}
                     >
-                        {profileButton()}
+                        {/* {profileButton()} */}
                         <Dropdown.Item
                             onClick={disconnect}
                         >

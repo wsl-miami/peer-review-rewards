@@ -55,15 +55,9 @@ class OpenBountyModal extends React.Component {
         // const authorization = "Basic " + btoa(projectId + ":" + projectSecret);
         const authorization = `Bearer ${process.env.REACT_APP_PINATA_API_KEY}`;
 
-        const config = { 
-            paymasterAddress: '0x7e4123407707516bD7a3aFa4E3ebCeacfcbBb107',
-            loggerConfiguration: {
-                logLevel: 'debug'
-            },
-            minViewableGasLimit: 0
-        }
-        const provider = await RelayProvider.newProvider({ provider: window.ethereum, config }).init();
-        const web3 = new Web3(provider);
+        // @TODO: Implementation of provider for opengsn network
+        // const provider = await RelayProvider.newProvider({ provider: window.ethereum, config }).init();
+        const web3 = this.props.web3;
 
         // if (!this.props.web3.utils.isAddress(this.state.token)) {
         //     alert('Token entered is not a valid eth address!')
