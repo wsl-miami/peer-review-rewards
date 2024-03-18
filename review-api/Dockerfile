@@ -1,7 +1,10 @@
-FROM node:18-alpine
+# platform needed to run image on linux server
+FROM --platform=linux/amd64 node:18-alpine
 WORKDIR /app
-COPY . .
-# COPY package.json ./
+COPY package.json ./
 RUN npm i
+COPY . .
 EXPOSE 5000
+WORKDIR /app
+
 CMD ["npm", "run", "start"]

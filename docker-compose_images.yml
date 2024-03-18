@@ -1,0 +1,38 @@
+version: "3"
+services:
+  nginx:
+    depends_on:
+      - api
+      - client
+    restart: always
+    image: peer-review-rewards_nginx
+    ports:
+      - "8000:80"
+    networks:
+      - node-network
+  api:
+    image: peer-review-rewards_api
+    # volumes:
+    #   - /app/node_modules
+    #   - ./review-api:/app
+    ports:
+      - "5000:5000"
+    environment:
+      - TESTENV=test
+    networks:
+      - node-network
+  client:
+    stdin_open: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    image: peer-review-rewards_client
+    volumes:
+      - /app/node_modules
+      - ./review-ui:/app
+    ports:
+      - "3000:3000"
+    networks:
+      - node-network
+networks:
+  node-network:
+    driver: bridge

@@ -1,4 +1,5 @@
-FROM node:18-alpine as builder
+# platform needed to run image on linux server
+FROM --platform=linux/amd64 node:18-alpine as builder
 WORKDIR /app
 # COPY package.json /app
 COPY . .
@@ -9,7 +10,7 @@ ENV NODE_OPTIONS=--max-old-space-size=8096
 RUN npm i
 # RUN npm run build
 
-FROM nginx
+FROM --platform=linux/amd64 nginx
 # Create environment
 ENV NODE_ENV production
 EXPOSE 3000
