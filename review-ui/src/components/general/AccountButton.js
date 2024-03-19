@@ -4,6 +4,7 @@ import Button from "react-bootstrap/Button";
 import Dropdown from 'react-bootstrap/Dropdown';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import profilePic from '../../static/profilepic.png';
+import STRING_CONSTANTS from "../../constants";
 const Web3 = require("web3");
 
 export default function AccountButton(
@@ -63,7 +64,7 @@ export default function AccountButton(
                     <Dropdown.Item
                         onClick={e => setShowCreateProfile()}
                     >
-                        Create Profile
+                        {STRING_CONSTANTS.CREATE_PROFILE}
                     </Dropdown.Item>
                 </>
             )
@@ -104,13 +105,13 @@ export default function AccountButton(
                         src={profilePic}
                         width="25"
                         height="25"
-                    /> {profile === null || profile === '' ? `${account.substring(0, 15)}...` : profile.name}</Dropdown.Toggle>
+                    /> {profile === null || profile === '' ? `${account.substring(0, 15)}...` : profile.USERNAME}</Dropdown.Toggle>
                     <Dropdown.Menu
                         show={showDropdown}
                     // onMouseEnter={show} broke
                     // onMouseLeave={hide}
                     >
-                        {/* {profileButton()} */}
+                        {profileButton()}
                         <Dropdown.Item
                             onClick={disconnect}
                         >

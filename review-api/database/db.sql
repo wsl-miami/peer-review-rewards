@@ -143,3 +143,5 @@ alter table manuscripts add editor_note NCLOB;
 INSERT INTO JOURNALS (JOURNAL_HASH, JOURNAL_NAME)
 VALUES ('0xfcDa3161CB37feAf39F4d323dB882cCbb1b05F07', 'Journal of Neural Engineering');
 
+
+alter table users add username VARCHAR2(100);
