@@ -81,6 +81,7 @@ class App extends Component {
             this.getBounties = this.getBounties.bind(this);
             this.getAccountData = this.getAccountData.bind(this);
             this.getProfile = this.getProfile.bind(this);
+            this.setProfile = this.setProfile.bind(this);
             this.disconnect = this.disconnect.bind(this);
             this.setShowProfileDetails = this.setShowProfileDetails.bind(this);
             this.detectAccountUpdate = this.detectAccountUpdate.bind(this);
@@ -257,16 +258,27 @@ class App extends Component {
     async getAccountData() {
         var cid = await this.state.web3.eth.getChainId();
         this.setState({ chainId: cid })
-        // this.getProfile();
+        this.getProfile();
         this.getBounties();
     }
 
     async getProfile() {
-        const prof = await this.state.ProfilesContract.methods.getProfileByAddress(
-            this.state.account
-        ).call();
-        if (prof.addr == this.state.account) {
-            this.setState({ profile: prof });
+        // const prof = await this.state.ProfilesContract.methods.getProfileByAddress(
+        //     this.state.account
+        // ).call();
+
+        try{
+            const prof = await axios({
+                url: `${process.env.REACT_APP_API_URL}/api/get-profile`,
+                method: "GET",
+                params: {account_hash: this.state.account},
+            });
+    
+            if (prof.data && prof.data.profile && prof.data.profile.USER_HASH == this.state.account) {
+                this.setState({ profile: prof.data.profile });
+            }
+        } catch (err) {
+            console.log('profile get error: ', err);
         }
     }
 

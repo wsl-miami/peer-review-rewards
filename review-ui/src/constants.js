@@ -13,6 +13,7 @@ const STRING_CONSTANTS = {
     'SBT': 'Reputation Tokens',
     'RRT': 'Reward Tokens',
     'RRT_SHORTENED': 'Reward Tokens',
+    'CREATE_PROFILE': 'Create Profile',
     'STATUS': {
         'ACCEPTED': {'text': 'Accepted', 'value': 1},
         'REJECTED': {'text': 'Rejected', 'value': 2},

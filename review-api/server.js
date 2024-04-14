@@ -739,6 +739,7 @@ app.get('/api/get-reviewers', async(req, res) => {
 
     const reviewers = await knex(USERS_TABLE)
                             .where('USER_ROLE', 'reviewer')
+                            .orWhere('USER_ROLE', 'author')
                             .select();
 
     res.send({success: true, reviewers});
@@ -782,6 +783,71 @@ app.post('/api/update-decision-status', async(req, res) => {
   } catch (err) {
     console.log('err here', err);
     res.send({success: false, error_code: 'SERVERSIDEERROR', message: err});
+  }
+});
+
+app.get('/api/get-profile', async(req, res) => {
+  try{
+    const account_hash = req.query.account_hash;
+
+    const account = await knex(USERS_TABLE)
+                            .leftJoin(JOURNALS_TABLE, `${USERS_TABLE}.USER_HASH`, `${JOURNALS_TABLE}.JOURNAL_HASH`)
+                            .where(`${USERS_TABLE}.USER_HASH`, account_hash)
+                            .select(
+                              `${USERS_TABLE}.USER_HASH`,
+                              `${USERS_TABLE}.FIRST_NAME`,
+                              `${USERS_TABLE}.LAST_NAME`,
+                              `${USERS_TABLE}.USERNAME`,
+                              `${USERS_TABLE}.DATE_OF_BIRTH as BIRTH_DATE`,
+                              `${JOURNALS_TABLE}.JOURNAL_NAME`,
+                              `${USERS_TABLE}.USER_ROLE`,
+                              `${USERS_TABLE}.EMAIL`
+                            )
+                            .first();
+    
+    res.send({success: true, profile: account});
+
+  } catch (err) {
+    console.log('err here', err);
+    res.status(500).send({success: false, error_code: 'SERVERSIDEERROR', message: err});
+  }
+});
+
+app.post('/api/create-user-profile', async(req, res) => {
+  try {
+    const username = req.body.username;
+    const first_name = req.body.first_name;
+    const last_name = req.body.last_name;
+    const birth_date = req.body.birth_date;
+    const email = req.body.email;
+    const role = req.body.role;
+    const journal_name = req.body.journal_name;
+    const account_hash = req.body.account_hash;
+
+    const update_user = await knex(USERS_TABLE)
+                          .insert({
+                            'USERNAME': username,
+                            'FIRST_NAME': first_name,
+                            'LAST_NAME': last_name,
+                            'DATE_OF_BIRTH': knex.raw(`to_date('${birth_date}, 12:00 PM', 'YYYY-MM-DD, HH:MI PM')`),
+                            'USER_ROLE': role,
+                            'EMAIL': email,
+                            'USER_HASH': account_hash,
+                            'TIME_STAMP': knex.raw('CURRENT_TIMESTAMP')
+                          }, ['ID']);
+
+    if (journal_name && journal_name != null && journal_name != '') {
+      const update_journal = await knex(JOURNALS_TABLE)
+                                .insert({
+                                  'JOURNAL_HASH': account_hash, 
+                                  'JOURNAL_NAME': journal_name
+                                });
+    }
+
+    res.send({ success: true, user: update_user });
+  } catch (err) {
+    console.log('err here', err);
+    res.status(500).send({success: false, error_code: 'SERVERSIDEERROR', message: err});
   }
 });
 
