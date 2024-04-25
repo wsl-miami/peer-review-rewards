@@ -1,0 +1,17 @@
+Running 1 test for test/ReviewRewardTokenGasReport.t.sol:TokenTest
+[PASS] test_GasTimes() (gas: 7269559)
+Test result: ok. 1 passed; 0 failed; 0 skipped; finished in 7.61ms
+| contracts/ReviewRewardToken.sol:ReviewRewardToken contract |                 |        |        |        |         |
+|------------------------------------------------------------|-----------------|--------|--------|--------|---------|
+| Deployment Cost                                            | Deployment Size |        |        |        |         |
+| 1020859                                                    | 5662            |        |        |        |         |
+| Function Name                                              | min             | avg    | median | max    | # calls |
+| addAdmin                                                   | 24768           | 24768  | 24768  | 24768  | 1       |
+| balanceOf                                                  | 629             | 629    | 629    | 629    | 1       |
+| bulkMintRRT                                                   | 259363          | 259363 | 259363 | 259363 | 1       |
+| individualMintRRT                                             | 25480           | 25480  | 25480  | 25480  | 1       |
+| revokeAdmin                                                | 840             | 840    | 840    | 840    | 1       |
+| bulkMintSBT                                | 6284445         | 6284445 | 6284445 | 6284445 | 1       |
+| getTokensOwnedByAddress                         | 1200            | 1200    | 1200    | 1200    | 1       |
+| individualMintSBT                                       | 626068          | 626068  | 626068  | 626068  | 1       |
+| tokenURISBT                                       | 6341            | 6341    | 6341    | 6341    | 1       |

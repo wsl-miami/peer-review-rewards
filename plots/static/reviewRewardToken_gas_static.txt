@@ -1,0 +1,12 @@
+Running 1 test for test/ReviewRewardTokenGasReport.t.sol:ReviewRewardTokenTest
+[PASS] test_RRTGasTimes() (gas: 1838753)
+Test result: ok. 1 passed; 0 failed; 0 skipped; finished in 7.77ms
+| contracts/ReviewRewardToken.sol:ReviewRewardToken contract |                 |       |        |       |         |
+|------------------------------------------------------------|-----------------|-------|--------|-------|---------|
+| Deployment Cost                                            | Deployment Size |       |        |       |         |
+| 1020859                                                    | 5662            |       |        |       |         |
+| Function Name                                              | min             | avg   | median | max   | # calls |
+| addAdmin                                                   | 20768           | 20968 | 20768  | 24768 | 20      |
+| bulkMint                                                   | 10631           | 11356 | 10631  | 83131 | 100     |
+| individualMint                                             | 3580            | 3799  | 3580   | 25480 | 100     |
+| revokeAdmin                                                | 840             | 840   | 840    | 840   | 20      |

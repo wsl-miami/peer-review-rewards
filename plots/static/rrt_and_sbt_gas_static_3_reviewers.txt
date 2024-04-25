@@ -1,0 +1,24 @@
+Running 1 test for test/ReviewRewardTokenGasReport.t.sol:TokenTest
+[PASS] test_GasTimes() (gas: 2699791)
+Test result: ok. 1 passed; 0 failed; 0 skipped; finished in 6.97ms
+| contracts/ReviewRewardToken.sol:ReviewRewardToken contract |                 |       |        |       |         |
+|------------------------------------------------------------|-----------------|-------|--------|-------|---------|
+| Deployment Cost                                            | Deployment Size |       |        |       |         |
+| 1020859                                                    | 5662            |       |        |       |         |
+| Function Name                                              | min             | avg   | median | max   | # calls |
+| addAdmin                                                   | 24768           | 24768 | 24768  | 24768 | 1       |
+| balanceOf                                                  | 629             | 629   | 629    | 629   | 1       |
+| bulkMint                                                   | 83131           | 83131 | 83131  | 83131 | 1       |
+| individualMint                                             | 25480           | 25480 | 25480  | 25480 | 1       |
+| revokeAdmin                                                | 840             | 840   | 840    | 840   | 1       |
+
+
+| contracts/SoulBoundToken.sol:Soulbound contract |                 |         |         |         |         |
+|-------------------------------------------------|-----------------|---------|---------|---------|---------|
+| Deployment Cost                                 | Deployment Size |         |         |         |         |
+| 2016608                                         | 10034           |         |         |         |         |
+| Function Name                                   | min             | avg     | median  | max     | # calls |
+| bulkMintFromCron                                | 1908196         | 1908196 | 1908196 | 1908196 | 1       |
+| getTokensOwnedByAddress                         | 1200            | 1200    | 1200    | 1200    | 1       |
+| safeMint                                        | 625497          | 625497  | 625497  | 625497  | 1       |
+| tokenURI                                        | 6341            | 6341    | 6341    | 6341    | 1       |

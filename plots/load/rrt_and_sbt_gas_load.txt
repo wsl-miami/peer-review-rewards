@@ -1,0 +1,131 @@
+Running 1 test for test/ReviewRewardTokenGasReport.t.sol:TokenTest
+[PASS] test_GasTimes() (gas: 2699791)
+Test result: ok. 1 passed; 0 failed; 0 skipped; finished in 5.74ms
+| contracts/ReviewRewardToken.sol:ReviewRewardToken contract |                 |       |        |       |         |
+|------------------------------------------------------------|-----------------|-------|--------|-------|---------|
+| Deployment Cost                                            | Deployment Size |       |        |       |         |
+| 1020859                                                    | 5662            |       |        |       |         |
+| Function Name                                              | min             | avg   | median | max   | # calls |
+| addAdmin                                                   | 24768           | 24768 | 24768  | 24768 | 1       |
+| balanceOf                                                  | 629             | 629   | 629    | 629   | 1       |
+| bulkMintFRT                                                   | 83131           | 83131 | 83131  | 83131 | 1       |
+| singleMintFRT                                             | 25480           | 25480 | 25480  | 25480 | 1       |
+| revokeAdmin                                                | 840             | 840   | 840    | 840   | 1       |
+
+
+| contracts/SoulBoundToken.sol:Soulbound contract |                 |         |         |         |         |
+|-------------------------------------------------|-----------------|---------|---------|---------|---------|
+| Deployment Cost                                 | Deployment Size |         |         |         |         |
+| 2016608                                         | 10034           |         |         |         |         |
+| Function Name                                   | min             | avg     | median  | max     | # calls |
+| bulkMintSBT                                 | 1908196         | 1908196 | 1908196 | 1908196 | 1       |
+| getTokensOwned                         | 1200            | 1200    | 1200    | 1200    | 1       |
+| individualMintSBT                                         | 625497          | 625497  | 625497  | 625497  | 1       |
+| tokenURISBT                                         | 6341            | 6341    | 6341    | 6341    | 1       |
+
+
+Running 1 test for test/ReviewRewardTokenGasReport.t.sol:TokenTest
+[PASS] test_GasTimes() (gas: 47529132)
+Test result: ok. 1 passed; 0 failed; 0 skipped; finished in 21.21ms
+| contracts/ReviewRewardToken.sol:ReviewRewardToken contract |                 |       |        |       |         |
+|------------------------------------------------------------|-----------------|-------|--------|-------|---------|
+| Deployment Cost                                            | Deployment Size |       |        |       |         |
+| 1020859                                                    | 5662            |       |        |       |         |
+| Function Name                                              | min             | avg   | median | max   | # calls |
+| addAdmin                                                   | 20768           | 20968 | 20768  | 24768 | 20      |
+| balanceOf                                                  | 629             | 629   | 629    | 629   | 20      |
+| bulkMintFRT                                                   | 10631           | 14256 | 10631  | 83131 | 20      |
+| singleMintFRT                                             | 3580            | 4675  | 3580   | 25480 | 20      |
+| revokeAdmin                                                | 840             | 840   | 840    | 840   | 20      |
+
+
+| contracts/SoulBoundToken.sol:Soulbound contract |                 |         |         |         |         |
+|-------------------------------------------------|-----------------|---------|---------|---------|---------|
+| Deployment Cost                                 | Deployment Size |         |         |         |         |
+| 2016608                                         | 10034           |         |         |         |         |
+| Function Name                                   | min             | avg     | median  | max     | # calls |
+| bulkMintSBT                                 | 1737396         | 1747449 | 1739109 | 1908196 | 20      |
+| getTokensOwned                         | 1200            | 3433    | 3433    | 5669    | 20      |
+| individualMintSBT                                         | 579197          | 582025  | 579768  | 625497  | 20      |
+| tokenURISBT                                         | 6341            | 6341    | 6341    | 6341    | 20      |
+
+
+Running 1 test for test/ReviewRewardTokenGasReport.t.sol:TokenTest
+[PASS] test_GasTimes() (gas: 238221999)
+Test result: ok. 1 passed; 0 failed; 0 skipped; finished in 88.09ms
+| contracts/ReviewRewardToken.sol:ReviewRewardToken contract |                 |       |        |       |         |
+|------------------------------------------------------------|-----------------|-------|--------|-------|---------|
+| Deployment Cost                                            | Deployment Size |       |        |       |         |
+| 1020859                                                    | 5662            |       |        |       |         |
+| Function Name                                              | min             | avg   | median | max   | # calls |
+| addAdmin                                                   | 20768           | 20808 | 20768  | 24768 | 100     |
+| balanceOf                                                  | 629             | 629   | 629    | 629   | 100     |
+| bulkMintFRT                                                   | 10631           | 11356 | 10631  | 83131 | 100     |
+| singleMintFRT                                             | 3580            | 3799  | 3580   | 25480 | 100     |
+| revokeAdmin                                                | 840             | 840   | 840    | 840   | 100     |
+
+
+| contracts/SoulBoundToken.sol:Soulbound contract |                 |         |         |         |         |
+|-------------------------------------------------|-----------------|---------|---------|---------|---------|
+| Deployment Cost                                 | Deployment Size |         |         |         |         |
+| 2016608                                         | 10034           |         |         |         |         |
+| Function Name                                   | min             | avg     | median  | max     | # calls |
+| bulkMintSBT                                 | 1737396         | 1742059 | 1740819 | 1908196 | 100     |
+| getTokensOwned                         | 1200            | 12861   | 12855   | 24548   | 100     |
+| singleMintSBT                                         | 579197          | 580652  | 580338  | 625497  | 100     |
+| tokenURISBT                                         | 6341            | 6341    | 6341    | 6341    | 100     |
+
+
+Running 1 test for test/ReviewRewardTokenGasReport.t.sol:TokenTest
+[PASS] test_GasTimes() (gas: 483740479)
+Test result: ok. 1 passed; 0 failed; 0 skipped; finished in 177.60ms
+| contracts/ReviewRewardToken.sol:ReviewRewardToken contract |                 |       |        |       |         |
+|------------------------------------------------------------|-----------------|-------|--------|-------|---------|
+| Deployment Cost                                            | Deployment Size |       |        |       |         |
+| 1020859                                                    | 5662            |       |        |       |         |
+| Function Name                                              | min             | avg   | median | max   | # calls |
+| addAdmin                                                   | 20768           | 20788 | 20768  | 24768 | 200     |
+| balanceOf                                                  | 629             | 629   | 629    | 629   | 200     |
+| bulkMintFRT                                                   | 10631           | 10993 | 10631  | 83131 | 200     |
+| singleMintFRT                                             | 3580            | 3689  | 3580   | 25480 | 200     |
+| revokeAdmin                                                | 840             | 840   | 840    | 840   | 200     |
+
+
+| contracts/SoulBoundToken.sol:Soulbound contract |                 |         |         |         |         |
+|-------------------------------------------------|-----------------|---------|---------|---------|---------|
+| Deployment Cost                                 | Deployment Size |         |         |         |         |
+| 2016608                                         | 10034           |         |         |         |         |
+| Function Name                                   | min             | avg     | median  | max     | # calls |
+| bulkMintSBT                                 | 1737396         | 1741439 | 1740819 | 1908196 | 200     |
+| getTokensOwned                         | 1200            | 24692   | 24666   | 48288   | 200     |
+| singleMintSBT                                         | 579197          | 580495  | 580338  | 625497  | 200     |
+| tokenURISBT                                         | 6341            | 6341    | 6341    | 6341    | 200     |
+
+
+
+ Running 1 test for test/ReviewRewardTokenGasReport.t.sol:TokenTest
+[PASS] test_GasTimes() (gas: 1375502068)
+Test result: ok. 1 passed; 0 failed; 0 skipped; finished in 482.05ms
+| contracts/ReviewRewardToken.sol:ReviewRewardToken contract |                 |       |        |       |         |
+|------------------------------------------------------------|-----------------|-------|--------|-------|---------|
+| Deployment Cost                                            | Deployment Size |       |        |       |         |
+| 1020859                                                    | 5662            |       |        |       |         |
+| Function Name                                              | min             | avg   | median | max   | # calls |
+| addAdmin                                                   | 20768           | 20776 | 20768  | 24768 | 500     |
+| balanceOf                                                  | 629             | 629   | 629    | 629   | 500     |
+| bulkMintFRT                                                   | 10631           | 10776 | 10631  | 83131 | 500     |
+| singleMintFRT                                             | 3580            | 3623  | 3580   | 25480 | 500     |
+| revokeAdmin                                                | 840             | 840   | 840    | 840   | 500     |
+
+
+| contracts/SoulBoundToken.sol:Soulbound contract |                 |         |         |         |         |
+|-------------------------------------------------|-----------------|---------|---------|---------|---------|
+| Deployment Cost                                 | Deployment Size |         |         |         |         |
+| 2016608                                         | 10034           |         |         |         |         |
+| Function Name                                   | min             | avg     | median  | max     | # calls |
+| bulkMintSBT                                 | 1737396         | 1742286 | 1743258 | 1908196 | 500     |
+| getTokensOwned                         | 1200            | 60498   | 60336   | 120445  | 500     |
+| singleMintSBT                                         | 579197          | 580809  | 581151  | 625497  | 500     |
+| tokenURISBT                                         | 6341            | 6341    | 6341    | 6341    | 500     |
+
+
