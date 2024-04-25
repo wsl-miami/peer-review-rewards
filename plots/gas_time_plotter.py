@@ -54,7 +54,7 @@ def parse_gas(filename):
 # create csv to be used for loaded gas costs
 def parse_load(filename):
     if "rrt_and" in filename:
-        data_dict = {"addAdmin": {}, "revokeAdmin": {}, "singleMintFRT": {}, "bulkMintFRT": {}, "balanceOf": {}, "bulkMintSBT": {},"singleMintSBT": {}, "getTokensOwned": {}, "tokenURISBT": {}}
+        data_dict = {"addAdmin": {}, "revokeAdmin": {}, "singleMintFRT": {}, "bulkMintFRT": {}, "balanceOf": {}, "transfer": {}, "bulkMintSBT": {},"singleMintSBT": {}, "getTokensOwned": {}, "tokenURISBT": {}}
     elif "review" in filename:
         data_dict = {"addAdmin": {}, "revokeAdmin": {}, "individualMint": {}, "bulkMint": {}}
     else:
@@ -101,7 +101,7 @@ def parse_load(filename):
                 elif times == "500":
                     data_dict[func]["500_avg"] = avg1.strip()
                 continue
-    df = pd.DataFrame(columns=['function', "1", "20", "100", "200", "500"])
+    df = pd.DataFrame(columns=['function', "1", "20", "100", "500"])
 
     # df = pd.DataFrame(columns=['function', "1", "20", "100", "500"])
     # get the output file name
@@ -109,11 +109,11 @@ def parse_load(filename):
 
     # loop through the dictionary to write the values a dataframe
     for key, value in data_dict.items():
-        if "1_avg" not in value.keys() or "20_avg" not in value.keys() or "100_avg" not in value.keys() or "200_avg" not in value.keys() or "500_avg" not in value.keys():
+        if "1_avg" not in value.keys() or "20_avg" not in value.keys() or "100_avg" not in value.keys() or "500_avg" not in value.keys():
         #or "500_avg" not in value.keys():
             print("missing value for " + key)
         else: 
-            row = [key, value["1_avg"], value["20_avg"], value["100_avg"], value["200_avg"], value["500_avg"]]
+            row = [key, value["1_avg"], value["20_avg"], value["100_avg"], value["500_avg"]]
             # row = [key, value["1_avg"], value["20_avg"], value["100_avg"], value["500_avg"]]
             df.loc[len(df)] = row
 
@@ -131,7 +131,7 @@ def plot_static(filename, df):
 
     # set number of x-axis labels and width of each bar
     x = np.arange(len(function_name))
-    width = 0.2
+    width = 0.1
 
     # generate subplots and set height/width
     fig, ax = plt.subplots()
@@ -155,7 +155,7 @@ def plot_static(filename, df):
     ax.legend(['3 tokens', '10 tokens', '20 tokens', '30 tokens'], loc='upper left')
     # ax.set_title("Gas report for Smart Contract (500 calls each)")
     ax.set_ylabel("Gas consumed in GWEI (log-scale)")
-    ax.set_xlabel("Smart Contract Methods")
+    ax.set_xlabel("Smart contract methods associated with bulk minting")
     ax.set_xticks(x, function_name, rotation=45, ha='right')
     fig.tight_layout()
     plt.yscale('log')
@@ -173,8 +173,8 @@ def plot_load(filename, df):
     one_gas = [eval(i) for i in list(df.iloc[:, 1])]
     twenty_gas = [eval(i) for i in list(df.iloc[:, 2])]
     hund_gas = [eval(i) for i in list(df.iloc[:, 3])]
-    twohund_gas = [eval(i) for i in list(df.iloc[:, 4])]
-    fivehund_gas = [eval(i) for i in list(df.iloc[:, 5])]
+    # twohund_gas = [eval(i) for i in list(df.iloc[:, 4])]
+    fivehund_gas = [eval(i) for i in list(df.iloc[:, 4])]
 
     # set the number of bars needed and the width of each bar
     x = np.arange(len(function_name))
@@ -193,11 +193,13 @@ def plot_load(filename, df):
     ax.bar(x - 2*width, one_gas, width, color='thistle', edgecolor='black', hatch='/')
     ax.bar(x - width, twenty_gas, width, color='springgreen', edgecolor='black', hatch='o')
     ax.bar(x, hund_gas, width, color='salmon', edgecolor='black', hatch='-')
-    ax.bar(x + width, twohund_gas, width, color='blue', edgecolor='black', hatch='+')
-    ax.bar(x + 2 * width, fivehund_gas, width, color='lightseagreen', edgecolor='black', hatch='\\')
+    ax.bar(x + width, fivehund_gas, width, color='blue', edgecolor='black', hatch='+')
+    # ax.bar(x + 2 * width, fivehund_gas, width, color='lightseagreen', edgecolor='black', hatch='\\')
 
     # plot attributes
-    ax.legend(['1', '20', '100', '200', '500'], loc='upper right')
+    # ax.legend(['1', '20', '100', '200', '500'], loc='upper right')
+    ax.legend(['1', '20', '100', '500'], loc='upper right')
+
     ax.set_ylabel("Gas consumed in GWEI (log-scale)")
     ax.set_xlabel("Smart Contract Method")
 

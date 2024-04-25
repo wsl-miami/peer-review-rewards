@@ -16,7 +16,7 @@ describe("Soulbound Token Test", function () {
     let sbt;
     let amount = 3;
 
-    let delayData = "addAdmin, revokeAdmin, bulkMintFRT, individualMintFRT, balanceOf, bulkMintSBT, individualMintSBT, getTokensOwnedByAddress, tokenURISBT\n";
+    let delayData = "addAdmin, revokeAdmin, bulkMintFRT, individualMintFRT, balanceOf, transfer, bulkMintSBT, individualMintSBT, getTokensOwnedByAddress, tokenURISBT\n";
 
     beforeEach(async function () {
         // Retrieve the default account from ethers
@@ -70,6 +70,12 @@ describe("Soulbound Token Test", function () {
             let afterBalanceOf = Date.now().toString();
             let balanceOfTime = (afterBalanceOf - beforeBalanceOf).toString();
             delayData += balanceOfTime + ",";
+
+            let beforeTransfer = Date.now().toString();
+            await rrt.transfer(reviewer1.address, 2);
+            let afterTransfer = Date.now().toString();
+            let transferTime = (afterTransfer - beforeTransfer).toString();
+            delayData += transferTime + ",";
     
             let beforeBulkMintSBT = Date.now().toString();
             await sbt.bulkMintFromCron(reviewers, (journal.address).toString());
