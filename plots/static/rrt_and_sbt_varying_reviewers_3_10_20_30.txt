@@ -1,0 +1,10 @@
+Running 1 test for test/ReviewRewardTokenGasReport.t.sol:TokenTest
+[PASS] test_GasTimes() (gas: 7269559)
+Test result: ok. 1 passed; 0 failed; 0 skipped; finished in 7.61ms
+| contracts/ReviewRewardToken.sol:ReviewRewardToken contract |                 |        |        |        |         |
+|------------------------------------------------------------|-----------------|--------|--------|--------|---------|
+| Deployment Cost                                            | Deployment Size |        |        |        |         |
+| 1020859                                                    | 5662            |        |        |        |         |
+| Function Name                                              | 3tokens             | 10tokens    | 20tokens | 30tokens    | # calls |
+| bulkMintFRT                                                   | 83131          | 259363 | 511124 | 762885 | 1       |
+| bulkMintSBT                                | 1907953         | 6283635 | 12541171 | 18800676 | 1       |

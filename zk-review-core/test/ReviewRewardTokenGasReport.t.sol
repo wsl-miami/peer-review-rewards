@@ -56,6 +56,7 @@ contract TokenTest is Test {
             rrt.bulkMint(reviewers, amount);
             rrt.individualMint(reviewer1, amount);
             rrt.balanceOf(reviewer1);
+            rrt.transfer(reviewer1, 2);
 
             sbt.bulkMintFromCron(reviewers, vm.toString(journal));
             sbt.safeMint(reviewer1, vm.toString(journal));
