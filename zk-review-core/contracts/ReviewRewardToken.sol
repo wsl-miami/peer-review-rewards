@@ -9,7 +9,7 @@ contract ReviewRewardToken is ERC20, ERC20Burnable {
     uint256 public blockReward;
 
     // mapping for admin access control
-    mapping(address => bool) admins;
+    mapping(address => bool) admins; 
 
     constructor(uint256 reward) ERC20("ReviewRewardToken", "RRT") {
         owner = payable(msg.sender);

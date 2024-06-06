@@ -20,7 +20,7 @@ contract Soulbound is ERC721, ERC721URIStorage, Ownable {
     }
 
     /**
-        Ensure that the token can not be transferred
+        The token should not be transferable once assigned to the reviewer
      */
     function _beforeTokenTransfer(address from, address to, uint256 tokenId)
         internal
@@ -55,30 +55,34 @@ contract Soulbound is ERC721, ERC721URIStorage, Ownable {
     function bulkMint(address[] memory _tos, string memory journalString, address journal) public {
         require(journal == msg.sender, "Only journal can mint the token.");
 
-        for(uint256 i=0; i< _tos.length; i++) {
-            _tokenIdCounter += 1;
-            _safeMint(_tos[i], _tokenIdCounter);
-            ownerTokenIds[_tos[i]].push(_tokenIdCounter);
+        unchecked {
+            for(uint256 i=0; i< _tos.length; i++) {
+                _tokenIdCounter += 1;
+                _safeMint(_tos[i], _tokenIdCounter);
+                ownerTokenIds[_tos[i]].push(_tokenIdCounter);
 
-            string memory tURI = generateTokenURI(
-                _tokenIdCounter,
-                journalString
-            );
-            _setTokenURI(_tokenIdCounter, tURI);
+                string memory tURI = generateTokenURI(
+                    _tokenIdCounter,
+                    journalString
+                );
+                _setTokenURI(_tokenIdCounter, tURI);
+            }
         }
     }
 
     function bulkMintFromCron(address[] memory _tos, string memory journalString) public onlyOwner {
-        for(uint256 i=0; i< _tos.length; i++) {
-            _tokenIdCounter += 1;
-            _safeMint(_tos[i], _tokenIdCounter);
-            ownerTokenIds[_tos[i]].push(_tokenIdCounter);
+        unchecked {
+            for(uint256 i=0; i< _tos.length; i++) {
+                _tokenIdCounter += 1;
+                _safeMint(_tos[i], _tokenIdCounter);
+                ownerTokenIds[_tos[i]].push(_tokenIdCounter);
 
-            string memory tURI = generateTokenURI(
-                _tokenIdCounter,
-                journalString
-            );
-            _setTokenURI(_tokenIdCounter, tURI);
+                string memory tURI = generateTokenURI(
+                    _tokenIdCounter,
+                    journalString
+                );
+                _setTokenURI(_tokenIdCounter, tURI);
+            }
         }
     }
 
@@ -143,6 +147,14 @@ contract Soulbound is ERC721, ERC721URIStorage, Ownable {
         returns (string memory)
     {
         return super.tokenURI(tokenId);
+    }
+
+    function updateTokenImage(string memory image) public onlyOwner {
+        rewardImage = image;
+    }
+
+    function getRewardImage() public view returns (string memory) {
+        return rewardImage;
     }
 
     // string public versionRecipient = "3.0.0-beta.6";
