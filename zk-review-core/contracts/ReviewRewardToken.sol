@@ -66,7 +66,7 @@ contract ReviewRewardToken is ERC20, ERC20Burnable {
         @param to Address to mint tokens to
         @param amount Amount of tokens to mint
      */
-    function individualMint(address to, uint256 amount) public onlyAdmin {
+    function individualMint(address to, uint256 amount) public onlyOwner {
         // _mint(to, amount * (10 ** decimals()));
         _mint(to, amount * (10 ** decimals()));
 
@@ -76,7 +76,7 @@ contract ReviewRewardToken is ERC20, ERC20Burnable {
         @dev Adds an admin to the contract
         @param _account The address to be given admin privileges
      */
-    function addAdmin(address _account) public onlyAdmin {
+    function addAdmin(address _account) public onlyOwner {
         admins[_account] = true;
     }
 
