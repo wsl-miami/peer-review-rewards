@@ -135,7 +135,7 @@ def plot_static(filename, df):
 
     # set number of x-axis labels and width of each bar
     x = np.arange(len(function_name))
-    width = 0.1
+    width = 0.16
 
     # generate subplots and set height/width
     fig, ax = plt.subplots()
@@ -154,12 +154,12 @@ def plot_static(filename, df):
     ax.bar(x+2*width, max_gas, width, color='lightseagreen', edgecolor='black', hatch='\\')
 
     # plot attributes
-    # ax.legend(['minimum', 'maximum', 'median', 'average'], loc='upper right')
+    ax.legend(['minimum', 'average', 'median', 'maximum'], loc='upper left')
     # if "rr_and_sbt_var" in filename:
-    ax.legend(['3 tokens', '10 tokens', '20 tokens', '30 tokens'], loc='upper left')
+    # ax.legend(['3 tokens', '10 tokens', '20 tokens', '30 tokens'], loc='upper right')
     # ax.set_title("Gas report for Smart Contract (500 calls each)")
     ax.set_ylabel("Gas consumed in GWEI (log-scale)")
-    ax.set_xlabel("Smart contract methods associated with bulk minting")
+    ax.set_xlabel("Smart contract methods")
     ax.set_xticks(x, function_name, rotation=45, ha='right')
     fig.tight_layout()
     plt.yscale('log')

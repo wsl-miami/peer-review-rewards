@@ -47,7 +47,7 @@ Test result: ok. 1 passed; 0 failed; 0 skipped; finished in 21.03ms
 | 2038429                                         | 10143           |         |         |         |         |
 | Function Name                                   | min             | avg     | median  | max     | # calls |
 | bulkMintSBT                                | 1737153         | 1747206 | 1738866 | 1907953 | 20      |
-| getTokensOwned                         | 1200            | 3433    | 3433    | 5669    | 20      |
+| getTokensOwned                         | 894             | 994     | 894     | 2894    | 20      |
 | singleMintSBT                                        | 579197          | 582025  | 579768  | 625497  | 20      |
 | tokenURISBT                                        | 6341            | 6341    | 6341    | 6341    | 20      |
 
@@ -74,7 +74,7 @@ Test result: ok. 1 passed; 0 failed; 0 skipped; finished in 85.77ms
 | 2038429                                         | 10143           |         |         |         |         |
 | Function Name                                   | min             | avg     | median  | max     | # calls |
 | bulkMintSBT                                | 1737153         | 1741816 | 1740576 | 1907953 | 100     |
-| getTokensOwned                         | 1200            | 12861   | 12855   | 24548   | 100     |
+| getTokensOwned                         | 894             | 914     | 894     | 2894    | 100     |
 | singleMintSBT                                        | 579197          | 580652  | 580338  | 625497  | 100     |
 | tokenURISBT                                        | 6341            | 6341    | 6341    | 6341    | 100     |
 
@@ -101,7 +101,7 @@ Test result: ok. 1 passed; 0 failed; 0 skipped; finished in 468.83ms
 | 2038429                                         | 10143           |         |         |         |         |
 | Function Name                                   | min             | avg     | median  | max     | # calls |
 | bulkMintSBT                                | 1737153         | 1742043 | 1743015 | 1907953 | 500     |
-| getTokensOwned                         | 1200            | 60498   | 60336   | 120445  | 500     |
+| getTokensOwned                         | 894             | 898     | 894     | 2894    | 500    |
 | singleMintSBT                                        | 579197          | 580809  | 581151  | 625497  | 500     |
 | tokenURISBT                                        | 6341            | 6341    | 6341    | 6341    | 500     |
 

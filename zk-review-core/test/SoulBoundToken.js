@@ -1,9 +1,7 @@
 const { expect } = require("chai");
 const address = require('../tasks/address');
 
-// @TODO: Update the test for GSN implementation
-
-describe("Soulbound Token Test", function () {
+describe("Token Delay Test", function () {
     let owner;
 
     beforeEach(async function () {
@@ -13,6 +11,8 @@ describe("Soulbound Token Test", function () {
         // A helper to get the contracts instance and deploy it locally
         const Soulbound = await ethers.getContractFactory("Soulbound");
         soulbound = await Soulbound.deploy();
+
+        
 
         // Mint token ID 1 to owner address
         await soulbound.safeMint(owner.address, '0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6');
@@ -52,4 +52,13 @@ describe("Soulbound Token Test", function () {
         )).to.be.reverted;
         
     });
+
+    it("update token image", async () => {
+        const newTokenImage = "";
+        await soulbound.updateTokenImage(newTokenImage);
+
+        const image = await soulbound.getRewardImage();
+
+        expect(image).to.equal(newTokenImage);
+    })
 });
