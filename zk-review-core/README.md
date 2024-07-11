@@ -1,5 +1,5 @@
 # Main Contracts and files to look for
-## Contrats:
+## Contracts:
 AcceptEverythingPaymaster : Naive paymaster that accepts requests from everyone
 WhitelistPaymaster : Paymaster that allows payment for whitelisted groups only
 PeerReviewGSN : Implementation of Peer Review contract with Gas Station Network
@@ -23,10 +23,6 @@ deployReviewRewardToken : Deployment script for ReviewRewardToken contract
 PeerReviewGSNTest : Test file for PeerReviewGSN contract
 SoulBoundToken : Test file for SoulBoundToken contract
 ReviewRewardTokenTest : Test file for ReviewRewardToken contract
-
-# Semaphore Hardhat template
-
-This project demonstrates a basic Semaphore use case. It comes with a sample contract, a test for that contract and a sample task that deploys that contract.
 
 ## Usage
 
