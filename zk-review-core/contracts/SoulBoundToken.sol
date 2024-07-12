@@ -8,7 +8,6 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 
 // @ToDo: Allow soulbound token to be burnt and reassigned by the owner
-// Ask chatgpt to optimize the contract
 
 /**
     @title Soulbound Tokens
