@@ -13,7 +13,7 @@ export default function RewardTokens({tokenId, SoulBoundContract}) {
 
     useEffect(() => {
         const fetchTokenMetadata = async() => {
-                var soulBoundToken = await SoulBoundContract.methods.tokenURI(tokenId).call();
+                let soulBoundToken = await SoulBoundContract.methods.tokenURI(tokenId).call();
                 const response = await axios.get(soulBoundToken);
                 let journal = {
                     journal_name: null,

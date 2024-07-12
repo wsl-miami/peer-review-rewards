@@ -13,7 +13,6 @@ async function main() {
 
   const setTrustedForwarderTx = await whitelistPaymaster.setTrustedForwarder(forwarder);
   await setTrustedForwarderTx.wait();
-//   console.log("Set trusted forwarder:", await whitelistPaymaster.getTrustedForwarder());
 
   const setRelayHubTx = await whitelistPaymaster.setRelayHub(relayHubAddress);
   console.log('relay hub add', relayHubAddress);

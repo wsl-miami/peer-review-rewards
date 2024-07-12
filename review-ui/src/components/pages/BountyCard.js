@@ -11,8 +11,6 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import AddReviewersModal from "../modals/AddReviewersModal";
 import SubmitReviewModal from '../modals/submitReviewModal';
-import check from '../../static/bigCheck.png';
-import bigX from '../../static/bigX.png';
 import { Buffer } from 'buffer';
 import bs58 from 'bs58'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
@@ -47,7 +45,6 @@ export default function BountyCard({
     }
     const handleShow = (link) => {
         setIpfs32(link);
-        console.log(ipfs32);
         setShow(true);
     }
 
@@ -112,13 +109,6 @@ export default function BountyCard({
                 console.log("done!");
                 window.location.reload();
             });
-            
-            // PRContract.methods.closeBounty(
-            //     bounty.id, passedOrFailed == 'Publish'
-            // ).send({ from: account })
-            //     .on('confirmation', (receipt) => {
-            //         window.location.reload();
-            //     });;
         }
 
         setConfirmation('');
@@ -367,12 +357,7 @@ export default function BountyCard({
             </>
         )
     }
-    // const userHasReviewed = () => {
-    //     var bountyList = type === 'reviewer' ? bounties[0] : bounties;
-    //     if (bountyList.length === 0 || bounties === null) {
-    //         return <NoBounties type={type} />
-    //     } 
-    // }
+
     const reviewerContent = () => {
         if (type !== 'reviewer') {
             return ('');
@@ -456,7 +441,6 @@ export default function BountyCard({
                                     <Col>
                                         <Ratio aspectRatio="16x9">
                                             <IframeResizer
-                                                // src={bounty ? "https://review-rewards.infura-ipfs.io/ipfs/" + convertBytes32toIpfsHash(bounty.manuscript_link) : ''}
                                                 src={bounty ? "https://review-rewards.infura-ipfs.io/ipfs/" + bounty.manuscript_link : ''}
                                                 heightCalculationMethod="lowestElement"
                                                 style={{ width: '1px', minWidth: '100%' }}
@@ -538,9 +522,7 @@ export default function BountyCard({
                     </Modal.Header>
                     <Modal.Body>
                         <IframeResizer
-                            // src={bounty ? "https://review-rewards.infura-ipfs.io/ipfs/" + convertBytes32toIpfsHash(ipfs32) : ''}
                             src={bounty ? "https://review-rewards.infura-ipfs.io/ipfs/" + ipfs32 : ''}
-
                             aspectRatio="1/1"
                             height="700"
                             style={{ width: '1px', minWidth: '100%' }}

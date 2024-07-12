@@ -23,7 +23,6 @@ export default function Reputation({
     useEffect(() => {
         const fetchReputation = async () => {
             if(account) {
-                // var ret = await PRContract.methods.addressToReputation(account).call();
                 var totalTokens = await SoulBoundContract.methods.balanceOf(account).call();
                 var listAllTokens = await SoulBoundContract.methods.getTokensOwnedByAddress(account).call();
                 console.log('listAllTokens', listAllTokens);

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Col from "react-bootstrap/Col";
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
-import Web3 from 'web3';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
@@ -18,15 +17,12 @@ export default function Settings({
     ReviewRewardTokenContract,
     account
 }) {
-
-    // const [tokenAmount, setTokenAmount] = useState(null);
     const [RRTEnabled, setRRTEnabled] = useState(null);
     const [tokenWithinDeadline, setTokenWithinDeadline] = useState(null);
     const [tokenAfterDeadline, setTokenAfterDeadline] = useState(null);
 
     useEffect(() => {
         const fetchSettings = async() => {
-            console.log("entered here", account);
             if (account) {
                 const settings = await axios({
                     url: `${process.env.REACT_APP_API_URL}/api/get-token-settings`,
@@ -40,7 +36,6 @@ export default function Settings({
                     const enabled = (reward_settings.ENABLE_RRT && reward_settings.ENABLE_RRT == 1) ? true : false;
                     const rrt_within_deadline = reward_settings.RRT_WITHIN_DEADLINE;
                     const rrt_after_deadline = reward_settings.RRT_AFTER_DEADLINE;
-                    // setTokenAmount(rrt_amount_per_review);
                     setRRTEnabled(enabled);
                     setTokenWithinDeadline(rrt_within_deadline);
                     setTokenAfterDeadline(rrt_after_deadline);
@@ -55,15 +50,12 @@ export default function Settings({
             url: `${process.env.REACT_APP_API_URL}/api/update-review-settings`,
             method: "POST",
             data: {journal_hash: account, 
-                    enableRRT: RRTEnabled, 
-                    // amountPerReview: tokenAmount,
+                    enableRRT: RRTEnabled,
                     amountPerReviewWithinDeadline: tokenWithinDeadline,
                     amountPerReviewAfterDeadline: tokenAfterDeadline
                 },
-            // data: {author: "0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6", file_hash: "QmVZerrmNhQE1gPp4KnX1yFJSHgAfMY6QW5LxGdpRPM2uJ"}
         })
             .then((res) => {
-                console.log('api response', res);
                 })
             .catch((err) => {
                 console.log('api error', err);
@@ -118,21 +110,6 @@ export default function Settings({
                                     className="mb-2"
                                 />
                             </Col>
-                            {/* <Col xs="auto">
-                                <Form.Label htmlFor="rrt_amount" visuallyHidden>
-                                    Tokens Per Review
-                                </Form.Label>
-                                <InputGroup className="mb-2">
-                                    <InputGroup.Text>RRT</InputGroup.Text>
-                                    <FormControl 
-                                        id="rrt_amount"
-                                        placeholder="Tokens per review" 
-                                        type="text"
-                                        value={tokenAmount}
-                                        onChange={e => setTokenAmount(e.target.value)}    
-                                    />
-                                </InputGroup>
-                            </Col> */}
                             <Col xs="auto">
                                 <Form.Label htmlFor="rrt_within_deadline">
                                     Review submitted within deadline

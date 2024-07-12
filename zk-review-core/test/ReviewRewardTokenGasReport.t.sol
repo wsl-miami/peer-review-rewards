@@ -14,6 +14,7 @@ contract TokenTest is Test {
     address owner;
     address admin;
     address reviewer1;
+    address reviewer2;
     address[] reviewers;
     uint256 amount;
     uint256 reward;
@@ -35,10 +36,11 @@ contract TokenTest is Test {
         reviewers.push(vm.addr(5));
         reviewers.push(vm.addr(6));
         reviewers.push(vm.addr(7));
+        reviewer2 = vm.addr(8);
 
-        // for (uint256 i = 0; i < 27; i++) {
-        //     reviewers.push(vm.addr(i+8));
-        // }
+        for (uint256 i = 0; i < 27; i++) {
+            reviewers.push(vm.addr(i+8));
+        }
 
         amount = 3;
     }
@@ -52,13 +54,42 @@ contract TokenTest is Test {
         }
 
         vm.startPrank(owner);
-        for (uint256 i=0; i<500; i++) {
+        for (uint256 i=0; i<1; i++) {
             rrt.bulkMint(reviewers, amount);
             rrt.individualMint(reviewer1, amount);
             rrt.balanceOf(reviewer1);
             rrt.transfer(reviewer1, 2);
 
-            sbt.bulkMintFromCron(reviewers, vm.toString(journal));
+            // sbt.bulkMintFromCron(reviewers, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
+            sbt.safeMint(reviewer1, vm.toString(journal));
             sbt.safeMint(reviewer1, vm.toString(journal));
             sbt.getTokensOwnedByAddress(reviewer1);
             sbt.tokenURI(1);
@@ -66,45 +97,3 @@ contract TokenTest is Test {
         vm.stopPrank();
     }
 }
-
-
-// contract SoulboundTest is Test {
-
-//     address owner;
-//     address admin;
-//     address reviewer1;
-//     address[] reviewers;
-
-//     Soulbound public sbt;
-//     address journal;
-
-//     function setUp() public {
-//         owner = vm.addr(1);
-//         vm.startPrank(owner);
-//         sbt = new Soulbound();
-//         vm.stopPrank();
-
-//         admin = vm.addr(2);
-//         journal = vm.addr(3);
-//         reviewer1 = vm.addr(4);
-//         reviewers.push(vm.addr(5));
-//         reviewers.push(vm.addr(6));
-//         reviewers.push(vm.addr(7));
-
-//         for (uint256 i = 0; i < 7; i++) {
-//             reviewers.push(vm.addr(i+8));
-//         }
-//     }
-
-//     function test_SBTGasTimes() public {
-
-//         vm.startPrank(owner);
-//         // for (uint256 i=0; i<100; i++) {
-//             sbt.bulkMintFromCron(reviewers, vm.toString(journal));
-//             sbt.safeMint(reviewer1, vm.toString(journal));
-//             sbt.getTokensOwnedByAddress(reviewer1);
-//             sbt.tokenURI(1);
-//         // }
-//         vm.stopPrank();
-//     }
-// }

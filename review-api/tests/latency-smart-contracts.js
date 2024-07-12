@@ -23,13 +23,11 @@ async function reviewRewardTokenSetup() {
 
 async function soulBoundSetup() {
   try {
-    // provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_URL);
     provider = new ethers.JsonRpcProvider(process.env.TEST_NETWORK == 'sepolia' ? process.env.SEPOLIA_URL : ETHEREUM_URL);
     const wallet = new ethers.Wallet(process.env.ETHEREUM_PRIVATE_KEY);
     signer = wallet.connect(provider);
     balance = await provider.getBalance(signer.address);
     console.log('balance', balance);
-    // const soulBoundAddress = process.env.SOUL_BOUND_TOKEN_CONTRACT;
     const soulBoundAddress = process.env.TEST_NETWORK == 'sepolia' ? process.env.SOUL_BOUND_TOKEN_CONTRACT_SEPOLIA: SOUL_BOUND_TOKEN_CONTRACT_GOERLI;
     SoulBoundContract = new ethers.Contract(soulBoundAddress, SoulBoundABI, signer);
 
@@ -48,7 +46,6 @@ let journal='0xcc5e48A23A7Db6FFda9facc76Db4A2aB5a89c80A';
 let reviewer1='0x9ae658c7300849D0A8E61d7098848750afDA88eF';
 let reviewer2='0x93Ca3d98200a35ba6a7d703188C200b000B9FDb7';
 let reviewer3='0x9ae658c7300849D0A8E61d7098848750afDA88eF';  
-let reviewer4; 
 // let delayData = "addAdmin, revokeAdmin, bulkMintFRT, individualMintFRT, balanceOf, transfer, bulkMintSBT, individualMintSBT, getTokensOwnedByAddress, tokenURISBT\n";
 let delayData = "bulkMintFRT, balanceOf, transfer, getTokensOwnedByAddress, tokenURISBT\n";
 let reviewers = [reviewer1, reviewer2, reviewer3];

@@ -14,7 +14,7 @@ export default function ReviewerStats({
         for (let i = 0; i < reviewerBounties.length; i++) {
             arr[i] = { "date": new Date(reviewerBounties[i].gen_time * 1000).toLocaleDateString("en-US"), "passed": reviewerBounties[i].reviewers.length };
         }
-        console.log(arr)
+
         var dateAmounts = {};
         let sum = 0;
         for (let i = 0; i < arr.length; i++) {
@@ -135,14 +135,7 @@ export default function ReviewerStats({
                             </LineChart>
                         </ResponsiveContainer>
                     </Col>
-            </Row>  
-    
-    
-    
-    
-    
-    
-    
+            </Row>    
     </>
 )
 }

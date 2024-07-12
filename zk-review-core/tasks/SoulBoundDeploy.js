@@ -16,8 +16,8 @@ async function deploy() {
 
     // Obtain the Soulbound contract
     const Soulbound = await hre.ethers.getContractFactory("Soulbound");
+    
     // Deploy the Soulbound contract
-    // const soulbound = await Soulbound.deploy(forwarder);
     const soulbound = await Soulbound.deploy();
 
 

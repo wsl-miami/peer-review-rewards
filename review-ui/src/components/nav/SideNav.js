@@ -1,7 +1,5 @@
-//import useState hook to create menu collapse state
 import React, { useState } from "react";
 
-//import react pro sidebar components
 import {
   Sidebar,
   Menu,
@@ -23,11 +21,6 @@ import Author from '../pages/Author';
 import Home from '../pages/Home.js';
 import Reputation from "../pages/Reputation";
 import Settings from "../pages/Settings";
-
-
-
-//import sidebar css from react-pro-sidebar module and our custom css 
-// import "react-pro-sidebar/dist/css/styles.css";
 import "./SideNav.css";
 import {
   Routes,
@@ -49,7 +42,6 @@ export default function SideNav(
   profile,
   ReviewRewardTokenContract}) {
   
-  //create initial menuCollapse state using useState hook
   const [menuCollapse, setMenuCollapse] = useState(false);
   const [hasImage, setHasImage] = React.useState(false);
   let location = useLocation().pathname;
@@ -97,7 +89,7 @@ export default function SideNav(
     }),
   };
 
-    //create a custom function that will change menucollapse state from false to true and true to false
+  //create a custom function that will change menucollapse state from false to true and true to false
   const menuIconClick = () => {
     //condition checking to change state from true to false and vice versa
     menuCollapse ? setMenuCollapse(false) : setMenuCollapse(true);
@@ -174,7 +166,6 @@ export default function SideNav(
                             account={account}
                             authorBounties={authorBounties}
                             PRContract={PRContract}
-                            // SoulBoundContract={SoulBoundContract}
                             web3={web3}
                         />} />
                 <Route path="/editor"
@@ -197,7 +188,6 @@ export default function SideNav(
                             account={account}
                             reviewerBounties={reviewerBounties}
                             PRContract={PRContract}
-                            // SoulBoundContract={SoulBoundContract}
                             profile={profile}
                             web3={web3}
 

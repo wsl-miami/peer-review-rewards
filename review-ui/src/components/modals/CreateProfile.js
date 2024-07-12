@@ -28,14 +28,6 @@ export default function CreateProfile({
     const [birthDate, setBirthDate] = useState(null);
     const [role, setRole] = useState(null);
 
-
-    // const showNoProfile = () => {
-    //     var ret = true;
-    //     ret = ret && (account !== null && account !== '');
-    //     ret = ret && (profile === null && chainId === 5);
-    //     return (ret);
-    // }
-
     const handleDisconnect = () => {
         disconnect();
     }
@@ -80,14 +72,6 @@ export default function CreateProfile({
                 console.log('api error', err);
                 alert('Something went Wrong. Please Try again');
             });
-
-        // await ProfilesContract.methods.createProfile(name, journalName, email)
-        // .send({from: account})
-        // .on('confirmation', (receipt) => {
-        //     window.location.reload();
-        // });
-        // var newProfile = await ProfilesContract.methods.getProfileByAddress(account).call()
-        // setProfile(newProfile);
     }
 
     return (

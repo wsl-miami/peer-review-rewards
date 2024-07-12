@@ -2,10 +2,7 @@ import "../../style/TabStyle.css";
 import React, { Component } from "react";
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-import Tab from 'react-bootstrap/Tab';
-import Tabs from 'react-bootstrap/Tabs';
 import Dashboard from "./Dashboard";
-import ReviewerStats from './ReviewerStats'
 class Review extends Component {
 
     render() {
@@ -15,8 +12,6 @@ class Review extends Component {
                 <Container fluid>
                     <Row>
                         <h2>Reviewer Dashboard</h2>
-                        {/* <Tabs className="tabs"> */}
-                            {/* <Tab title='Reviewer Dashboard' eventKey='dashboard'> */}
                                 <Dashboard
                                     chainId={this.props.chainId}
                                     account={this.props.account}
@@ -25,13 +20,7 @@ class Review extends Component {
                                     type={"reviewer"}
                                     profile={this.props.profile}
                                     web3={this.props.web3}
-
                                 />
-                            {/* </Tab> */}
-                            {/* <Tab title='Statistics' eventKey='statistics'> */}
-                                {/* <ReviewerStats reviewerBounties={this.props.reviewerBounties} /> */}
-                            {/* </Tab> */}
-                        {/* </Tabs> */}
                     </Row>
                 </Container>
             </>

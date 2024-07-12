@@ -101,9 +101,6 @@ describe("Soulbound Token Test", function () {
             let tokenURISBTTime = (afterTokenURISBT - beforeTokenURISBT).toString();
             delayData += tokenURISBTTime + "\n";
         }
-
-
         console.log('delayData', delayData);
-
     });
 });
