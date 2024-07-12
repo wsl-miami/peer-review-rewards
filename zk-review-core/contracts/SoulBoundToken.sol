@@ -45,11 +45,6 @@ contract Soulbound is ERC721, ERC721URIStorage, Ownable {
         super._beforeTokenTransfer(from, to, tokenId);
     }
 
-    // function safeMint(address to) public onlyOwner {
-    //     _tokenIdCounter += 1;
-    //     _safeMint(to, _tokenIdCounter);
-    // }
-
     // Changing safeMint function such that token can be assigned by cron job rather than just contract owner
     // Later change this such that token can only be issued by the contract owner
     // And then it can be burned/minted/claimed by the address to whom it is issued

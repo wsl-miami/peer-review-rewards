@@ -15,8 +15,6 @@ describe('Profiles conract', function() {
         return { ProfContract, owner, addr1, addr2 };
     }
 
-
-    // i did this to make sure this getter is actually working, this is not a real test
     it("Should return a profile", async function() {
         const { ProfContract, owner, addr1, addr2 } = await loadFixture(deployProfileWithProfile);
 

@@ -37,8 +37,6 @@ class AddReviewersModal extends React.Component {
             });
 
             this.setState({'available_reviewers': reviewers.data.reviewers});
-            console.log('test', reviewers);
-            console.log('reviewers', this.state.available_reviewers);
         }
 
         getReviewers();
@@ -51,22 +49,12 @@ class AddReviewersModal extends React.Component {
                 return
             }
         }
-        // this.props.PRContract.methods.addReviewersToBounty(
-        //     this.props.bountyid, this.state.reviewer_values
-        // ).send({from: this.props.account})
-        // .on('confirmation', (receipt) => {
-        //     window.location.reload();
-        // });
-
-        const str = Buffer.from(bs58.decode(this.props.ipfs32)).toString('hex');
-        console.log("ipfs32 props", this.props.ipfs32);
 
         // Connecting to database and updating data
         axios({
             url: `${process.env.REACT_APP_API_URL}/api/add-reviewers`,
             method: "POST",
             data: {reviewer_hashes: this.state.reviewer_values, article_hash: this.props.ipfs32, deadline: this.state.deadline},
-            // data: {author: "0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6", file_hash: "QmVZerrmNhQE1gPp4KnX1yFJSHgAfMY6QW5LxGdpRPM2uJ"}
         })
             .then((res) => {
                 console.log('api response', res);
@@ -76,17 +64,6 @@ class AddReviewersModal extends React.Component {
                 console.log('api error', err);
                 alert("Something went wrong. Please try again");
             });
-        
-        
-
-        // this.props.PRContract.methods.submitManuscript(
-        //     this.props.account,
-        //     '0x'+str.substring(4, str.length)
-        // ).send({from: this.props.account, gas: 210000})
-        // .on('confirmation', (receipt) => {
-        //     console.log("done!");
-        //     window.location.reload();
-        // });
     }
 
     handleIncrement() {
@@ -135,12 +112,6 @@ class AddReviewersModal extends React.Component {
                                                 <Form.Label>Reviewer:</Form.Label>
                                             </Col>
                                             <Col>
-                                                {/* <Form.Control 
-                                                    type="text"
-                                                    value={item}
-                                                    placeholder='Reviewer address'
-                                                    onChange={(e) => this.handleReviewerChange(e.target.value, i)}
-                                                /> */}
                                                 <Form.Select
                                                     type="text"
                                                     onChange={e => this.handleReviewerChange(e.target.value, i)}

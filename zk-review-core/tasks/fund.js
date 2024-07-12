@@ -16,9 +16,6 @@ const fund = async () => {
   console.log('chainid', chainId);
   console.log(relayHubAddress);
 
-  // const RelayHub = await hre.ethers.getContractFactory("@opengsn/contracts/src/RelayHub.sol:RelayHub");
-  // const relayHub = await RelayHub.attach(relayHubAddress);
-
   // Trying out using ABI file
   const relayHubAbiFile = path.resolve(__dirname, "../relayHubABI.abi");
     const relayHubABI = fs.readFileSync(relayHubAbiFile, "utf8");

@@ -33,12 +33,7 @@ export default function Dashboard({
     const [showOpenForm, setShowOpenForm] = useState(false);
 
     const renderBounties = () => {
-        console.log('bounties', bounties);
-        console.log("prcont", PRContract);
-        console.log("type", type);
-        console.log("chainId", chainId);
         if (bounties) {
-            // var bountyList = type === 'reviewer' ? bounties[0] : bounties;
             var bountyList = bounties;
 
             if (bountyList.length === 0 || bounties === null) {
@@ -96,17 +91,6 @@ export default function Dashboard({
 
             rewardsIds.push(rewardsId);
             reviewerAddresses.push(reviewerAddress);
-
-            // console.log(reviewerAddress);
-            // let test = await SoulBoundContract.methods.safeMint(
-            //         reviewerAddress, account
-            //     ).send({from: account, gas: 2100000});
-
-            // const updateRewards = await axios({
-            //     url: "http://localhost:5000/api/update-assigned-reviews",
-            //     method: "POST",
-            //     data: {rewardsId: rewardsId},
-            // })
         });
 
         if (reviewerAddresses.length > 0){
@@ -172,19 +156,6 @@ export default function Dashboard({
             <>
                 <br />
                 <br />
-                {/* <Col style={{ 'text-align': 'right' }}>
-                    <OverlayTrigger overlay={account == null ? <Tooltip id="tooltip-disabled">Account Connection Required</Tooltip> : <div></div>}>
-                        <span>
-                            <Button
-                                disabled={account == null}
-                                class="btn btn-success"
-                                onClick={() => distributeRewards()} >
-                                Distribute Rewards
-                            </Button>
-                        </span>
-                    </OverlayTrigger>
-
-                </Col> */}
             </>
         );
     }

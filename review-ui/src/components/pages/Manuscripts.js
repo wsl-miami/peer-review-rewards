@@ -1,4 +1,3 @@
-// import "../../style/BountyCardStyle.css";
 import "../../style/ModalStyle.css";
 import React, { useState, useEffect } from "react";
 import Row from 'react-bootstrap/Row';
@@ -50,7 +49,6 @@ export default function Manuscripts({
     }
     const handleShow = (link) => {
         setIpfs32(link);
-        console.log(ipfs32);
         setShow(true);
     }
 
@@ -115,19 +113,9 @@ export default function Manuscripts({
             } else {
                 alert('Something went wrong. Please try again.');
             }
-
-            // PRContract.methods.cancelBounty(
-            //     bounty.id
-            // ).send({ from: account })
-            //     .on('confirmation', (receipt) => {
-            //         window.location.reload();
-            //     });
         } else if (type === 'editor') {
             let editor_note = editorNote;
             let decision_status = editorDecision;
-            console.log('decision_status', decision_status);
-            console.log('editor_note', editor_note);
-
             let pinataRes = null;
     
             try {
@@ -170,20 +158,6 @@ export default function Manuscripts({
                 alert('Something went wrong. Please try again.');
                 console.log("Error while uploading file: ", err);
             }
-            // PRContract.methods.closeReview(
-            //     bounty.blockManuscriptId, passedOrFailed == 'Publish'
-            // ).send({from: account, gas: 210000})
-            // .on('confirmation', (receipt) => {
-            //     console.log("done!");
-            //     window.location.reload();
-            // });
-            
-            // PRContract.methods.closeBounty(
-            //     bounty.id, passedOrFailed == 'Publish'
-            // ).send({ from: account })
-            //     .on('confirmation', (receipt) => {
-            //         window.location.reload();
-            //     });;
         }
 
         setConfirmation('');
@@ -379,121 +353,6 @@ export default function Manuscripts({
         }else if (bounty.decision_status != STRING_CONSTANTS.STATUS.PENDING.value) {
             return 'Decision has already been made.';
         }
-        // else if (bounty.review_links.length < bounty.reviewers_count) {
-        //     return 'Reviewers are still working on their reviews.';
-        // }
-    }
-    const editorContent = () => {
-        if (type !== 'editor') {
-            return ('');
-        }
-        return (
-            <>
-                <Col md={{ span: 2 }}>
-                    <br /><br />
-                    <br />
-                    <OverlayTrigger overlay={isEditorDisabled() ? <Tooltip id="tooltip-disabled">{editorDisabledString()}</Tooltip> : <div></div>}>
-                        <Row class='text-right'>
-                            <Button
-                                disabled={isEditorDisabled()}
-                                onClick={handleShowOpenReviewer}
-                                variant='outline-primary'
-                            >
-                                Assign Reviewers
-                            </Button>
-                        </Row>
-                    </OverlayTrigger>
-                    <br />
-
-                    <Row>
-                        <DropdownButton
-                            as={ButtonGroup}
-                            title="View Reviewers"
-                            style={{}}
-                        >
-                            {
-                                    reviewers.map((reviewer, index) => {
-                                        return (
-                                            <Dropdown.Item 
-                                                key={index}
-                                            >
-                                                {reviewer.REVIEWER_HASH}
-                                            </Dropdown.Item>
-                                        )
-                                    })
-
-                                }
-                        </DropdownButton>
-                    </Row>
-                </Col>
-
-                <Col md={{ span: 2 }}>
-                    <OverlayTrigger overlay={isEditorClosedDisabled() ? <Tooltip id="tooltip-disabled">{editorClosedDisabledString()}</Tooltip> : <div></div>}>
-                        <Row class='text-right' className="butt">
-                            <Button
-                                disabled={isEditorClosedDisabled()}
-                                onClick={handleOpenConfirm}
-                                variant='outline-success'
-                            >
-                                Close Article
-                            </Button>
-                        </Row>
-                    </OverlayTrigger>
-
-                </Col>
-                <AddReviewersModal
-                    showOpenForm={showOpenReviewer}
-                    handleCloseOpenForm={handleCloseOpenReviewer}
-                    account={account}
-                    bountyid={bounty.id}
-                    PRContract={PRContract}
-                    ipfs32={bounty.manuscript_link}
-                    reviewers={reviewers}
-                />
-            </>
-        )
-    }
-    // const userHasReviewed = () => {
-    //     var bountyList = type === 'reviewer' ? bounties[0] : bounties;
-    //     if (bountyList.length === 0 || bounties === null) {
-    //         return <NoBounties type={type} />
-    //     } 
-    // }
-    const reviewerContent = () => {
-        if (type !== 'reviewer') {
-            return ('');
-        }
-        return (
-            <>
-                <Col md={{ span: 2 }}>
-                    <Row class='text-right'>
-                        <Button
-                            onClick={handleShowOpenReview}
-                            variant='outline-primary'
-                        >
-                            Submit Review
-                        </Button>
-                        <SubmitReviewModal
-                            showOpenForm={showOpenReview}
-                            handleCloseOpenForm={handleCloseOpenReview}
-                            account={account}
-                            bountyid={bounty.id}
-                            PRContract={PRContract}
-                            ipfs32={bounty.manuscript_link}
-                            journal={bounty.journal}
-                            prevReviewLinks={bounty.review_links}
-                        />
-                    </Row>
-                </Col>
-            </>
-        )
-    }
-
-    const convertBytes32toIpfsHash = (bytes32) => {
-        var hashHex = "1220" + bytes32.slice(2);
-        var hashBytes = Buffer.from(hashHex, 'hex');
-        var hashStr = bs58.encode(hashBytes);
-        return hashStr;
     }
 
     const convertTimestampToDate = (date) => {
@@ -540,7 +399,6 @@ export default function Manuscripts({
             <td>
                 <Ratio aspectRatio="16x9">
                     <IframeResizer
-                        // src={bounty ? "https://review-rewards.infura-ipfs.io/ipfs/" + convertBytes32toIpfsHash(bounty.manuscript_link) : ''}
                         src={bounty ? `${process.env.REACT_APP_PINATA_DEDICATED_GATEWAY_URL}/ipfs/${bounty.manuscript_link}?pinataGatewayToken=${process.env.REACT_APP_PINATA_OPEN_ACCESS_GATEWAY_KEY}` : ''}
                         heightCalculationMethod="lowestElement"
                         style={{ width: '1px', minWidth: '100%' }}
@@ -568,24 +426,6 @@ export default function Manuscripts({
                         )
                     })}
                </td>
-            //         <DropdownButton
-            //             as={ButtonGroup}
-            //             title="View Reviewers"
-            //             style={{}}
-            //         >
-            //             {
-            //                     reviewers.map((reviewer, index) => {
-            //                         return (
-            //                             <Dropdown.Item 
-            //                                 key={index}
-            //                             >
-            //                                 {reviewer.REVIEWER_HASH}
-            //                             </Dropdown.Item>
-            //                         )
-            //                     })
-
-            //                 }
-            //         </DropdownButton>
             }
             <td>
                 {
@@ -717,7 +557,6 @@ export default function Manuscripts({
                 </Modal.Header>
                 <Modal.Body>
                     <IframeResizer
-                        // src={bounty ? "https://review-rewards.infura-ipfs.io/ipfs/" + convertBytes32toIpfsHash(ipfs32) : ''}
                         src={bounty ?`${process.env.REACT_APP_PINATA_DEDICATED_GATEWAY_URL}/ipfs/${ipfs32}?pinataGatewayToken=${process.env.REACT_APP_PINATA_OPEN_ACCESS_GATEWAY_KEY}` : ''}
 
                         aspectRatio="1/1"

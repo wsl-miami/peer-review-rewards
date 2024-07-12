@@ -24,9 +24,6 @@ const apiEndpoints = [
 
 ];
 
-
-// @TODO: File upload using Pinata IPFS
-
 // Function to run Autocannon test for each API endpoint
 async function runTest(endpoint) {
     return new Promise((resolve, reject) => {

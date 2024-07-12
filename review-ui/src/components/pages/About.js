@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Container from 'react-bootstrap/Container';
 import STRING_CONSTANTS from "../../constants";
-// const oracledb = require('oracledb');
-
 
 export default function About({
     PRContract

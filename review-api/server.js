@@ -25,7 +25,6 @@ app.use(cors({
   origin: '*'
 }));
 
-// let connection;
 let SoulBoundContract;
 let ReviewRewardTokenContract;
 let signer;
@@ -74,7 +73,6 @@ knex.raw("SELECT 1 from DUAL").then(() => {
 });
 
 async function reviewRewardTokenSetup() {
-  // const reviewRewardTokenAddress = process.env.REVIEW_REWARD_TOKEN_CONTRACT;
   const reviewRewardTokenAddress = process.env.TEST_NETWORK == 'sepolia' ? process.env.REVIEW_REWARD_TOKEN_CONTRACT_SEPOLIA: process.env.REVIEW_REWARD_TOKEN_CONTRACT_GOERLI;
   ReviewRewardTokenContract = new ethers.Contract(reviewRewardTokenAddress, ReviewRewardTokenABI, signer);
   console.log('Review reward token contract set up!')
@@ -83,13 +81,11 @@ async function reviewRewardTokenSetup() {
 
 async function soulBoundSetup() {
   try {
-    // provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_URL);
     provider = new ethers.JsonRpcProvider(process.env.TEST_NETWORK == 'sepolia' ? process.env.SEPOLIA_URL : ETHEREUM_URL);
     const wallet = new ethers.Wallet(process.env.ETHEREUM_PRIVATE_KEY);
     signer = wallet.connect(provider);
     balance = await provider.getBalance(signer.address);
     console.log('balance', balance);
-    // const soulBoundAddress = process.env.SOUL_BOUND_TOKEN_CONTRACT;
     const soulBoundAddress = process.env.TEST_NETWORK == 'sepolia' ? process.env.SOUL_BOUND_TOKEN_CONTRACT_SEPOLIA: SOUL_BOUND_TOKEN_CONTRACT_GOERLI;
     SoulBoundContract = new ethers.Contract(soulBoundAddress, SoulBoundABI, signer);
 
@@ -191,9 +187,7 @@ async function bulkMintRRTTokens() {
           rrtJournalReviewerAddresses[journalAddress]['afterDeadline']['rewardsIds'].push(rewardsId);
         }
       });
-  
-      // console.log('rrtJournalReviewerAddresses', rrtJournalReviewerAddresses);
-  
+
       let journalAddresses = Object.keys(rrtJournalReviewerAddresses);
       for(let i=0; i < journalAddresses.length; i++) {
         let journalAddress = journalAddresses[i];
@@ -317,7 +311,6 @@ app.post('/api/manuscript-submission', async(req, res) => {
     console.log('err here', err);
     res.send({success: false, error_code: 'SERVERSIDEERROR'})
   }
-
 });
 
 app.get('/api/get-assigned-reviewers', async(req, res) => {
@@ -347,16 +340,9 @@ app.get('/api/get-assigned-reviewers', async(req, res) => {
 });
 
 app.post('/api/add-reviewers', async(req, res) => {
-
-  // if (!connection) {
-  //   await run();
-  // }
-
-  console.log(req.body);
   const reviewer_hashes = req.body.reviewer_hashes;
   const article_hash = req.body.article_hash;
   const deadline = req.body.deadline;
-  let connection;
 
   const manuscript_update = await knex(MANUSCRIPTS_TABLE)
                                 .where('ARTICLE_HASH', article_hash)
@@ -672,13 +658,11 @@ app.post('/api/update-assigned-reviews', async(req, res) => {
 app.post('/api/update-review-settings', async(req, res) => {
   const journal_hash = req.body.journal_hash;
   const enable_rrt = (req.body.enableRRT) ? 1 : 0;
-  // let rrt_amount_per_review = req.body.amountPerReview ? req.body.amountPerReview : 0;
   let rrt_within_deadline = req.body.amountPerReviewWithinDeadline ? req.body.amountPerReviewWithinDeadline : 0;
   let rrt_after_deadline = req.body.amountPerReviewAfterDeadline ? req.body.amountPerReviewAfterDeadline : 0;
 
 
   if (enable_rrt == 0) {
-    // rrt_amount_per_review = 0;
     rrt_within_deadline = 0;
     rrt_after_deadline = 0;
   }

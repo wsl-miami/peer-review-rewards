@@ -4,10 +4,7 @@ import Row from 'react-bootstrap/Row';
 import Button from "react-bootstrap/Button";
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-// import * as IPFS from 'ipfs-http-client';
-// import bs58 from 'bs58'
 import { Buffer } from 'buffer';
-// import { Identity } from "@semaphore-protocol/identity";
 import axios from "axios";
 const FormData = require('form-data');
 
@@ -40,33 +37,9 @@ class SubmitReviewModal extends Component {
         this.formContent = this.formContent.bind(this);
     }
 
-    /**
-     * TODO: Create the function to post the review file correctly 
-     * Create helper methods as see fit
-     * Consult OpenBountyModal.js for connection to IPFS
-     */
     async handleReview(e) {
         e.preventDefault();
         this.setState({ isReviewed: true });
-        // const msg = `0x${Buffer.from(this.state.note, 'utf8').toString('hex')}`;
-        // const sign = await window.ethereum.request({
-        //     method: 'personal_sign',
-        //     params: [msg, this.props.account, 'Example password'],
-        // });
-
-        // var identity = new Identity(sign);
-        // var idArray = JSON.parse(localStorage.getItem('review-identities'));
-        // var obj = {
-        //     note: this.state.note,
-        //     date: new Date()
-        // }
-        // if (idArray === null) {
-        //     idArray = [obj]
-        // } else {
-        //     idArray.push(obj);
-        // }
-        // localStorage.setItem('review-identities', JSON.stringify(idArray));
-
         const results = await this.ipfsUpload();
         this.props.handleCloseOpenForm();
     }
@@ -90,26 +63,13 @@ class SubmitReviewModal extends Component {
     }
 
     async ipfsUpload() {
-        // Connect to IPFS
-        // const projectId = process.env.REACT_APP_IPFS_ID;
-        // const projectSecret = process.env.REACT_APP_IPFS_SECRET;
-        // const authorization = "Basic " + btoa(projectId + ":" + projectSecret);
         const authorization = `Bearer ${process.env.REACT_APP_PINATA_API_KEY}`;
-
-        // const node = await IPFS.create({
-        //     url: process.env.REACT_APP_IPFS_URL,
-        //     headers: {
-        //         authorization,
-        //     },
-        // });
 
         // Send file to ipfs
         const reader = new FileReader()
         reader.onload = async (e) => {
             var text = (e.target.result)
             var text = this.formContent() + text;
-            // const results = await node.add(text);
-            // const str = Buffer.from(bs58.decode(results.path)).toString('hex');
 
             try {
                 const blob = new Blob([text], { type: "text/plain" });
@@ -133,15 +93,8 @@ class SubmitReviewModal extends Component {
                         authorization
                     }
                 });
-    
-                // this.props.PRContract.methods.claimBounty(
-                //     this.props.bountyid, '0x' + str.substring(4, str.length), identity.commitment
-                // ).send({ from: this.props.account })
-                //     .on('confirmation', (receipt) => {
-                //         window.location.reload();
-                //     });
                 
-                        // Connecting to database and updating data
+                // Connecting to database and updating data
                 axios({
                     url: `${process.env.REACT_APP_API_URL}/api/review-submission`,
                     method: "POST",
@@ -176,19 +129,6 @@ class SubmitReviewModal extends Component {
                     <Form onSubmit={(e) => this.handleReview(e)}>
                         <Row>
                             <Form.Group as={Col}>
-                                {/* <Row className='align-items-center'>
-                                    <Col md={{ span: 2 }}>
-                                        <Form.Label>Note:</Form.Label>
-                                    </Col>
-                                    <Col>
-                                        <Form.Control
-                                            type="text"
-                                            onChange={e => this.setState({ note: e.target.value })}
-                                            required
-                                            placeholder="Unique note used to claim reputation"
-                                        />
-                                    </Col>
-                                </Row> */}
                                 <Row>
                                     <Col>
                                         <strong>Reader Interest:</strong>

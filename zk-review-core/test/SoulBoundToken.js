@@ -12,8 +12,6 @@ describe("Token Delay Test", function () {
         const Soulbound = await ethers.getContractFactory("Soulbound");
         soulbound = await Soulbound.deploy();
 
-        
-
         // Mint token ID 1 to owner address
         await soulbound.safeMint(owner.address, '0x01fD07f75146Dd40eCec574e8f39A9dBc65088e6');
         console.log('minted');
